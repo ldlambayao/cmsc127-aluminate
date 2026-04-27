@@ -37,15 +37,16 @@ cmsc127-aluminate/
     │   ├── alumni/                 # Alumni section
     │   │   ├── layout.tsx          # Alumni layout
     │   │   ├── page.tsx            # Alumni main page
-    │   │   └── forms/
-    │   │       └── page.tsx        # Forms page
+    │   │   └── surveyform/
+    │   │       └── page.tsx        # Survey form page
     │   │
     │   └── components/             # Reusable components
     │       ├── dashboards/         # Dashboard components
-    │       │   ├── AdminDashboard.tsx    # Admin dashboard
     │       │   └── AlumniDashboard.tsx   # Alumni dashboard
     │       ├── layout/
-    │       │   └── sidebar.tsx     # Sidebar navigation
+    │       │   └── sidebar/        # Sidebar navigation
+    │       │       ├── AdminSidebar.tsx  # Admin sidebar
+    │       │       └── AlumniSidebar.tsx # Alumni sidebar
     │       └── ui/                 # UI components (empty)
     │
     └── public/                     # Static assets
@@ -67,8 +68,9 @@ cmsc127-aluminate/
 | `app/admin/` | Admin dashboard pages |
 | `app/alumni/` | Alumni section pages |
 | `app/components/` | Reusable React components |
-| `app/components/dashboards/` | Dashboard components (Admin & Alumni) |
+| `app/components/dashboards/` | Dashboard components (Alumni) |
 | `app/components/layout/` | Layout components (sidebar, etc.) |
+| `app/components/layout/sidebar/` | Sidebar navigation components |
 | `app/components/ui/` | UI component library (empty) |
 | `public/` | Static assets (images, SVGs) |
 
@@ -92,7 +94,7 @@ cmsc127-aluminate/
 /admin                     → app/admin/page.tsx
 /admin/results             → app/admin/results/page.tsx
 /alumni                    → app/alumni/page.tsx
-/alumni/forms              → app/alumni/forms/page.tsx
+/alumni/surveyform         → app/alumni/surveyform/page.tsx
 ```
 
 ---
