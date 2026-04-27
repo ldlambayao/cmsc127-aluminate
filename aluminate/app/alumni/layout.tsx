@@ -5,7 +5,7 @@ export default function AlumniLayout({
 }) {
   return (
     <div>
-      {/* Alumni Navigation/Sidebar */}
+      {/* Alumni Section Layout */}
       <main>{children}</main>
     </div>
   );

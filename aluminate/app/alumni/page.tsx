@@ -1,7 +1,5 @@
-export default function AlumniDashboard() {
-  return (
-    <div>
-      {/* Alumni Dashboard Home Page */}
-    </div>
-  );
+import AlumniDashboard from "@/components/dashboards/AlumniDashboard";
+
+export default function AlumniPage() {
+  return <AlumniDashboard />;
 }
