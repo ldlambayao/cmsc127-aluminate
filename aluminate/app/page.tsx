@@ -48,6 +48,7 @@ export default function Home() {
   );
 }
 
+
 const linkStyle = {
   color: "#9b1d2a",
   fontWeight: "600",
