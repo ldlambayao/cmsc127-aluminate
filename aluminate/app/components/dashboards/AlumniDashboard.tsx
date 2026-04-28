@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import AlumniSidebar from "@/components/layout/sidebar/AlumniSidebar";
 import Image from "next/image";
 
@@ -39,6 +40,13 @@ interface User {
 // --- Component ---
 export default function AlumniDashboard() {
   const [activePage, setActivePage] = useState("home");
+  const router = useRouter();
+
+  const handleSetActivePage = (page: string) => {
+    setActivePage(page);
+    if (page === "survey") router.push("/alumni/surveyform");
+    if (page === "home") router.push("/alumni");
+  };
 
   const user: User = {
     name: "Liarrah",
@@ -51,7 +59,7 @@ export default function AlumniDashboard() {
   return (
     <div style={styles.shell}>
       {/* Sidebar */}
-      <AlumniSidebar activePage={activePage} setActivePage={setActivePage} />
+      <AlumniSidebar activePage={activePage} setActivePage={handleSetActivePage} />
 
       {/* Main Content */}
       <main style={styles.main}>
@@ -114,7 +122,7 @@ export default function AlumniDashboard() {
               suggestions for the continuous improvement of DMPCS academic
               programs and their respective curricula.
             </p>
-            <button style={styles.answerBtn}>
+            <button style={styles.answerBtn} onClick={() => handleSetActivePage("survey")}>
               answer now <ArrowIcon />
             </button>
           </div>
