@@ -1,3 +1,4 @@
+// hi ivan here ka mag code sa getting started thanks
 import Link from "next/link";
 
 export default function Home() {
