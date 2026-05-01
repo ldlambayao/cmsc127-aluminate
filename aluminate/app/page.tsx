@@ -1,57 +1,120 @@
-// hi ivan here ka mag code sa getting started thanks
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        gap: "16px",
-        fontFamily: "'Segoe UI', sans-serif",
-        backgroundColor: "#f0f0f0",
-      }}
-    >
-      <h1 style={{ color: "#1a1a2e", marginBottom: "8px" }}>
-        Aluminate System
-      </h1>
-      <p style={{ color: "#888", fontSize: "14px", marginBottom: "24px" }}>
-        Illuminating Alumni Paths Through Data, One at a Time
-      </p>
-      <Link
-        href="/alumni"
-        style={linkStyle}
-      >
-        → Alumni Dashboard
-      </Link>
-      <Link
-        href="/admin"
-        style={linkStyle}
-      >
-        → Admin Dashboard
-      </Link>
-      <Link
-        href="/login"
-        style={linkStyle}
-      >
-        → Login
-      </Link>
-      <Link
-        href="/signup"
-        style={linkStyle}
-      >
-        → Sign Up
-      </Link>
+    <div style={containerStyle}>
+      {/* Corner gradient blobs */}
+      <div style={blobTopLeftStyle} />
+      <div style={blobTopRightStyle} />
+      <div style={blobBottomLeftStyle} />
+      <div style={blobBottomRightStyle} />
+
+      {/* Centered content */}
+      <div style={contentStyle}>
+        {/* Logo */}
+        <Image
+          src="/aluminate logo.png"
+          alt="Aluminate logo"
+          width={320}
+          height={80}
+          style={{ objectFit: "contain", marginBottom: "12px" }}
+          priority
+        />
+
+        {/* Subtitle */}
+        <p style={subtitleStyle}>
+          A DMPCS Alumni Tracking and Analytics System
+        </p>
+
+        {/* Get Started button */}
+        <Link href="/login" style={buttonStyle}>
+          Get Started &nbsp;→
+        </Link>
+      </div>
     </div>
   );
 }
 
-const linkStyle = {
+const containerStyle: React.CSSProperties = {
+  position: "relative",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100vh",
+  overflow: "hidden",
+  backgroundColor: "#fce8e8",
+  fontFamily: "'Segoe UI', sans-serif",
+};
+
+const cornerBlobBase: React.CSSProperties = {
+  position: "absolute",
+  width: "480px",
+  height: "480px",
+  borderRadius: "50%",
+  pointerEvents: "none",
+};
+
+const blobTopLeftStyle: React.CSSProperties = {
+  ...cornerBlobBase,
+  top: "-15%",
+  left: "-10%",
+  background:
+    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+};
+
+const blobTopRightStyle: React.CSSProperties = {
+  ...cornerBlobBase,
+  top: "-15%",
+  right: "-10%",
+  background:
+    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+};
+
+const blobBottomLeftStyle: React.CSSProperties = {
+  ...cornerBlobBase,
+  bottom: "-15%",
+  left: "-10%",
+  background:
+    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+};
+
+const blobBottomRightStyle: React.CSSProperties = {
+  ...cornerBlobBase,
+  bottom: "-15%",
+  right: "-10%",
+  background:
+    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+};
+
+const contentStyle: React.CSSProperties = {
+  position: "relative",
+  zIndex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "0px",
+};
+
+const subtitleStyle: React.CSSProperties = {
   color: "#9b1d2a",
-  fontWeight: "600",
-  fontSize: "15px",
+  fontSize: "13px",
+  fontWeight: 400,
+  letterSpacing: "0.02em",
+  marginBottom: "28px",
+  marginTop: "4px",
+};
+
+const buttonStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  backgroundColor: "#9b1d2a",
+  color: "#ffffff",
+  fontSize: "14px",
+  fontWeight: 600,
+  padding: "10px 28px",
+  borderRadius: "999px",
   textDecoration: "none",
+  letterSpacing: "0.03em",
+  transition: "background-color 0.2s ease, transform 0.15s ease",
 };
