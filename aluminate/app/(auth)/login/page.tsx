@@ -10,11 +10,22 @@ import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [status, setStatus] = useState("");
   const supabase = getSupabaseBrowserClient();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setStatus("error.message");
+    } else {
+      setStatus("Login successful!");
+    }
   }
 
   return (
