@@ -55,12 +55,22 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
         <button
           style={{
             ...styles.navItem,
-            ...(activePage === "survey" ? styles.navItemActive : {}),
+            ...(activePage === "exit" ? styles.navItemActive : {}),
           }}
-          onClick={() => setActivePage("survey")}
+          onClick={() => setActivePage("exit")}
         >
           <SurveyIcon />
-          Survey Form
+          Program Satisfaction Form
+        </button>
+        <button
+          style={{
+            ...styles.navItem,
+            ...(activePage === "tracer" ? styles.navItemActive : {}),
+          }}
+          onClick={() => setActivePage("tracer")}
+        >
+          <SurveyIcon />
+          Alumni Tracer Form
         </button>
       </nav>
 
