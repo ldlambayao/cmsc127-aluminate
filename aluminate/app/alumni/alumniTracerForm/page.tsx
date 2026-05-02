@@ -9,14 +9,15 @@ import AlumniTracerForm from "@/components/surveyform/AlumniTracerForm";
 type View = "intro" | "form";
 
 export default function AlumniTracerFormPage() {
-  const [activePage, setActivePage] = useState("survey");
+  const [activePage, setActivePage] = useState("tracer");
   const [view, setView] = useState<View>("intro");
   const router = useRouter();
 
   const handleSetActivePage = (page: string) => {
     setActivePage(page);
     if (page === "home") router.push("/alumni");
-    if (page === "survey") router.push("/alumni/alumniTracerForm");
+    if (page === "exit") router.push("/alumni/programSatisfactionForm");
+    if (page === "tracer") router.push("/alumni/alumniTracerForm");
   };
 
   const handleSubmit = () => {
