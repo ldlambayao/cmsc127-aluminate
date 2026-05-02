@@ -41,7 +41,7 @@ interface User {
 // --- Component ---
 export default function AlumniDashboard() {
   const [activePage, setActivePage] = useState("home");
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -102,11 +102,11 @@ export default function AlumniDashboard() {
 
       {/* Main Content */}
       <main style={styles.main}>
-        {loading && <p>Loading user data...</p>}
-        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
-        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
-        
-        {user && (
+        {loading ? (
+          <p>Loading...</p>
+        ) : fetchError ? (
+          <p style={{ color: 'red' }}>{fetchError}</p>
+        ) : user ? (
           <>
             {/* Header */}
             <header style={styles.header}>
@@ -151,10 +151,13 @@ export default function AlumniDashboard() {
               </div>
             </div>
           </>
+        ) : (
+          <p>No user data found</p>
         )}
 
         {/* About Section */}
-        <div style={styles.aboutCard}>
+        {!loading && user && (
+          <div style={styles.aboutCard}>
           <div style={styles.aboutContent}>
             <p style={styles.aboutLabel}>about us</p>
             <h2 style={styles.aboutTitle}>Aluminate</h2>
@@ -186,6 +189,7 @@ export default function AlumniDashboard() {
             </div>
           </div>
         </div>
+        )}
       </main>
     </div>
   );

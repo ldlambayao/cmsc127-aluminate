@@ -1,7 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import EmailPasswordDemo from "./EmailPasswordDemo";
+import { createSupabaseServerClient } from "@/../lib/supabase/server-client";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  console.log({user});
+
   return (
     <div style={containerStyle}>
       {/* Corner gradient blobs */}
