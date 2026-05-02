@@ -3,28 +3,36 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { User } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/../lib/supabase/server-client";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
+type LoginProps = {
+  user: User | null;
+}
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
+export default function LoginPage({ user }: LoginProps) {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const supabase = getSupabaseBrowserClient();
+  const [currentUser, setCurrentUser] = useState<User | null>(user);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setStatus("Verifying...");
+    const email = `${username}@up.edu.ph`
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    })
     if (error) {
-      setStatus("error.message");
+      setStatus("Invalid username or password");
+      console.error(error.message);
     } else {
-      setStatus("Login successful!");
+      console.log("Successfully logged in:", data.user);
+      setStatus("Welcome, " + data.user.email);
     }
   }
 
@@ -67,15 +75,15 @@ export default function LoginPage() {
             </div>
 
             {/* Login form */}
-            <form style={formStyle}>
+            <form style={formStyle} onSubmit={handleSubmit}>
               {/* Email input field */}
               <div style={inputGroupStyle}>
-                <label style={labelStyle}>Email</label>
+                <label style={labelStyle}>Username</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="Enter your email"
+                  type="username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="Enter your Username"
                   style={inputFieldStyle}
                   required
                 />
@@ -97,19 +105,6 @@ export default function LoginPage() {
               {/* Login button */}
               <button type="submit" style={loginButtonStyle}>
                 Login
-              </button>
-
-              {/* Separator */}
-              <div style={separatorStyle}>
-                <div style={separatorLine} />
-                <span style={separatorText}>or</span>
-                <div style={separatorLine} />
-              </div>
-
-              {/* Google sign-in button */}
-              <button type="button" style={googleButtonStyle}>
-                <span style={googleLogoPlaceholder}>G</span>
-                Sign in with Google
               </button>
             </form>
           </div>
@@ -279,50 +274,4 @@ const loginButtonStyle: React.CSSProperties = {
   border: "none",
   cursor: "pointer",
   transition: "background-color 0.2s ease, transform 0.15s ease",
-};
-
-const separatorStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "12px",
-  width: "100%",
-  marginTop: "8px",
-  marginBottom: "8px",
-};
-
-const separatorLine: React.CSSProperties = {
-  flex: 1,
-  height: "1px",
-  backgroundColor: "#e0e0e0",
-};
-
-const separatorText: React.CSSProperties = {
-  fontSize: "13px",
-  color: "#9b1d2a",
-  fontWeight: 400,
-};
-
-const googleButtonStyle: React.CSSProperties = {
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "12px",
-  backgroundColor: "#ffffff",
-  color: "#6c6c6c",
-  fontSize: "14px",
-  fontWeight: 500,
-  padding: "14px",
-  borderRadius: "8px",
-  border: "1px solid #e0e0e0",
-  cursor: "pointer",
-  transition: "background-color 0.2s ease, box-shadow 0.15s ease",
-};
-
-const googleLogoPlaceholder: React.CSSProperties = {
-  fontSize: "18px",
-  fontWeight: 700,
-  color: "#4285F4",
-  marginRight: "4px",
 };
