@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-interface SurveyFormProps {
+interface AlumniTracerFormProps {
   onSubmit?: () => void;
 }
 
@@ -34,7 +34,7 @@ interface FormData {
   alumniInterview: InterviewAnswer;
 }
 
-export default function SurveyForm({ onSubmit }: SurveyFormProps) {
+export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const [form, setForm] = useState<FormData>({
     lastName: "",
     firstName: "",

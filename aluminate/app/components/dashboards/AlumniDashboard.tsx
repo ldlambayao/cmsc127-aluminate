@@ -90,8 +90,9 @@ export default function AlumniDashboard() {
 
   const handleSetActivePage = (page: string) => {
     setActivePage(page);
-    if (page === "survey") router.push("/alumni/surveyform");
     if (page === "home") router.push("/alumni");
+    if (page === "exit") router.push("/alumni/programSatisfactionForm");
+    if (page === "tracer") router.push("/alumni/alumniTracerForm");
   };
 
   return (
@@ -168,7 +169,7 @@ export default function AlumniDashboard() {
               suggestions for the continuous improvement of DMPCS academic
               programs and their respective curricula.
             </p>
-            <button style={styles.answerBtn} onClick={() => handleSetActivePage("survey")}>
+            <button style={styles.answerBtn} onClick={() => handleSetActivePage("tracer")}>
               answer now <ArrowIcon />
             </button>
           </div>

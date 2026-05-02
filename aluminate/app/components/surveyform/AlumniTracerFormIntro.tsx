@@ -1,10 +1,10 @@
 "use client";
 
-interface SurveyFormIntroProps {
+interface AlumniTracerFormIntroProps {
   onProceed: () => void;
 }
 
-export default function SurveyFormIntro({ onProceed }: SurveyFormIntroProps) {
+export default function AlumniTracerFormIntro({ onProceed }: AlumniTracerFormIntroProps) {
   return (
     <div style={styles.wrapper}>
       <div style={styles.card}>
