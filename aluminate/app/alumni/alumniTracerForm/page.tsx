@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AlumniSidebar from "@/components/layout/sidebar/AlumniSidebar";
-import SurveyFormIntro from "@/components/surveyform/SurveyFormIntro";
-import SurveyForm from "@/components/surveyform/SurveyForm";
+import AlumniTracerFormIntro from "@/components/surveyform/AlumniTracerFormIntro";
+import AlumniTracerForm from "@/components/surveyform/AlumniTracerForm";
 
 type View = "intro" | "form";
 
-export default function SurveyFormPage() {
+export default function AlumniTracerFormPage() {
   const [activePage, setActivePage] = useState("survey");
   const [view, setView] = useState<View>("intro");
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function SurveyFormPage() {
   const handleSetActivePage = (page: string) => {
     setActivePage(page);
     if (page === "home") router.push("/alumni");
-    if (page === "survey") router.push("/alumni/surveyform");
+    if (page === "survey") router.push("/alumni/alumniTracerForm");
   };
 
   const handleSubmit = () => {
@@ -30,9 +30,9 @@ export default function SurveyFormPage() {
 
       <main style={styles.main}>
         {view === "intro" ? (
-          <SurveyFormIntro onProceed={() => setView("form")} />
+          <AlumniTracerFormIntro onProceed={() => setView("form")} />
         ) : (
-          <SurveyForm onSubmit={handleSubmit} />
+          <AlumniTracerForm onSubmit={handleSubmit} />
         )}
       </main>
     </div>
