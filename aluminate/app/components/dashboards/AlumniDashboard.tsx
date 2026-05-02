@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AlumniSidebar from "@/components/layout/sidebar/AlumniSidebar";
 import Image from "next/image";
+import supabase from "@/config/supabaseClient";
 
 // --- Icons ---
 const UserIcon = () => (
@@ -30,31 +31,68 @@ const ArrowIcon = () => (
 
 // --- Types ---
 interface User {
-  name: string;
-  fullName: string;
-  id: string;
-  program: string;
-  surveyStatus: string;
+  name?: string;
+  fullName?: string;
+  id?: string;
+  program?: string;
+  surveyStatus?: string;
 }
 
 // --- Component ---
 export default function AlumniDashboard() {
   const [activePage, setActivePage] = useState("home");
+  const [user, setUser] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select(`fname , mname , lname , alumni!inner (student_number , survey_status , program!inner (program_name))`)
+          .eq("user_id", 1)
+          .single();
+
+        if (error) {
+          setFetchError('Could not fetch data');
+          setUser(null);
+          console.log(error);
+        } else if (data) {
+          const name = data.fname;
+          const fullname = `${data.fname} ${data.mname ? data.mname.charAt(0) + '.' : ''} ${data.lname}`;
+          const student_number = data.alumni[0].student_number;
+          const program = data.alumni[0].program.program_name;
+          const survey_status = data.alumni[0].survey_status;
+
+          const userData: User = {
+            name: name,
+            fullName: fullname,
+            id: student_number,
+            program: program,
+            surveyStatus: survey_status,
+          };
+
+          setUser(userData);
+          setFetchError(null);
+        }
+      } catch (err) {
+        setFetchError('An error occurred');
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSetActivePage = (page: string) => {
     setActivePage(page);
     if (page === "home") router.push("/alumni");
     if (page === "exit") router.push("/alumni/programSatisfactionForm");
     if (page === "tracer") router.push("/alumni/alumniTracerForm");
-  };
-
-  const user: User = {
-    name: "Liarrah",
-    fullName: "Liarrah Daniya E. Lambayao",
-    id: "2024-04565",
-    program: "BS Computer Science",
-    surveyStatus: "Completed",
   };
 
   return (
@@ -64,48 +102,56 @@ export default function AlumniDashboard() {
 
       {/* Main Content */}
       <main style={styles.main}>
-        {/* Header */}
-        <header style={styles.header}>
-          <h1 style={styles.welcomeTitle}>
-            Welcome, <span style={styles.accent}>{user.name}</span> !
-          </h1>
-          <p style={styles.subtitle}>
-            Illuminating Alumni Paths through Data, One at a Time
-          </p>
-        </header>
+        {loading && <p>Loading user data...</p>}
+        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
+        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
+        
+        {user && (
+          <>
+            {/* Header */}
+            <header style={styles.header}>
+              <h1 style={styles.welcomeTitle}>
+                Welcome, <span style={styles.accent}>{user.name}</span> !
+              </h1>
+              <p style={styles.subtitle}>
+                Illuminating Alumni Paths through Data, One at a Time
+              </p>
+            </header>
 
-        {/* Info Cards */}
-        <div style={styles.cardRow}>
-          {/* User Info Card */}
-          <div style={styles.card}>
-            <div style={styles.cardInner}>
-              <div style={styles.avatarCircle}>
-                <UserIcon />
+            {/* Info Cards */}
+            <div style={styles.cardRow}>
+              {/* User Info Card */}
+              <div style={styles.card}>
+                <div style={styles.cardInner}>
+                  <div style={styles.avatarCircle}>
+                    <UserIcon />
+                  </div>
+                  <div>
+                    <p style={styles.cardName}>{user.fullName}</p>
+                    <p style={styles.cardId}>{user.id}</p>
+                    <span style={styles.badge}>{user.program}</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p style={styles.cardName}>{user.fullName}</p>
-                <p style={styles.cardId}>{user.id}</p>
-                <span style={styles.badge}>{user.program}</span>
+
+              {/* Survey Status Card */}
+              <div style={styles.card}>
+                <div style={styles.cardInner}>
+                  <div style={styles.clipboardWrap}>
+                    <ClipboardIcon />
+                  </div>
+                  <div>
+                    <p style={styles.cardName}>Survey Form Status</p>
+                    <p style={styles.surveyQuestion}>
+                      Answered the alumni tracer form?
+                    </p>
+                    <p style={styles.statusCompleted}>{user.surveyStatus}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Survey Status Card */}
-          <div style={styles.card}>
-            <div style={styles.cardInner}>
-              <div style={styles.clipboardWrap}>
-                <ClipboardIcon />
-              </div>
-              <div>
-                <p style={styles.cardName}>Survey Form Status</p>
-                <p style={styles.surveyQuestion}>
-                  Answered the alumni tracer form?
-                </p>
-                <p style={styles.statusCompleted}>{user.surveyStatus}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
 
         {/* About Section */}
         <div style={styles.aboutCard}>
