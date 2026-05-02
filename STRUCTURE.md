@@ -37,7 +37,7 @@ cmsc127-aluminate/
     │   ├── alumni/                 # Alumni section
     │   │   ├── layout.tsx          # Alumni layout
     │   │   ├── page.tsx            # Alumni main page
-    │   │   └── surveyform/
+    │   │   └── alumniTracerForm/
     │   │       └── page.tsx        # Survey form page
     │   │
     │   └── components/             # Reusable components
@@ -94,7 +94,7 @@ cmsc127-aluminate/
 /admin                     → app/admin/page.tsx
 /admin/results             → app/admin/results/page.tsx
 /alumni                    → app/alumni/page.tsx
-/alumni/surveyform         → app/alumni/surveyform/page.tsx
+/alumni/alumniTracerForm   → app/alumni/alumniTracerForm/page.tsx
 ```
 
 ---
