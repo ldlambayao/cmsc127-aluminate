@@ -44,7 +44,7 @@ export default function AlumniDashboard() {
 
   const handleSetActivePage = (page: string) => {
     setActivePage(page);
-    if (page === "survey") router.push("/alumni/surveyform");
+    if (page === "survey") router.push("/alumni/alumniTracerForm");
     if (page === "home") router.push("/alumni");
   };
 
