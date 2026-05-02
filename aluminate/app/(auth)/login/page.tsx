@@ -1,15 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import EmailPasswordDemo from "./EmailPasswordDemo";
+import { useState } from "react";
 import { createSupabaseServerClient } from "@/../lib/supabase/server-client";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
-export default async function LoginPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  console.log({user});
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const supabase = getSupabaseBrowserClient();
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+  }
 
   return (
     <div style={containerStyle}>
@@ -26,9 +32,9 @@ export default async function LoginPage() {
           {/* Branded Logo using the full image from /public */}
           <div style={brandLockupStyle}>
             <Image
-              src="/aluminate logo.png" 
+              src="/aluminate logo.png"
               alt="Aluminate logo"
-              width={380} 
+              width={380}
               height={95}
               style={{ objectFit: "contain", marginLeft: "-10px" }}
               priority
@@ -56,6 +62,8 @@ export default async function LoginPage() {
                 <label style={labelStyle}>Email</label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   placeholder="Enter your email"
                   style={inputFieldStyle}
                   required
@@ -67,6 +75,8 @@ export default async function LoginPage() {
                 <label style={labelStyle}>Password</label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   placeholder="Enter your password"
                   style={inputFieldStyle}
                   required
@@ -106,7 +116,7 @@ const containerStyle: React.CSSProperties = {
   width: "100%",
   height: "100vh",
   overflow: "hidden",
-  backgroundColor: "#fce8e8", 
+  backgroundColor: "#fce8e8",
   fontFamily: "'Segoe UI', sans-serif",
 };
 
@@ -156,10 +166,10 @@ const mainSplitLayout: React.CSSProperties = {
   width: "100%",
   height: "100%",
   alignItems: "center",
-  justifyContent: "center", 
+  justifyContent: "center",
   gap: "100px", // Adjust this value to bring them closer or further apart
-  padding: "0 20px", 
-  zIndex: 1, 
+  padding: "0 20px",
+  zIndex: 1,
 };
 
 // UPDATED: Removed fixed flex widths so elements take natural space
@@ -177,17 +187,17 @@ const brandLockupStyle: React.CSSProperties = {
 };
 
 const brandSubtitleStyle: React.CSSProperties = {
-  color: "#9b1d2a", 
-  fontSize: "14px", 
+  color: "#9b1d2a",
+  fontSize: "14px",
   fontWeight: 400,
   letterSpacing: "0.02em",
-  marginLeft: "4px", 
+  marginLeft: "4px",
 };
 
 // UPDATED: Removed fixed flex widths and padding
 const cardColumnStyle: React.CSSProperties = {
   display: "flex",
-  justifyContent: "center", 
+  justifyContent: "center",
   alignItems: "center",
 };
 
@@ -197,7 +207,7 @@ const loginCardStyle: React.CSSProperties = {
   maxWidth: "560px",
   backgroundColor: "#ffffff",
   borderRadius: "24px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.06)", 
+  boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
   padding: "50px",
   display: "flex",
   flexDirection: "column",
@@ -213,7 +223,7 @@ const headerWrapper: React.CSSProperties = {
 const welcomeTitleStyle: React.CSSProperties = {
   fontSize: "24px",
   fontWeight: 700,
-  color: "#2a2a2a", 
+  color: "#2a2a2a",
 };
 
 const welcomeSubtitleStyle: React.CSSProperties = {
@@ -242,14 +252,14 @@ const inputFieldStyle: React.CSSProperties = {
   width: "100%",
   padding: "12px 16px",
   borderRadius: "8px",
-  border: "1px solid #e0e0e0", 
+  border: "1px solid #e0e0e0",
   fontSize: "14px",
   color: "#2a2a2a",
 };
 
 const loginButtonStyle: React.CSSProperties = {
   width: "100%",
-  backgroundColor: "#9b1d2a", 
+  backgroundColor: "#9b1d2a",
   color: "#ffffff",
   fontSize: "14px",
   fontWeight: 600,
@@ -278,7 +288,7 @@ const separatorLine: React.CSSProperties = {
 
 const separatorText: React.CSSProperties = {
   fontSize: "13px",
-  color: "#9b1d2a", 
+  color: "#9b1d2a",
   fontWeight: 400,
 };
 
@@ -293,7 +303,7 @@ const googleButtonStyle: React.CSSProperties = {
   fontSize: "14px",
   fontWeight: 500,
   padding: "14px",
-  borderRadius: "8px", 
+  borderRadius: "8px",
   border: "1px solid #e0e0e0",
   cursor: "pointer",
   transition: "background-color 0.2s ease, box-shadow 0.15s ease",
@@ -302,6 +312,6 @@ const googleButtonStyle: React.CSSProperties = {
 const googleLogoPlaceholder: React.CSSProperties = {
   fontSize: "18px",
   fontWeight: 700,
-  color: "#4285F4", 
+  color: "#4285F4",
   marginRight: "4px",
 };
