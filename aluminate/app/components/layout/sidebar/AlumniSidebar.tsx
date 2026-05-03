@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 
 const HomeIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -8,10 +9,21 @@ const HomeIcon = () => (
   </svg>
 );
 
-const SurveyIcon = () => (
+const ProgramFormIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M8 7h8M8 12h8M8 17h4" />
+    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+    <path d="M12 11h4M12 16h4M8 11h.01M8 16h.01" />
+  </svg>
+);
+
+const TracerFormIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
   </svg>
 );
 
@@ -23,59 +35,50 @@ const LogOutIcon = () => (
   </svg>
 );
 
-interface SidebarProps {
-  activePage: string;
-  setActivePage: (page: string) => void;
-}
+const navItems = [
+  { label: "Home",                     icon: <HomeIcon />,        href: "/alumni" },
+  { label: "Program Satisfaction Form", icon: <ProgramFormIcon />, href: "/alumni/programSatisfactionForm" },
+  { label: "Alumni Tracer Form",        icon: <TracerFormIcon />,  href: "/alumni/alumniTracerForm" },
+];
 
-export default function AlumniSidebar({ activePage, setActivePage }: SidebarProps) {
+export default function AlumniSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <aside style={styles.sidebar}>
       {/* Logo */}
       <div style={styles.logo}>
-        <Image 
-        src="/aluminate logo.png" 
-        alt="Aluminate Logo" 
-        width={120} 
-        height={120} />
+        <Image
+          src="/aluminate logo.png"
+          alt="Aluminate Logo"
+          width={120}
+          height={120}
+        />
       </div>
 
       {/* Nav */}
       <nav style={styles.nav}>
-        <button
-          style={{
-            ...styles.navItem,
-            ...(activePage === "home" ? styles.navItemActive : {}),
-          }}
-          onClick={() => setActivePage("home")}
-        >
-          <HomeIcon />
-          Home
-        </button>
-        <button
-          style={{
-            ...styles.navItem,
-            ...(activePage === "exit" ? styles.navItemActive : {}),
-          }}
-          onClick={() => setActivePage("exit")}
-        >
-          <SurveyIcon />
-          Program Satisfaction Form
-        </button>
-        <button
-          style={{
-            ...styles.navItem,
-            ...(activePage === "tracer" ? styles.navItemActive : {}),
-          }}
-          onClick={() => setActivePage("tracer")}
-        >
-          <SurveyIcon />
-          Alumni Tracer Form
-        </button>
+        {navItems.map(({ label, icon, href }) => {
+          const isActive = pathname === href;
+          return (
+            <button
+              key={href}
+              style={{
+                ...styles.navItem,
+                ...(isActive ? styles.navItemActive : {}),
+              }}
+              onClick={() => router.push(href)}
+            >
+              {icon}
+              {label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Logout */}
-      <button style={styles.logoutBtn}>
+      <button style={styles.logoutBtn} onClick={() => router.push("/login")}>
         <LogOutIcon />
         Log Out
       </button>
@@ -98,12 +101,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     gap: "8px",
     padding: "0 20px 28px 20px",
-  },
-  logoText: {
-    fontWeight: "700",
-    fontSize: "18px",
-    color: "#1a1a2e",
-    letterSpacing: "-0.3px",
   },
   nav: {
     display: "flex",
