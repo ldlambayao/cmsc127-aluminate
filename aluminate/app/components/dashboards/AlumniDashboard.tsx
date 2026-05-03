@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import AlumniSidebar from "@/components/layout/sidebar/AlumniSidebar";
 import Image from "next/image";
 
@@ -20,48 +18,31 @@ const ClipboardIcon = () => (
   </svg>
 );
 
-const ArrowIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
-  </svg>
-);
-
-
 // --- Types ---
 interface User {
   name: string;
   fullName: string;
   id: string;
   program: string;
-  surveyStatus: string;
+  programFormStatus: string;
+  tracerFormStatus: string;
 }
 
 // --- Component ---
 export default function AlumniDashboard() {
-  const [activePage, setActivePage] = useState("home");
-  const router = useRouter();
-
-  const handleSetActivePage = (page: string) => {
-    setActivePage(page);
-    if (page === "survey") router.push("/alumni/surveyform");
-    if (page === "home") router.push("/alumni");
-  };
-
   const user: User = {
     name: "Liarrah",
     fullName: "Liarrah Daniya E. Lambayao",
     id: "2024-04565",
     program: "BS Computer Science",
-    surveyStatus: "Completed",
+    programFormStatus: "Completed",
+    tracerFormStatus: "Not Yet",
   };
 
   return (
     <div style={styles.shell}>
-      {/* Sidebar */}
-      <AlumniSidebar activePage={activePage} setActivePage={handleSetActivePage} />
+      <AlumniSidebar />
 
-      {/* Main Content */}
       <main style={styles.main}>
         {/* Header */}
         <header style={styles.header}>
@@ -89,18 +70,30 @@ export default function AlumniDashboard() {
             </div>
           </div>
 
-          {/* Survey Status Card */}
+          {/* Program Satisfaction Form Status Card */}
+          <div style={{ ...styles.card, ...styles.cardActive }}>
+            <div style={styles.cardInner}>
+              <div style={styles.clipboardWrapActive}>
+                <ClipboardIcon />
+              </div>
+              <div>
+                <p style={{ ...styles.cardName, color: "#9b1d2a" }}>Program Satisfaction Form Status</p>
+                <p style={styles.surveyQuestion}>Answered the Satisfaction Form?</p>
+                <span style={styles.statusBadgeCompleted}>{user.programFormStatus}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Alumni Tracer Form Status Card */}
           <div style={styles.card}>
             <div style={styles.cardInner}>
               <div style={styles.clipboardWrap}>
                 <ClipboardIcon />
               </div>
               <div>
-                <p style={styles.cardName}>Survey Form Status</p>
-                <p style={styles.surveyQuestion}>
-                  Answered the alumni tracer form?
-                </p>
-                <p style={styles.statusCompleted}>{user.surveyStatus}</p>
+                <p style={styles.cardName}>Alumni Tracer Form Status</p>
+                <p style={styles.surveyQuestion}>Answered the Alumni Tracer Form?</p>
+                <span style={styles.statusBadgeNotYet}>{user.tracerFormStatus}</span>
               </div>
             </div>
           </div>
@@ -122,22 +115,28 @@ export default function AlumniDashboard() {
               suggestions for the continuous improvement of DMPCS academic
               programs and their respective curricula.
             </p>
-            <button style={styles.answerBtn} onClick={() => handleSetActivePage("survey")}>
-              answer now <ArrowIcon />
-            </button>
           </div>
-
-          {/* Logo */}
           <div style={styles.aboutLogoWrap}>
             <div style={styles.aboutLogo}>
-                  <Image
-                    src="/aluminate logo.png"
-                    alt="Aluminate Logo"
-                    width={400}
-                    height={400}
-                  />
+              <Image src="/aluminate logo.png" alt="Aluminate Logo" width={400} height={400} />
             </div>
           </div>
+        </div>
+
+        {/* Steps Section */}
+        <div style={styles.stepsCard}>
+          <p style={styles.stepsLabel}>steps</p>
+          <ol style={styles.stepsList}>
+            <li style={styles.stepsItem}>
+              Before graduation, student shall answer the{" "}
+              <strong>Program Satisfaction Form</strong> as part of the
+              requirements before graduation.
+            </li>
+            <li style={styles.stepsItem}>
+              Two years after graduation, the alumni shall once again revisit
+              the system to answer the <strong>Alumni Tracer Form</strong>.
+            </li>
+          </ol>
         </div>
       </main>
     </div>
@@ -159,27 +158,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     gap: "24px",
   },
-  header: {
-    marginBottom: "4px",
-  },
-  welcomeTitle: {
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#1a1a2e",
-    margin: 0,
-  },
-  accent: {
-    color: "#9b1d2a",
-  },
-  subtitle: {
-    fontSize: "13px",
-    color: "#888",
-    margin: "6px 0 0",
-  },
-  cardRow: {
-    display: "flex",
-    gap: "20px",
-  },
+  header: { marginBottom: "4px" },
+  welcomeTitle: { fontSize: "32px", fontWeight: "700", color: "#1a1a2e", margin: 0 },
+  accent: { color: "#9b1d2a" },
+  subtitle: { fontSize: "13px", color: "#888", margin: "6px 0 0" },
+  cardRow: { display: "flex", gap: "20px" },
   card: {
     flex: 1,
     backgroundColor: "#ffffff",
@@ -187,135 +170,63 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "20px 24px",
     boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
   },
-  cardInner: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "16px",
-  },
+  cardActive: { backgroundColor: "#fce8ea" },
+  cardInner: { display: "flex", alignItems: "flex-start", gap: "16px" },
   avatarCircle: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "50%",
-    backgroundColor: "#f0f0f0",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
+    width: "44px", height: "44px", borderRadius: "50%",
+    backgroundColor: "#f0f0f0", display: "flex",
+    alignItems: "center", justifyContent: "center", flexShrink: 0,
   },
   clipboardWrap: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "10px",
-    backgroundColor: "#fce8ea",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
+    width: "44px", height: "44px", borderRadius: "10px",
+    backgroundColor: "#fce8ea", display: "flex",
+    alignItems: "center", justifyContent: "center", flexShrink: 0,
   },
-  cardName: {
-    fontWeight: "600",
-    fontSize: "13px",
-    color: "#444",
-    margin: "0 0 4px",
+  clipboardWrapActive: {
+    width: "44px", height: "44px", borderRadius: "10px",
+    backgroundColor: "#f4c0c6", display: "flex",
+    alignItems: "center", justifyContent: "center", flexShrink: 0,
   },
-  cardId: {
-    fontWeight: "700",
-    fontSize: "22px",
-    color: "#1a1a2e",
-    margin: "0 0 8px",
-    letterSpacing: "-0.5px",
-  },
+  cardName: { fontWeight: "600", fontSize: "13px", color: "#444", margin: "0 0 4px" },
+  cardId: { fontWeight: "700", fontSize: "22px", color: "#1a1a2e", margin: "0 0 8px", letterSpacing: "-0.5px" },
   badge: {
-    display: "inline-block",
-    backgroundColor: "#f4d0d4",
-    color: "#9b1d2a",
-    fontSize: "11px",
-    fontWeight: "600",
-    padding: "3px 10px",
-    borderRadius: "20px",
+    display: "inline-block", backgroundColor: "#f4d0d4", color: "#9b1d2a",
+    fontSize: "11px", fontWeight: "600", padding: "3px 10px", borderRadius: "20px",
   },
-  surveyQuestion: {
-    fontSize: "12px",
-    color: "#888",
-    margin: "0 0 8px",
+  surveyQuestion: { fontSize: "12px", color: "#888", margin: "0 0 8px" },
+  statusBadgeCompleted: {
+    display: "inline-block", backgroundColor: "#ffffff", color: "#555",
+    fontSize: "12px", fontWeight: "600", padding: "4px 16px", borderRadius: "20px",
   },
-  statusCompleted: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#555",
-    borderTop: "1px solid #eee",
-    paddingTop: "8px",
-    marginTop: "4px",
+  statusBadgeNotYet: {
+    display: "inline-block", backgroundColor: "#fce8ea", color: "#9b1d2a",
+    fontSize: "12px", fontWeight: "600", padding: "4px 16px", borderRadius: "20px",
   },
   aboutCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "32px 36px",
-    boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-    display: "flex",
-    gap: "48px",
-    alignItems: "center",
+    backgroundColor: "#ffffff", borderRadius: "12px", padding: "32px 36px",
+    boxShadow: "0 1px 6px rgba(0,0,0,0.06)", display: "flex", gap: "48px", alignItems: "center",
   },
-  aboutContent: {
-    flex: 1,
-  },
+  aboutContent: { flex: 1 },
   aboutLabel: {
-    fontSize: "11px",
-    color: "#aaa",
-    letterSpacing: "0.5px",
-    margin: "0 0 8px",
-    border: "1px solid #ddd",
-    display: "inline-block",
-    padding: "2px 10px",
-    borderRadius: "20px",
+    fontSize: "11px", color: "#aaa", letterSpacing: "0.5px", margin: "0 0 8px",
+    border: "1px solid #ddd", display: "inline-block", padding: "2px 10px", borderRadius: "20px",
   },
-  aboutTitle: {
-    fontSize: "24px",
-    fontWeight: "700",
-    color: "#1a1a2e",
-    margin: "0 0 2px",
-  },
-  aboutSubLabel: {
-    fontSize: "12px",
-    color: "#bbb",
-    margin: "0 0 14px",
-  },
+  aboutTitle: { fontSize: "24px", fontWeight: "700", color: "#1a1a2e", margin: "0 0 2px" },
+  aboutSubLabel: { fontSize: "12px", color: "#bbb", margin: "0 0 14px" },
   aboutText: {
-    fontSize: "12.5px",
-    lineHeight: "1.75",
-    color: "#555",
-    margin: "0 0 20px",
-    maxWidth: "480px",
-    textAlign: "justify",
+    fontSize: "12.5px", lineHeight: "1.75", color: "#555",
+    margin: "0", maxWidth: "480px", textAlign: "justify",
   },
-  answerBtn: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    backgroundColor: "#9b1d2a",
-    color: "#fff",
-    border: "none",
-    borderRadius: "20px",
-    padding: "10px 20px",
-    fontSize: "13px",
-    fontWeight: "600",
-    cursor: "pointer",
+  aboutLogoWrap: { display: "flex", alignItems: "center", justifyContent: "center", minWidth: "160px" },
+  aboutLogo: { display: "flex", alignItems: "center", gap: "10px" },
+  stepsCard: {
+    backgroundColor: "#ffffff", borderRadius: "12px", padding: "28px 36px",
+    boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
   },
-  aboutLogoWrap: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: "160px",
+  stepsLabel: {
+    fontSize: "11px", color: "#aaa", letterSpacing: "0.5px", margin: "0 0 16px",
+    border: "1px solid #ddd", display: "inline-block", padding: "2px 10px", borderRadius: "20px",
   },
-  aboutLogo: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-  aboutLogoText: {
-    fontSize: "28px",
-    fontWeight: "800",
-    color: "#9b1d2a",
-    letterSpacing: "-0.5px",
-  },
+  stepsList: { margin: 0, padding: "0 0 0 20px", display: "flex", flexDirection: "column", gap: "12px" },
+  stepsItem: { fontSize: "13px", color: "#555", lineHeight: "1.6" },
 };

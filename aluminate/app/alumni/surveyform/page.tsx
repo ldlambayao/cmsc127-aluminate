@@ -9,24 +9,16 @@ import SurveyForm from "@/components/surveyform/SurveyForm";
 type View = "intro" | "form";
 
 export default function SurveyFormPage() {
-  const [activePage, setActivePage] = useState("survey");
   const [view, setView] = useState<View>("intro");
   const router = useRouter();
 
-  const handleSetActivePage = (page: string) => {
-    setActivePage(page);
-    if (page === "home") router.push("/alumni");
-    if (page === "survey") router.push("/alumni/surveyform");
-  };
-
   const handleSubmit = () => {
-    // After submission — navigate back to home or show a success state
     router.push("/alumni");
   };
 
   return (
     <div style={styles.shell}>
-      <AlumniSidebar activePage={activePage} setActivePage={handleSetActivePage} />
+      <AlumniSidebar />
 
       <main style={styles.main}>
         {view === "intro" ? (
