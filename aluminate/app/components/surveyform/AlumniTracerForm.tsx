@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 interface AlumniTracerFormProps {
   onSubmit?: () => void;
@@ -35,6 +36,9 @@ interface FormData {
 }
 
 export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
+  const supabase = getSupabaseBrowserClient();
+  const [loading, setLoading] = useState(true);
+
   const [form, setForm] = useState<FormData>({
     lastName: "",
     firstName: "",
@@ -54,6 +58,55 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     emailUpdates: "",
     alumniInterview: "",
   });
+
+  useEffect(() => {
+    async function getProfile() {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error("Supabase auth error:", userError);
+        setLoading(false);
+        return;
+      }
+
+      if (user) {
+        const result: any = await supabase
+          .from('users')
+          .select('fname, mname, lname, alumni!inner(student_number, graduation_month, graduation_year)')
+          .eq('uuid', user.id)
+          .single();
+
+        if (result.error) {
+          console.error("Profile query error:", result.error);
+          setLoading(false);
+          return;
+        }
+
+        if (!result.data) {
+          console.warn("No profile data found for user", user.id);
+          setLoading(false);
+          return;
+        }
+
+        const data = result.data;
+        const alumni = data.alumni;
+        const month = alumni?.graduation_month;
+        const year = alumni?.graduation_year;
+        const monthYearGraduated = month && year ? `${year}-${month}` : "";
+        setForm((prev) => ({
+          ...prev,
+          lastName: data.lname || "",
+          firstName: data.fname || "",
+          middleInitial: data.mname ? data.mname.charAt(0) : "",
+          studentNumber: alumni?.student_number ?? "",
+          monthYearGraduated,
+        }));
+      }
+
+      setLoading(false);
+    }
+
+    getProfile();
+  }, []);
 
   const set = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
