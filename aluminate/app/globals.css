@@ -19,8 +19,21 @@
   }
 }
 
+@layer base {
+  body {
+    font-family: var(--font-geist-sans);
+  }
+
+  html {
+    font-family: var(--font-geist-sans);
+  }
+
+  * {
+    font-family: inherit;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
