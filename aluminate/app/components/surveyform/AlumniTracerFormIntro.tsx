@@ -51,7 +51,6 @@ const ArrowIcon = () => (
 const styles: { [key: string]: React.CSSProperties } = {
   content: {
     maxWidth: "800px",
-    fontFamily: "'Inter', 'Segoe UI', sans-serif",
   },
   title: {
     fontSize: "24px",

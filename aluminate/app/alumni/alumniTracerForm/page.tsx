@@ -44,7 +44,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     minHeight: "100vh",
     backgroundColor: "#f0f2f5",
-    fontFamily: "'Inter', 'Segoe UI', sans-serif",
   },
   main: {
     flex: 1,

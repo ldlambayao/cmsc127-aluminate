@@ -11,7 +11,7 @@ export default function AdminLayout({
   const [activePage, setActivePage] = useState("home");
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "'Segoe UI', sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       {/* Admin Sidebar */}
       <AdminSidebar activePage={activePage} setActivePage={setActivePage} />
       <main style={{ flex: 1, backgroundColor: "#f0f0f0" }}>{children}</main>

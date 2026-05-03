@@ -126,7 +126,6 @@ const containerStyle: React.CSSProperties = {
   height: "100vh",
   overflow: "hidden",
   backgroundColor: "#fce8e8",
-  fontFamily: "'Segoe UI', sans-serif",
 };
 
 const cornerBlobBase: React.CSSProperties = {
