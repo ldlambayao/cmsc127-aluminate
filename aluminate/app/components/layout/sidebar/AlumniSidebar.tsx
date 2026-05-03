@@ -86,24 +86,21 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
 const styles: { [key: string]: React.CSSProperties } = {
   sidebar: {
     width: "300px",
-    minHeight: "100vh",
+    height: "100vh",     // Changed from minHeight so it strictly fits the screen
+    position: "sticky",  // Locks the element in place
+    top: 0,              // Pins it to the very top of the window
     backgroundColor: "#ffffff",
     display: "flex",
     flexDirection: "column",
     padding: "24px 0",
     boxShadow: "1px 0 4px rgba(0,0,0,0.06)",
+    overflowY: "auto",   // Adds a scrollbar INSIDE the sidebar just in case your nav links ever exceed screen height
   },
   logo: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
     padding: "0 20px 28px 20px",
-  },
-  logoText: {
-    fontWeight: "700",
-    fontSize: "18px",
-    color: "#1a1a2e",
-    letterSpacing: "-0.3px",
   },
   nav: {
     display: "flex",
