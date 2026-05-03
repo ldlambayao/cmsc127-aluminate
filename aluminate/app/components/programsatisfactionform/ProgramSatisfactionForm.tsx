@@ -202,7 +202,7 @@ export default function ProgramSatisfactionForm({
                     onChange={() => handleReasonToggle("parentsChoice")}
                     style={styles.checkboxInput}
                   />
-                  Parents' choice
+                  Parents&apos choice
                 </label>
                 <label style={styles.checkboxLabel}>
                   <input
@@ -211,7 +211,7 @@ export default function ProgramSatisfactionForm({
                     onChange={() => handleReasonToggle("noOtherChoice")}
                     style={styles.checkboxInput}
                   />
-                  No other choice (e.g. didn't pass quota for other courses)
+                  No other choice (e.g. didn&apos;t pass quota for other courses)
                 </label>
                 <div style={styles.otherCheckWrap}>
                   <label style={styles.checkboxLabel}>
