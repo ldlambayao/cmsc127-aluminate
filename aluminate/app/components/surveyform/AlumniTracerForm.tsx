@@ -34,6 +34,22 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const supabase = getSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
 
+  //const variables to store user input into
+  const [natureOfWork, setNatureOfWork] = useState("");
+  const [higherStudies, setHigherStudies] = useState("");
+  const [listOfHigherStudies, setListOfHigherStudies] = useState("");
+  const [employmentStatus, setEmploymentStatus] = useState("");
+  const [workRelation, setWorkRelation] = useState("");
+  const [suggestions, setSuggestions] = useState("");
+  const [satisfactionLevel, setSatisfactionLevel] = useState<SatisfactionLevel>("");
+  const [satisfactionReason, setSatisfactionReason] = useState("");
+  const [waysDegprogHelped, setWaysDegprogHelped] = useState("");
+  const [degprogSuggestions, setDegprogSuggestions] = useState("");
+  const [receiveUpdates, setReceiveUpdates] = useState("");
+  const [interviewInterest, setInterviewInterest] = useState<InterviewAnswer>("");
+  const [dateAnswered, setDateAnswered] = useState(new Date().toISOString().split('T')[0]);
+  const [formError, setFormError] = useState("");
+
   const [form, setForm] = useState<FormData>({
     lastName: "",
     firstName: "",
@@ -103,14 +119,77 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     getProfile();
   }, []);
 
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!natureOfWork || !higherStudies || !listOfHigherStudies || !employmentStatus || !workRelation || !suggestions || !satisfactionLevel || !satisfactionReason || !waysDegprogHelped || !degprogSuggestions || !receiveUpdates || !interviewInterest) {
+      setFormError('Please fill out all  fields before submitting the form.');
+      console.error("Form submission error: Missing required fields");
+      return;
+    } else {
+      setFormError('');
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error("No user found! Please log in to submit form data.");
+      alert("No user found! Please log in to submit form data.");
+      return;
+    }
+
+    const { data: alumniData, error: alumniError } = await supabase
+      .from('alumni')
+      .select('alumnus_id')
+      .eq('uuid', user.id)
+      .single() as { data: { alumnus_id: any } | null, error: any };
+
+    if (alumniError || !alumniData) {
+      console.error("Alumnus record not found:", alumniError);
+      alert("Could not find your alumni profile.");
+      return;
+    }
+
+    const currentAlumnusId = alumniData.alumnus_id;
+
+    const { error: insertError } = await (supabase
+      .from('tracer_survey_response')
+      .insert([
+        {
+          alumnus_id: currentAlumnusId,
+          nature_of_work: natureOfWork,
+          higher_studies: higherStudies,
+          list_for_higher_studies: listOfHigherStudies,
+          employment_status: employmentStatus,
+          work_relation: workRelation,
+          share_suggestions: suggestions,
+          satisfaction_level: satisfactionLevel,
+          satisfaction_reason: satisfactionReason,
+          ways_degprog_helped: waysDegprogHelped,
+          degprog_suggestions: degprogSuggestions,
+          receive_updates: receiveUpdates,
+          interview_interest: interviewInterest,
+          date_answered: dateAnswered,
+        }
+      ] as any) as any);
+
+      if (insertError) {
+        console.error("Insert failed:", insertError.message);
+        alert("Error saving survey response.");
+      } else {
+        alert("Survey submitted successfully!");
+        const { error: updateError } = await (supabase as any)
+          .from('alumni')
+          .update({ tracer_survey_status: "Completed" })
+          .eq('alumnus_id', currentAlumnusId);
+      }
+
+    onSubmit?.();
+  };
+
+
   const set = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleSubmit = () => {
-    console.log("Survey submitted:", form);
-    onSubmit?.();
-  };
 
   const satisfactionLevels: SatisfactionLevel[] = [
     "Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied",
@@ -134,7 +213,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     <div style={styles.content}>
 
       {/* Page Header */}
-      <div style={styles.pageHeader}>  
+      <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Alumni Tracer Form</h1>
         <p style={styles.pageSubtitle}>
           Complete the Alumni Tracer form to contribute valuable feedback and data.
@@ -186,14 +265,14 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               Organization/Company, Business, Research and Development, Others, etc.)
               If currently employed, please provide the name of your employer.
             </label>
-            <textarea style={styles.textarea} rows={4} value={form.workField} onChange={set("workField")}
+            <textarea style={styles.textarea} rows={4} value={form.workField} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setNatureOfWork(e.target.value); set("workField")(e)}}
               placeholder="Share with us the nature of your work..." />
           </div>
 
           <div style={styles.twoColumnRow}>
             <div style={styles.inputGroup}>
               <label style={styles.questionLabel}>Are you pursuing higher studies?</label>
-              <select style={styles.textInput} value={form.pursuingHigherStudies} onChange={set("pursuingHigherStudies")}>
+              <select style={styles.textInput} value={form.pursuingHigherStudies} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {setHigherStudies(e.target.value); set("pursuingHigherStudies")(e)}}>
                 <option value="">Select option</option>
                 <option>Yes</option>
                 <option>No</option>
@@ -203,7 +282,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               <label style={styles.questionLabel}>
                 Please specify degree program, field of study, and university.
               </label>
-              <textarea style={styles.textarea} rows={3} value={form.degreesHeld} onChange={set("degreesHeld")}
+              <textarea style={styles.textarea} rows={3} value={form.degreesHeld} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setListOfHigherStudies(e.target.value); set("degreesHeld")(e)}}
                 placeholder="List each program if applicable..." />
             </div>
           </div>
@@ -219,7 +298,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
                       name="employed"
                       value={opt}
                       checked={form.employed === opt}
-                      onChange={set("employed")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setEmploymentStatus(e.target.value); set("employed")(e)}}
                       style={styles.checkboxInput}
                     />
                     {opt}
@@ -237,7 +316,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
                       name="workRelated"
                       value={opt}
                       checked={form.workRelated === opt}
-                      onChange={set("workRelated")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setWorkRelation(e.target.value); set("workRelated")(e)}}
                       style={styles.checkboxInput}
                     />
                     {opt}
@@ -258,7 +337,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               Please share your suggestions for activities (programs, mentoring, etc.) that
               allow us to better help alumni find jobs after graduation. Please elaborate below.
             </label>
-            <textarea style={styles.textarea} rows={5} value={form.suggestions} onChange={set("suggestions")}
+            <textarea style={styles.textarea} rows={5} value={form.suggestions} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setSuggestions(e.target.value); set("suggestions")(e)}}
               placeholder="Share your suggestions with us..." />
           </div>
 
@@ -275,7 +354,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
                     ...styles.satisfactionBtn,
                     ...(form.satisfaction === level ? styles.satisfactionBtnActive : {}),
                   }}
-                  onClick={() => setForm((prev) => ({ ...prev, satisfaction: level }))}
+                  onClick={() => {setForm((prev) => ({ ...prev, satisfaction: level })); setSatisfactionLevel(level)}}
                 >
                   {level}
                 </button>
@@ -285,7 +364,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
 
           <div style={styles.inputGroup}>
             <label style={styles.questionLabel}>Reasons for giving that rating above:</label>
-            <textarea style={styles.textarea} rows={4} value={form.satisfactionReasons} onChange={set("satisfactionReasons")}
+            <textarea style={styles.textarea} rows={4} value={form.satisfactionReasons} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setSatisfactionReason(e.target.value); set("satisfactionReasons")(e)}}
               placeholder="Share your reasons with us..." />
           </div>
 
@@ -293,7 +372,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
             <label style={styles.questionLabel}>
               In what way did your degree program help you in your professional career?
             </label>
-            <textarea style={styles.textarea} rows={4} value={form.degreeHelpfulness} onChange={set("degreeHelpfulness")}
+            <textarea style={styles.textarea} rows={4} value={form.degreeHelpfulness} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setWaysDegprogHelped(e.target.value); set("degreeHelpfulness")(e)}}
               placeholder="Share your thoughts with us..." />
           </div>
 
@@ -302,7 +381,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               What are your suggestions on how to improve the program in terms of structure,
               content, teaching, assessments, etc.?
             </label>
-            <textarea style={styles.textarea} rows={4} value={form.programImprovements} onChange={set("programImprovements")}
+            <textarea style={styles.textarea} rows={4} value={form.programImprovements} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setDegprogSuggestions(e.target.value); set("programImprovements")(e)}}
               placeholder="Share your suggestions with us..." />
           </div>
 
@@ -311,7 +390,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               Would you like to get updates regarding new DMPCS program offerings, trainings
               and/or activities for alumni? If yes, please provide your email below.
             </label>
-            <input style={styles.textInput} type="email" value={form.emailUpdates} onChange={set("emailUpdates")}
+            <input style={styles.textInput} type="email" value={form.emailUpdates} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setReceiveUpdates(e.target.value); set("emailUpdates")(e)}}
               placeholder="email@example.com" />
           </div>
 
@@ -328,7 +407,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
                     name="alumniInterview"
                     value={opt}
                     checked={form.alumniInterview === opt}
-                    onChange={set("alumniInterview")}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setInterviewInterest(e.target.value as InterviewAnswer); set("alumniInterview")(e)}}
                     style={styles.checkboxInput}
                   />
                   {opt}

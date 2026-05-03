@@ -28,8 +28,8 @@ interface User {
   fullName?: string;
   id?: string;
   program?: string;
-  programFormStatus?: string;
-  tracerFormStatus?: string;
+  satisfactionSurveyStatus?: string;
+  tracerSurveyStatus?: string;
 }
 
 // --- Component ---
@@ -57,7 +57,7 @@ export default function AlumniDashboard() {
 
         const result: any = await supabase
           .from("users")
-          .select(`fname, mname, lname, alumni!inner(student_number, survey_status, program!inner(program_name))`)
+          .select(`fname, mname, lname, alumni!inner(student_number, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))`)
           .eq("uuid", sessionUser.id)
           .single();
 
@@ -73,8 +73,8 @@ export default function AlumniDashboard() {
           fullName: fullname,
           id: data.alumni?.student_number ?? "",
           program: data.alumni?.program?.program_name ?? "",
-          programFormStatus: data.alumni?.program_form_status ?? "Not yet answered",
-          tracerFormStatus: data.alumni?.survey_status ?? "Not yet answered",
+          satisfactionSurveyStatus: data.alumni?.satisfaction_survey_status ?? "Not yet answered",
+          tracerSurveyStatus: data.alumni?.tracer_survey_status ?? "Not yet answered",
         };
         setUser(userData);
         setFetchError(null);
@@ -163,7 +163,7 @@ export default function AlumniDashboard() {
                       <p style={styles.cardTitleBold}>Program Satisfaction Form Status</p>
                       <p style={styles.cardSubtitleDark}>Answered the Satisfaction Form?</p>
                       <div style={styles.pillWrapper}>
-                        <span style={styles.pillWhiteWide}>{user.programFormStatus}</span>
+                        <span style={styles.pillWhiteWide}>{user.satisfactionSurveyStatus}</span>
                       </div>
                     </div>
                   </div>
@@ -179,7 +179,7 @@ export default function AlumniDashboard() {
                       <p style={styles.cardTitleBold}>Alumni Tracer Form Status</p>
                       <p style={styles.cardSubtitleLight}>Answered the Alumni Tracer Form?</p>
                       <div style={styles.pillWrapper}>
-                        <span style={styles.pillPinkWide}>{user.tracerFormStatus}</span>
+                        <span style={styles.pillPinkWide}>{user.tracerSurveyStatus}</span>
                       </div>
                     </div>
                   </div>
