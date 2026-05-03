@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/../lib/supabase/server-client";
@@ -16,6 +17,7 @@ export default function LoginPage({ user }: LoginProps) {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const supabase = getSupabaseBrowserClient();
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<User | null>(user);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -33,6 +35,7 @@ export default function LoginPage({ user }: LoginProps) {
     } else {
       console.log("Successfully logged in:", data.user);
       setStatus("Welcome, " + data.user.email);
+      router.push("/alumni")
     }
   }
 

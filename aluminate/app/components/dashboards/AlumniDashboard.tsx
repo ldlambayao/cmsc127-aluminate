@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AlumniSidebar from "@/components/layout/sidebar/AlumniSidebar";
 import Image from "next/image";
-import supabase from "@/config/supabaseClient";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 // --- Icons ---
 const UserIcon = () => (
@@ -45,48 +45,67 @@ export default function AlumniDashboard() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const loadUser = async () => {
       try {
-        const { data, error } = await supabase
-          .from('users')
-          .select(`fname , mname , lname , alumni!inner (student_number , survey_status , program!inner (program_name))`)
-          .eq("user_id", 1)
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        const sessionUser = sessionData.session?.user ?? null;
+        if (!sessionUser) {
+          setUser(null);
+          setLoading(false);
+          router.push("/login");
+          return;
+        }
+
+        const result: any = await supabase
+          .from("users")
+          .select(`fname, mname, lname, alumni!inner(student_number, survey_status, program!inner(program_name))`)
+          .eq("uuid", sessionUser.id)
           .single();
 
-        if (error) {
-          setFetchError('Could not fetch data');
-          setUser(null);
-          console.log(error);
-        } else if (data) {
-          const name = data.fname;
-          const fullname = `${data.fname} ${data.mname ? data.mname.charAt(0) + '.' : ''} ${data.lname}`;
-          const student_number = data.alumni[0].student_number;
-          const program = data.alumni[0].program.program_name;
-          const survey_status = data.alumni[0].survey_status;
-
-          const userData: User = {
-            name: name,
-            fullName: fullname,
-            id: student_number,
-            program: program,
-            surveyStatus: survey_status,
-          };
-
-          setUser(userData);
-          setFetchError(null);
+        if (result.error) throw result.error;
+        if (!result.data) {
+          throw new Error("No profile data found");
         }
-      } catch (err) {
-        setFetchError('An error occurred');
-        console.log(err);
+
+        const data = result.data;
+        const fullname = `${data.fname} ${data.mname ? data.mname.charAt(0) + "." : ""} ${data.lname}`.trim();
+        const userData: User = {
+          name: data.fname,
+          fullName: fullname,
+          id: data.alumni?.student_number ?? "",
+          program: data.alumni?.program?.program_name ?? "",
+          surveyStatus: data.alumni?.survey_status ?? "",
+        };
+        setUser(userData);
+        setFetchError(null);
+      } catch (error) {
+        console.error(error);
+        setFetchError("Could not load user data");
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
-  }, []);
+    loadUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        router.push("/login");
+      } else {
+        loadUser();
+      }
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, [router]);
 
   const handleSetActivePage = (page: string) => {
     setActivePage(page);
