@@ -35,7 +35,7 @@ interface FormState {
 }
 
 interface ProgramSatisfactionFormProps {
-  onSubmit?: () => void;
+  onSubmit?: (formData: FormState) => void;
 }
 
 // --- Constants ---
@@ -400,7 +400,7 @@ export default function ProgramSatisfactionForm({
 
         {/* Submit Row */}
         <div style={styles.actionRow}>
-          <button style={styles.nextBtn} onClick={onSubmit}>
+          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>
             Next
           </button>
         </div>

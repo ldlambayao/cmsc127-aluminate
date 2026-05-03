@@ -86,7 +86,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
         const alumni = data.alumni;
         const month = alumni?.graduation_month;
         const year = alumni?.graduation_year;
-        const monthYearGraduated = month && year ? `${year}-${month}` : "";
+        const monthYearGraduated = month && year ? `${year}-${String(month).padStart(2, "0")}` : "";
         setForm((prev) => ({
           ...prev,
           lastName: data.lname || "",
@@ -120,11 +120,21 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     "Yes", "No", "Maybe, I'll join later at some other time",
   ];
 
+  if (loading) {
+    return (
+      <div style={styles.content}>
+        <div style={styles.pageHeader}>
+          <h1 style={styles.pageTitle}>Loading...</h1>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.content}>
 
       {/* Page Header */}
-      <div style={styles.pageHeader}>
+      <div style={styles.pageHeader}>  
         <h1 style={styles.pageTitle}>Alumni Tracer Form</h1>
         <p style={styles.pageSubtitle}>
           Complete the Alumni Tracer form to contribute valuable feedback and data.

@@ -23,8 +23,8 @@ export default function AlumniTracerFormIntro({ onProceed }: AlumniTracerFormInt
         *This survey only takes 1-3 minutes to finish.
       </p>
 
-      <button style={styles.proceedBtn} onClick={onProceed}>
-        ANSWER NOW &nbsp;
+      <button type="button" style={styles.proceedBtn} onClick={onProceed}>
+        ANSWER NOW
         <ArrowIcon />
       </button>
     </div>
