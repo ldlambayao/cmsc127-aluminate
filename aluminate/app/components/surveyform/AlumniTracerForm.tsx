@@ -6,25 +6,20 @@ interface AlumniTracerFormProps {
   onSubmit?: () => void;
 }
 
-type SatisfactionLevel = "Very Satisfied" | "Satisfied" | "Neutral" | "Dissatisfied" | "Not Satisfied" | "";
-type InterviewAnswer = "Yes" | "No" | "Maybe, I'll provide my info later" | "";
+type SatisfactionLevel = "Very Satisfied" | "Satisfied" | "Neutral" | "Dissatisfied" | "Very Dissatisfied" | "";
+type InterviewAnswer = "Yes" | "No" | "Maybe, I'll join later at some other time" | "";
 
 interface FormData {
-  // Personal Information
   lastName: string;
   firstName: string;
   middleInitial: string;
   monthYearGraduated: string;
   studentNumber: string;
-
-  // Employment / Education
   workField: string;
   pursuingHigherStudies: string;
   degreesHeld: string;
   employed: string;
   workRelated: string;
-
-  // Program Feedback
   suggestions: string;
   satisfaction: SatisfactionLevel;
   satisfactionReasons: string;
@@ -65,352 +60,344 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   };
 
   const satisfactionLevels: SatisfactionLevel[] = [
-    "Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Not Satisfied",
+    "Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied",
   ];
 
   const interviewOptions: InterviewAnswer[] = [
-    "Yes", "No", "Maybe, I'll provide my info later",
+    "Yes", "No", "Maybe, I'll join later at some other time",
   ];
 
   return (
-    <div style={styles.wrapper}>
+    <div style={styles.content}>
+
       {/* Page Header */}
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Alumni Tracer Form</h1>
         <p style={styles.pageSubtitle}>
-          Complete the Alumni Tracer Form to aid and inform alumni-related research activities.
+          Complete the Alumni Tracer form to contribute valuable feedback and data.
         </p>
       </div>
 
-      {/* ── PERSONAL INFORMATION ── */}
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Personal Information</h2>
+      <div style={styles.formContainer}>
 
-        <div style={styles.row3}>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Last Name</label>
-            <input style={styles.input} value={form.lastName} onChange={set("lastName")} placeholder="" />
+        {/* ── PERSONAL INFORMATION ── */}
+        <div style={styles.sectionBlock}>
+          <h2 style={styles.sectionTitle}>Personal Information</h2>
+          <div style={styles.divider} />
+
+          <div style={styles.twoColumnRow}>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Last Name</label>
+              <input style={styles.textInput} value={form.lastName} onChange={set("lastName")} />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>First Name</label>
+              <input style={styles.textInput} value={form.firstName} onChange={set("firstName")} />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Middle Initial</label>
+              <input style={styles.textInput} value={form.middleInitial} onChange={set("middleInitial")} maxLength={3} />
+            </div>
           </div>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>First Name</label>
-            <input style={styles.input} value={form.firstName} onChange={set("firstName")} placeholder="" />
-          </div>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Middle Initial</label>
-            <input style={styles.input} value={form.middleInitial} onChange={set("middleInitial")} placeholder="" maxLength={3} />
+
+          <div style={{ ...styles.twoColumnRow, maxWidth: "500px" }}>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Month and Year Graduated</label>
+              <input style={styles.textInput} type="month" value={form.monthYearGraduated} onChange={set("monthYearGraduated")} />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Student Number</label>
+              <input style={styles.textInput} value={form.studentNumber} onChange={set("studentNumber")} />
+            </div>
           </div>
         </div>
 
-        <div style={styles.row2}>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Month and Year Graduated</label>
-            <input style={styles.input} type="month" value={form.monthYearGraduated} onChange={set("monthYearGraduated")} />
-          </div>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Student Number</label>
-            <input style={styles.input} value={form.studentNumber} onChange={set("studentNumber")} placeholder="" />
-          </div>
-        </div>
-      </section>
+        {/* ── EMPLOYMENT / EDUCATION ── */}
+        <div style={styles.sectionBlock}>
+          <h2 style={styles.sectionTitle}>Employment Details, Further Education, and Career Outcomes</h2>
+          <div style={styles.divider} />
 
-      <div style={styles.sectionDivider} />
-
-      {/* ── EMPLOYMENT / EDUCATION ── */}
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>
-          Employment Details, Further Education, and Career Outcomes
-        </h2>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            What is the nature of your work? (Specialization, field / Expertise in the area /
-            Specialization/Company, Business, Research and Development work, Others) and if
-            currently employed, please provide the name of your employer.
-          </label>
-          <textarea style={styles.textarea} rows={4} value={form.workField} onChange={set("workField")} />
-        </div>
-
-        <div style={styles.row2}>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Are you pursuing higher studies?</label>
-            <select style={styles.select} value={form.pursuingHigherStudies} onChange={set("pursuingHigherStudies")}>
-              <option value="">Select option</option>
-              <option>Yes</option>
-              <option>No</option>
-            </select>
-          </div>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>
-              Please specify degrees/programs held at or from your university.
-              If possible, list this component for every study you are on.
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              What is the nature of your work? (Education, IT/ICT Position in the
+              Organization/Company, Business, Research and Development, Others, etc.)
+              If currently employed, please provide the name of your employer.
             </label>
-            <textarea style={{ ...styles.textarea, minHeight: "70px" }} rows={3} value={form.degreesHeld} onChange={set("degreesHeld")} />
+            <textarea style={styles.textarea} rows={4} value={form.workField} onChange={set("workField")}
+              placeholder="Share with us the nature of your work..." />
           </div>
-        </div>
 
-        <div style={styles.row2}>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Are you currently employed?</label>
-            <div style={styles.radioGroup}>
-              {["Yes", "No"].map((opt) => (
-                <label key={opt} style={styles.radioLabel}>
-                  <input
-                    type="radio"
-                    name="employed"
-                    value={opt}
-                    checked={form.employed === opt}
-                    onChange={set("employed")}
-                    style={styles.radioInput}
-                  />
-                  {opt}
-                </label>
-              ))}
+          <div style={styles.twoColumnRow}>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>Are you pursuing higher studies?</label>
+              <select style={styles.textInput} value={form.pursuingHigherStudies} onChange={set("pursuingHigherStudies")}>
+                <option value="">Select option</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
             </div>
-          </div>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Is your work related to your degree program?</label>
-            <div style={styles.radioGroup}>
-              {["Yes", "No"].map((opt) => (
-                <label key={opt} style={styles.radioLabel}>
-                  <input
-                    type="radio"
-                    name="workRelated"
-                    value={opt}
-                    checked={form.workRelated === opt}
-                    onChange={set("workRelated")}
-                    style={styles.radioInput}
-                  />
-                  {opt}
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div style={styles.sectionDivider} />
-
-      {/* ── PROGRAM FEEDBACK ── */}
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Program Feedback</h2>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            Please share your suggestions for activities (programs, mentoring, etc.) that allows us to better help alumni find jobs after graduation.
-            Please elaborate on your suggestions below.
-          </label>
-          <textarea style={styles.textarea} rows={5} value={form.suggestions} onChange={set("suggestions")} />
-        </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            What is your level of satisfaction for your undergraduate study under the BSCS degree program?
-          </label>
-          <div style={styles.satisfactionRow}>
-            {satisfactionLevels.map((level) => (
-              <button
-                key={level}
-                type="button"
-                style={{
-                  ...styles.satisfactionBtn,
-                  ...(form.satisfaction === level ? styles.satisfactionBtnActive : {}),
-                }}
-                onClick={() => setForm((prev) => ({ ...prev, satisfaction: level }))}
-              >
-                {level}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>Reasons for giving that rating above:</label>
-          <textarea style={styles.textarea} rows={4} value={form.satisfactionReasons} onChange={set("satisfactionReasons")} />
-        </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            In what way did your degree program help you in your professional career?
-          </label>
-          <textarea style={styles.textarea} rows={4} value={form.degreeHelpfulness} onChange={set("degreeHelpfulness")} />
-        </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            What are your suggestions on how to improve the program in terms of the structure, content, teaching, assessments, etc.?
-          </label>
-          <textarea style={styles.textarea} rows={4} value={form.programImprovements} onChange={set("programImprovements")} />
-        </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            Would you like to get updates regarding new BSCS/IT program offerings, trainings and/or activities for alumni?
-            If yes, please provide your email below for subscribing.
-          </label>
-          <input style={styles.input} type="email" value={form.emailUpdates} onChange={set("emailUpdates")} placeholder="email@example.com" />
-        </div>
-
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>
-            Would you be interested in taking part as an alumni interviewer for the review and revision of the BSCS Program?
-          </label>
-          <div style={styles.verticalRadioGroup}>
-            {interviewOptions.map((opt) => (
-              <label key={opt} style={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="alumniInterview"
-                  value={opt}
-                  checked={form.alumniInterview === opt}
-                  onChange={set("alumniInterview")}
-                  style={styles.radioInput}
-                />
-                {opt}
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>
+                Please specify degree program, field of study, and university.
               </label>
-            ))}
+              <textarea style={styles.textarea} rows={3} value={form.degreesHeld} onChange={set("degreesHeld")}
+                placeholder="List each program if applicable..." />
+            </div>
+          </div>
+
+          <div style={styles.twoColumnRow}>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>Are you currently employed?</label>
+              <div style={styles.checkboxList}>
+                {["Yes", "No"].map((opt) => (
+                  <label key={opt} style={styles.checkboxLabel}>
+                    <input
+                      type="radio"
+                      name="employed"
+                      value={opt}
+                      checked={form.employed === opt}
+                      onChange={set("employed")}
+                      style={styles.checkboxInput}
+                    />
+                    {opt}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>Is your work related to your degree program?</label>
+              <div style={styles.checkboxList}>
+                {["Yes", "No"].map((opt) => (
+                  <label key={opt} style={styles.checkboxLabel}>
+                    <input
+                      type="radio"
+                      name="workRelated"
+                      value={opt}
+                      checked={form.workRelated === opt}
+                      onChange={set("workRelated")}
+                      style={styles.checkboxInput}
+                    />
+                    {opt}
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Submit */}
-      <div style={styles.submitRow}>
-        <button style={styles.submitBtn} onClick={handleSubmit}>
-          Submit
-        </button>
+        {/* ── PROGRAM FEEDBACK ── */}
+        <div style={styles.sectionBlock}>
+          <h2 style={styles.sectionTitle}>Program Feedback</h2>
+          <div style={styles.divider} />
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              Please share your suggestions for activities (programs, mentoring, etc.) that
+              allow us to better help alumni find jobs after graduation. Please elaborate below.
+            </label>
+            <textarea style={styles.textarea} rows={5} value={form.suggestions} onChange={set("suggestions")}
+              placeholder="Share your suggestions with us..." />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              What is your level of satisfaction for your undergraduate study under the BSCS degree program?
+            </label>
+            <div style={styles.ratingCard}>
+              {satisfactionLevels.map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  style={{
+                    ...styles.satisfactionBtn,
+                    ...(form.satisfaction === level ? styles.satisfactionBtnActive : {}),
+                  }}
+                  onClick={() => setForm((prev) => ({ ...prev, satisfaction: level }))}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>Reasons for giving that rating above:</label>
+            <textarea style={styles.textarea} rows={4} value={form.satisfactionReasons} onChange={set("satisfactionReasons")}
+              placeholder="Share your reasons with us..." />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              In what way did your degree program help you in your professional career?
+            </label>
+            <textarea style={styles.textarea} rows={4} value={form.degreeHelpfulness} onChange={set("degreeHelpfulness")}
+              placeholder="Share your thoughts with us..." />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              What are your suggestions on how to improve the program in terms of structure,
+              content, teaching, assessments, etc.?
+            </label>
+            <textarea style={styles.textarea} rows={4} value={form.programImprovements} onChange={set("programImprovements")}
+              placeholder="Share your suggestions with us..." />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              Would you like to get updates regarding new DMPCS program offerings, trainings
+              and/or activities for alumni? If yes, please provide your email below.
+            </label>
+            <input style={styles.textInput} type="email" value={form.emailUpdates} onChange={set("emailUpdates")}
+              placeholder="email@example.com" />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              Would you be interested in taking part as an alumni interviewer for the review
+              and revision of the BSCS Program?
+            </label>
+            <div style={styles.checkboxList}>
+              {interviewOptions.map((opt) => (
+                <label key={opt} style={styles.checkboxLabel}>
+                  <input
+                    type="radio"
+                    name="alumniInterview"
+                    value={opt}
+                    checked={form.alumniInterview === opt}
+                    onChange={set("alumniInterview")}
+                    style={styles.checkboxInput}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Submit */}
+        <div style={styles.actionRow}>
+          <button style={styles.nextBtn} onClick={handleSubmit}>
+            Submit
+          </button>
+        </div>
+
       </div>
     </div>
   );
 }
 
-// --- Styles ---
+// --- Styles --- (exact mirror of ProgramSatisfactionForm styles)
 const styles: { [key: string]: React.CSSProperties } = {
-  wrapper: {
-    flex: 1,
-    padding: "40px 56px",
-    backgroundColor: "#f0f0f0",
-    overflowY: "auto",
-    maxWidth: "860px",
+  content: {
+    width: "100%",
+    maxWidth: "1400px",
   },
   pageHeader: {
-    marginBottom: "28px",
+    marginBottom: "48px",
   },
   pageTitle: {
     fontSize: "26px",
     fontWeight: "700",
     color: "#1a1a2e",
-    margin: "0 0 6px",
-    letterSpacing: "-0.3px",
+    margin: "0 0 10px",
+    letterSpacing: "-0.5px",
   },
   pageSubtitle: {
-    fontSize: "12.5px",
-    color: "#888",
+    fontSize: "13px",
+    color: "#555",
     margin: 0,
   },
-  section: {
+  formContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "18px",
-    marginBottom: "8px",
+    gap: "50px",
+    paddingBottom: "40px",
+  },
+  sectionBlock: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px",
+    width: "100%",
   },
   sectionTitle: {
-    fontSize: "14px",
-    fontWeight: "700",
+    fontSize: "18px",
+    fontWeight: "600",
     color: "#9b1d2a",
-    margin: "0 0 4px",
-    letterSpacing: "0.1px",
+    margin: 0,
   },
-  sectionDivider: {
+  divider: {
     height: "1px",
-    backgroundColor: "#e4e4e4",
-    margin: "24px 0",
+    backgroundColor: "#e0e0e0",
+    width: "100%",
+    marginTop: "-10px",
   },
-  row3: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr 1fr",
-    gap: "16px",
+  twoColumnRow: {
+    display: "flex",
+    gap: "24px",
+    width: "100%",
+    maxWidth: "700px",
   },
-  row2: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "16px",
-  },
-  fieldGroup: {
+  inputGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: "6px",
+    gap: "10px",
+    flex: 1,
+    width: "100%",
   },
   label: {
     fontSize: "12px",
-    color: "#444",
-    lineHeight: "1.5",
+    color: "#333",
+    fontWeight: "500",
   },
-  input: {
-    border: "1px solid #ddd",
-    borderRadius: "6px",
-    padding: "8px 10px",
+  questionLabel: {
     fontSize: "13px",
-    color: "#1a1a2e",
-    backgroundColor: "#fff",
+    color: "#333",
+    fontWeight: "500",
+    lineHeight: "1.5",
+    marginBottom: "4px",
+  },
+  textInput: {
+    border: "1px solid #dcdcdc",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    fontSize: "13px",
+    color: "#333",
     outline: "none",
+    width: "100%",
+    backgroundColor: "#ffffff",
   },
   textarea: {
-    border: "1px solid #ddd",
-    borderRadius: "6px",
-    padding: "10px 12px",
+    border: "1px solid #dcdcdc",
+    borderRadius: "8px",
+    padding: "16px",
     fontSize: "13px",
-    color: "#1a1a2e",
-    backgroundColor: "#fff",
+    color: "#333",
+    outline: "none",
+    width: "100%",
+    backgroundColor: "#ffffff",
     resize: "vertical" as const,
-    outline: "none",
-    fontFamily: "'Segoe UI', sans-serif",
-    minHeight: "90px",
+    fontFamily: "inherit",
   },
-  select: {
-    border: "1px solid #ddd",
-    borderRadius: "6px",
-    padding: "8px 10px",
-    fontSize: "13px",
-    color: "#1a1a2e",
-    backgroundColor: "#fff",
-    outline: "none",
-    cursor: "pointer",
-  },
-  radioGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-    padding: "8px 12px",
-    border: "1px solid #ddd",
-    borderRadius: "6px",
-    backgroundColor: "#fff",
-  },
-  verticalRadioGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  radioLabel: {
+  ratingCard: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    fontSize: "13px",
-    color: "#444",
-    cursor: "pointer",
-  },
-  radioInput: {
-    accentColor: "#9b1d2a",
-    cursor: "pointer",
-  },
-  satisfactionRow: {
-    display: "flex",
-    gap: "8px",
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
+    border: "1px solid #eaeaea",
+    borderRadius: "12px",
+    padding: "24px 40px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+    marginTop: "8px",
+    width: "100%",
     flexWrap: "wrap" as const,
+    gap: "10px",
   },
   satisfactionBtn: {
-    padding: "7px 16px",
+    padding: "7px 18px",
     borderRadius: "20px",
-    border: "1px solid #ddd",
-    backgroundColor: "#fff",
+    border: "1px solid #dcdcdc",
+    backgroundColor: "#ffffff",
     fontSize: "12px",
     color: "#555",
     cursor: "pointer",
@@ -419,22 +406,42 @@ const styles: { [key: string]: React.CSSProperties } = {
   satisfactionBtnActive: {
     backgroundColor: "#9b1d2a",
     borderColor: "#9b1d2a",
-    color: "#fff",
+    color: "#ffffff",
   },
-  submitRow: {
+  checkboxList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    marginTop: "4px",
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    fontSize: "13px",
+    color: "#333",
+    cursor: "pointer",
+  },
+  checkboxInput: {
+    width: "16px",
+    height: "16px",
+    accentColor: "#9b1d2a",
+    cursor: "pointer",
+  },
+  actionRow: {
     display: "flex",
     justifyContent: "center",
-    paddingTop: "16px",
-    paddingBottom: "40px",
+    marginTop: "20px",
   },
-  submitBtn: {
+  nextBtn: {
     backgroundColor: "#9b1d2a",
-    color: "#fff",
+    color: "#ffffff",
     border: "none",
-    borderRadius: "20px",
-    padding: "10px 48px",
-    fontSize: "13px",
+    borderRadius: "24px",
+    padding: "12px 64px",
+    fontSize: "14px",
     fontWeight: "600",
     cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(155, 29, 42, 0.2)",
   },
 };

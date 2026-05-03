@@ -21,7 +21,6 @@ export default function AlumniTracerFormPage() {
   };
 
   const handleSubmit = () => {
-    // After submission — navigate back to home or show a success state
     router.push("/alumni");
   };
 
@@ -44,12 +43,14 @@ const styles: { [key: string]: React.CSSProperties } = {
   shell: {
     display: "flex",
     minHeight: "100vh",
-    backgroundColor: "#f0f0f0",
-    fontFamily: "'Segoe UI', sans-serif",
+    backgroundColor: "#f0f2f5",
+    fontFamily: "'Inter', 'Segoe UI', sans-serif",
   },
   main: {
     flex: 1,
+    padding: "64px 72px",
     display: "flex",
+    flexDirection: "column",
     overflowY: "auto",
   },
 };
