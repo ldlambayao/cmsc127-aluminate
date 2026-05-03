@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AlumniSidebar from "@/components/layout/sidebar/AlumniSidebar";
-import ProgramSatisfactionFormIntro from "@/components/surveyform/ProgramSatisfactionFormIntro";
-import ProgramSatisfactionForm from "@/components/surveyform/ProgramSatisfactionForm";
+import ProgramSatisfactionFormIntro from "@/components/surveyform/programSatisfactionSteps/ProgramSatisfactionFormIntro";
+import ProgramSatisfactionForm from "@/components/surveyform/programSatisfactionSteps/Page1-ProgramSatisfactionForm";
 
 type Step = "intro" | "form";
 
