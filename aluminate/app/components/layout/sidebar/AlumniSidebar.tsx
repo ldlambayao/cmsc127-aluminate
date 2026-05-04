@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useRouter } from "next/navigation";
 
 const HomeIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -29,14 +31,16 @@ interface SidebarProps {
 }
 
 export default function AlumniSidebar({ activePage, setActivePage }: SidebarProps) {
+  const router = useRouter();
+  const supabase = getSupabaseBrowserClient();
   return (
     <aside style={styles.sidebar}>
       {/* Logo */}
       <div style={styles.logo}>
-        <Image 
-        src="/aluminate logo.png" 
-        alt="Aluminate Logo" 
-        width={120} 
+        <Image
+        src="/aluminate logo.png"
+        alt="Aluminate Logo"
+        width={120}
         height={120} />
       </div>
 
@@ -75,13 +79,27 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
       </nav>
 
       {/* Logout */}
-      <button style={styles.logoutBtn}>
+      <button
+        style={styles.logoutBtn}
+        onClick={handleSignOut}>
         <LogOutIcon />
         Log Out
       </button>
     </aside>
   );
 }
+
+const handleSignOut = async () => {
+  const supabase = getSupabaseBrowserClient();
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Error signing out:", error.message);
+  } else {
+    window.location.href = "/login";
+  }
+};
 
 const styles: { [key: string]: React.CSSProperties } = {
   sidebar: {
