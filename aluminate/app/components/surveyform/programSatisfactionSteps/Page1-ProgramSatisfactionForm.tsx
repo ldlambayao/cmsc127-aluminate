@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 // --- Types ---
 type RatingValue = 1 | 2 | 3 | 4 | 5 | null;
@@ -52,9 +53,13 @@ const enrollmentFactorItems = [
 ];
 
 // --- Component ---
-export default function ProgramSatisfactionForm({
-  onSubmit,
-}: ProgramSatisfactionFormProps) {
+export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactionFormProps) {
+  const supabase = getSupabaseBrowserClient();
+  const [loading, setLoading] = useState(true);
+
+  //const variables to store user input into
+  const [] = useState("");
+
   const [form, setForm] = useState<FormState>({
     date: "",
     studentNumber: "",
