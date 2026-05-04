@@ -252,7 +252,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   shell: {
     display: "flex",
     minHeight: "100vh",
-    backgroundColor: "#2a2a2a",
+    backgroundColor: "#f4f5f7",
   },
   main: {
     flex: 1,
@@ -262,8 +262,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   topGradientOverlay: {
     position: "absolute",
-    top: 0, left: 0, right: 0, height: "400px",
-    background: "linear-gradient(180deg, #fce8ea 0%, rgba(244,245,247,0) 100%)",
+    top: 0, left: 0, right: 0, height: "360px",
+    background: "linear-gradient(180deg, #E8C4C4 0%, rgba(244,245,247,0) 100%)",
     zIndex: 0,
     pointerEvents: "none",
   },
@@ -275,7 +275,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "60px 48px",
     display: "flex",
     flexDirection: "column",
-    gap: "28px",
+    gap: "24px",
   },
   loadingText: { color: "#666" },
   errorText: { color: "#d15a6b", fontWeight: "bold" },
@@ -293,22 +293,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "14px",
     color: "#666",
     margin: "8px 0 0",
-    fontWeight: "500",
+    fontWeight: "400",
   },
 
-  topCardsContainer: { display: "flex", gap: "20px", width: "100%" },
+  topCardsContainer: { display: "flex", gap: "18px", width: "100%" },
 
   /* Card Layout Globals */
   cardLayoutRow: { display: "flex", alignItems: "flex-start", gap: "16px" },
-  cardContent: { display: "flex", flexDirection: "column" },
+  cardContent: { display: "flex", flexDirection: "column", flex: 1 },
 
-  /* Card 1: User Profile */
+  /* Card 1: User Profile — #E8C4C4 */
   profileCard: {
     flex: 1,
-    backgroundColor: "#f5c6cb",
+    backgroundColor: "#E8C4C4",
     borderRadius: "14px",
     padding: "24px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
   },
   avatarBox: {
     width: "48px", height: "48px", borderRadius: "10px",
@@ -326,21 +326,21 @@ const styles: { [key: string]: React.CSSProperties } = {
   pillWhite: {
     display: "inline-block", backgroundColor: "#ffffff", color: "#b82035",
     alignSelf: "flex-start", fontSize: "12px", fontWeight: "600",
-    padding: "4px 12px", borderRadius: "20px",
+    padding: "4px 14px", borderRadius: "20px",
   },
 
-  /* Card 2: Program Satisfaction */
+  /* Card 2: Program Satisfaction — #D89A9A */
   programCard: {
     flex: 1,
-    backgroundColor: "#df7e89",
+    backgroundColor: "#D89A9A",
     borderRadius: "14px",
     padding: "24px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
   },
   cardTitleBold: {
     fontSize: "14px", color: "#111", margin: "0 0 6px", fontWeight: "700",
   },
-  cardSubtitleDark: { fontSize: "12px", color: "#333", margin: "0 0 16px" },
+  cardSubtitleDark: { fontSize: "12px", color: "#3a3a3a", margin: "0 0 16px" },
   pillWrapper: { display: "flex", width: "100%" },
   pillWhiteWide: {
     display: "inline-block", backgroundColor: "#ffffff", color: "#333",
@@ -348,18 +348,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "13px", fontWeight: "600", padding: "6px 0", borderRadius: "20px",
   },
 
-  /* Card 3: Alumni Tracer */
+  /* Card 3: Alumni Tracer — #F8EDED */
   tracerCard: {
     flex: 1,
-    backgroundColor: "#fcf6f7",
+    backgroundColor: "#F8EDED",
     borderRadius: "14px",
     padding: "24px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.02)",
-    border: "1px solid rgba(223, 126, 137, 0.15)",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
+    border: "1px solid rgba(216, 154, 154, 0.25)",
   },
-  cardSubtitleLight: { fontSize: "12px", color: "#666", margin: "0 0 16px" },
+  cardSubtitleLight: { fontSize: "12px", color: "#777", margin: "0 0 16px" },
   pillPinkWide: {
-    display: "inline-block", backgroundColor: "#f5c6cb", color: "#111",
+    display: "inline-block", backgroundColor: "#E8C4C4", color: "#333",
     width: "100%", textAlign: "center",
     fontSize: "13px", fontWeight: "600", padding: "6px 0", borderRadius: "20px",
   },
@@ -369,35 +369,35 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "#ffffff",
     display: "flex", alignItems: "center", justifyContent: "center",
     flexShrink: 0,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
   },
 
   /* White Card Sections */
   whiteCardBlock: {
     backgroundColor: "#ffffff", borderRadius: "16px", padding: "36px 40px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
   },
 
   aboutFlexRow: { display: "flex", gap: "40px", alignItems: "center" },
   aboutTextSection: { flex: 3 },
   verticalDivider: {
-    width: "1px", height: "140px", backgroundColor: "#eaeaea",
+    width: "1px", alignSelf: "stretch", backgroundColor: "#eaeaea", flexShrink: 0,
   },
   aboutLogoSection: {
     flex: 1, display: "flex", justifyContent: "center", alignItems: "center",
   },
 
   outlinePill: {
-    fontSize: "12px", color: "#333", letterSpacing: "0.5px", margin: "0 0 16px",
+    fontSize: "12px", color: "#555", letterSpacing: "0.3px", marginBottom: "14px",
     border: "1px solid #ccc", display: "inline-block",
-    padding: "4px 16px", borderRadius: "20px",
+    padding: "3px 14px", borderRadius: "20px",
   },
   aboutTitle: {
     fontSize: "24px", fontWeight: "800", color: "#111", margin: "0 0 2px",
   },
-  aboutSubLabel: { fontSize: "12px", color: "#999", margin: "0 0 16px" },
+  aboutSubLabel: { fontSize: "12px", color: "#aaa", fontStyle: "italic", margin: "0 0 14px" },
   aboutDescription: {
-    fontSize: "14px", lineHeight: "1.7", color: "#555",
+    fontSize: "14px", lineHeight: "1.75", color: "#555",
     margin: "0", textAlign: "justify",
   },
 
@@ -405,5 +405,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: "12px 0 0 0", padding: "0 0 0 24px",
     display: "flex", flexDirection: "column", gap: "16px",
   },
-  stepItem: { fontSize: "14px", color: "#444", lineHeight: "1.6" },
+  stepItem: { fontSize: "14px", color: "#444", lineHeight: "1.65" },
 };
