@@ -40,8 +40,8 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
         <Image
         src="/aluminate logo.png"
         alt="Aluminate Logo"
-        width={120}
-        height={120} />
+        width={180}
+        height={180} />
       </div>
 
       {/* Nav */}
@@ -104,15 +104,16 @@ const handleSignOut = async () => {
 const styles: { [key: string]: React.CSSProperties } = {
   sidebar: {
     width: "300px",
-    height: "100vh",     // Changed from minHeight so it strictly fits the screen
-    position: "sticky",  // Locks the element in place
-    top: 0,              // Pins it to the very top of the window
+    height: "100vh",
+    position: "sticky",
+    top: 0,
+    zIndex: 10,          // Ensures sidebar renders above main content so shadow isn't clipped
     backgroundColor: "#ffffff",
     display: "flex",
     flexDirection: "column",
     padding: "24px 0",
-    boxShadow: "1px 0 4px rgba(0,0,0,0.06)",
-    overflowY: "auto",   // Adds a scrollbar INSIDE the sidebar just in case your nav links ever exceed screen height
+    boxShadow: "4px 0 8px rgba(0,0,0,0.10), 8px 0 24px rgba(0,0,0,0.07), 1px 0 0 rgba(0,0,0,0.04)",
+    overflowY: "auto",
   },
   logo: {
     display: "flex",
@@ -142,7 +143,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "left",
   },
   navItemActive: {
-    backgroundColor: "#fce8ea",
+    backgroundColor: "#E8C4C4",
     color: "#9b1d2a",
   },
   logoutBtn: {
