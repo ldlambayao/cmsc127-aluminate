@@ -28,6 +28,11 @@ interface FormData {
   programImprovements: string;
   emailUpdates: string;
   alumniInterview: InterviewAnswer;
+  timeToFindJob: string;
+  currentEmploymentStatus: string;
+  dateHired: string;
+  currentWorkplace: string;
+  currentPosition: string;
 }
 
 export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
@@ -48,6 +53,11 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const [receiveUpdates, setReceiveUpdates] = useState("");
   const [interviewInterest, setInterviewInterest] = useState<InterviewAnswer>("");
   const [dateAnswered, setDateAnswered] = useState(new Date().toISOString().split('T')[0]);
+  const [timeToFindJob, setTimeToFindJob] = useState("");
+  const [currentEmploymentStatus, setCurrentEmploymentStatus] = useState("");
+  const [dateHired, setDateHired] = useState("");
+  const [currentWorkplace, setCurrentWorkplace] = useState("");
+  const [currentPosition, setCurrentPosition] = useState("");
   const [formError, setFormError] = useState("");
 
   const [form, setForm] = useState<FormData>({
@@ -68,6 +78,11 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     programImprovements: "",
     emailUpdates: "",
     alumniInterview: "",
+    timeToFindJob: "",
+    currentEmploymentStatus: "",
+    dateHired: "",
+    currentWorkplace: "",
+    currentPosition: "",
   });
 
   useEffect(() => {
@@ -122,7 +137,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!natureOfWork || !higherStudies || !listOfHigherStudies || !employmentStatus || !workRelation || !suggestions || !satisfactionLevel || !satisfactionReason || !waysDegprogHelped || !degprogSuggestions || !receiveUpdates || !interviewInterest) {
+    if (!natureOfWork || !higherStudies || !listOfHigherStudies || !employmentStatus || !workRelation || !suggestions || !satisfactionLevel || !satisfactionReason || !waysDegprogHelped || !degprogSuggestions || !receiveUpdates || !interviewInterest || !timeToFindJob || !currentEmploymentStatus || !currentWorkplace || !currentPosition) {
       setFormError('Please fill out all  fields before submitting the form.');
       console.error("Form submission error: Missing required fields");
       return;
@@ -168,6 +183,11 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           degprog_suggestions: degprogSuggestions,
           receive_updates: receiveUpdates,
           interview_interest: interviewInterest,
+          time_to_find_job: timeToFindJob,
+          current_employment_status: currentEmploymentStatus,
+          date_hired: dateHired || null,
+          current_workplace: currentWorkplace,
+          current_position: currentPosition,
           date_answered: dateAnswered,
         }
       ] as any) as any);
@@ -258,6 +278,54 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
         <div style={styles.sectionBlock}>
           <h2 style={styles.sectionTitle}>Employment Details, Further Education, and Career Outcomes</h2>
           <div style={styles.divider} />
+
+          <div style={styles.twoColumnRow}>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>How long did it take you to find a job after graduation?</label>
+              <select style={styles.textInput} value={form.timeToFindJob} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setTimeToFindJob(e.target.value); set("timeToFindJob")(e); }}>
+                <option value="">Select option</option>
+                <option>Less than 1 month</option>
+                <option>1–3 months</option>
+                <option>4–6 months</option>
+                <option>7–12 months</option>
+                <option>More than 1 year</option>
+                <option>Not applicable</option>
+              </select>
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>Current status of employment</label>
+              <select style={styles.textInput} value={form.currentEmploymentStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setCurrentEmploymentStatus(e.target.value); set("currentEmploymentStatus")(e); }}>
+                <option value="">Select option</option>
+                <option>Employed (Full-time)</option>
+                <option>Employed (Part-time)</option>
+                <option>Self-employed / Business owner</option>
+                <option>Unemployed (looking for work)</option>
+                <option>Unemployed (not looking for work)</option>
+                <option>Further studies / Not yet employed</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.questionLabel}>
+              Date hired in present employment if employed, self-employed or with business:
+            </label>
+            <p style={styles.helperText}>
+              (If you cannot recall the exact date, just provide the month and year, and input the day as 1. For example, if you were hired sometime in June 2019, input June 1, 2019.)
+            </p>
+            <input style={{ ...styles.textInput, maxWidth: "260px" }} type="date" value={form.dateHired} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDateHired(e.target.value); set("dateHired")(e); }} />
+          </div>
+
+          <div style={styles.twoColumnRow}>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>Where do you work now? (Please specify company name and location.)</label>
+              <input style={styles.textInput} value={form.currentWorkplace} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCurrentWorkplace(e.target.value); set("currentWorkplace")(e); }} placeholder="" />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.questionLabel}>What is your current position for your job?</label>
+              <input style={styles.textInput} value={form.currentPosition} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCurrentPosition(e.target.value); set("currentPosition")(e); }} placeholder="" />
+            </div>
+          </div>
 
           <div style={styles.inputGroup}>
             <label style={styles.questionLabel}>
@@ -498,6 +566,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: "500",
     lineHeight: "1.5",
     marginBottom: "4px",
+  },
+  helperText: {
+    fontSize: "11px",
+    color: "#777",
+    margin: "-6px 0 0",
+    lineHeight: "1.5",
+    fontStyle: "italic",
   },
   textInput: {
     border: "1px solid #dcdcdc",
