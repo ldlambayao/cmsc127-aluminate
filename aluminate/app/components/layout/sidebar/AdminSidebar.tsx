@@ -36,7 +36,8 @@ export default function AdminSidebar({ activePage, setActivePage }: SidebarProps
         src="/aluminate logo.png" 
         alt="Aluminate Logo" 
         width={120} 
-        height={120} />
+        height={120}
+        priority />
       </div>
 
       {/* Nav */}

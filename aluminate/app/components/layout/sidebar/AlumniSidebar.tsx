@@ -54,7 +54,9 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
           src="/aluminate logo.png"
           alt="Aluminate Logo"
           width={180}
-          height={180} />
+          height={180}
+          priority
+        />
       </div>
 
       {/* Divider under logo */}
