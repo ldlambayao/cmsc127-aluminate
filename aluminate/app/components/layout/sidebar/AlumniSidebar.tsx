@@ -40,20 +40,23 @@ const LogOutIcon = () => (
 interface SidebarProps {
   activePage: string;
   setActivePage: (page: string) => void;
+  className?: string;
 }
 
-export default function AlumniSidebar({ activePage, setActivePage }: SidebarProps) {
+export default function AlumniSidebar({ activePage, setActivePage, className }: SidebarProps) {
   const router = useRouter();
   const supabase = getSupabaseBrowserClient();
   return (
-    <aside style={styles.sidebar}>
+    <aside style={styles.sidebar} className={className}>
       {/* Logo — centered */}
       <div style={styles.logo}>
         <Image
           src="/aluminate logo.png"
           alt="Aluminate Logo"
           width={180}
-          height={180} />
+          height={180}
+          priority
+        />
       </div>
 
       {/* Divider under logo */}
