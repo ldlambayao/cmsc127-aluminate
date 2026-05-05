@@ -112,14 +112,18 @@ export default function AlumniDashboard() {
   return (
     <div style={styles.shell}>
       {/* Sidebar */}
-      <AlumniSidebar activePage={activePage} setActivePage={handleSetActivePage} />
+      <AlumniSidebar
+        activePage={activePage}
+        setActivePage={handleSetActivePage}
+        className="dash-sidebar-enter"
+      />
 
       {/* Main Content */}
       <main style={styles.main}>
         {/* Top gradient overlay */}
         <div style={styles.topGradientOverlay} />
 
-        <div style={styles.contentWrapper}>
+        <div style={styles.contentWrapper} className="dash-content-enter">
           {loading ? (
             <p style={styles.loadingText}>Loading...</p>
           ) : fetchError ? (
@@ -140,7 +144,7 @@ export default function AlumniDashboard() {
               <div style={styles.topCardsContainer}>
 
                 {/* Card 1: User Profile */}
-                <div style={styles.profileCard}>
+                <div style={styles.profileCard} className="dash-card-enter">
                   <div style={styles.cardLayoutRow}>
                     <div style={styles.avatarBox}>
                       <UserAvatarIcon />
@@ -154,7 +158,7 @@ export default function AlumniDashboard() {
                 </div>
 
                 {/* Card 2: Program Satisfaction */}
-                <div style={styles.programCard}>
+                <div style={styles.programCard} className="dash-card-enter">
                   <div style={styles.cardLayoutRow}>
                     <div style={styles.iconBoxWhite}>
                       <ClipboardIcon color="#d15a6b" />
@@ -170,7 +174,7 @@ export default function AlumniDashboard() {
                 </div>
 
                 {/* Card 3: Alumni Tracer */}
-                <div style={styles.tracerCard}>
+                <div style={styles.tracerCard} className="dash-card-enter">
                   <div style={styles.cardLayoutRow}>
                     <div style={styles.iconBoxWhite}>
                       <ClipboardIcon color="#d15a6b" />

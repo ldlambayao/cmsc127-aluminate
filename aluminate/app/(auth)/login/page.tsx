@@ -1,16 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { User } from "@supabase/supabase-js";
-import { createSupabaseServerClient } from "@/../lib/supabase/server-client";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 type LoginProps = {
   user: User | null;
-}
+};
 
 export default function LoginPage({ user }: LoginProps) {
   const [username, setUsername] = useState("");
@@ -19,39 +17,50 @@ export default function LoginPage({ user }: LoginProps) {
   const supabase = getSupabaseBrowserClient();
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<User | null>(user);
+  const [exiting, setExiting] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("Verifying...");
-    const email = `${username}@up.edu.ph`
+    const email = `${username}@up.edu.ph`;
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
-    })
+    });
     if (error) {
       setStatus("Invalid username or password");
       console.error(error.message);
     } else {
       console.log("Successfully logged in:", data.user);
       setStatus("Welcome, " + data.user.email);
-      router.push("/alumni")
+
+      // Play exit animation, then navigate
+      setExiting(true);
+      setTimeout(() => router.push("/alumni"), 420);
     }
   }
 
   return (
-    <div style={containerStyle}>
+    /* Background fades in */
+    <div
+      ref={containerRef}
+      className={`page-morph-bg${exiting ? " exiting" : ""}`}
+      style={containerStyle}
+    >
       {/* Corner gradient blobs */}
       <div style={blobTopLeftStyle} />
       <div style={blobTopRightStyle} />
       <div style={blobBottomLeftStyle} />
       <div style={blobBottomRightStyle} />
 
-      {/* Two-column layout container */}
+      {/* Two-column layout */}
       <div style={mainSplitLayout}>
-        {/* Left column: Brand lockup */}
-        <div style={brandColumnStyle}>
-          {/* Branded Logo using the full image from /public */}
+
+        {/* Left — brand fades up */}
+        <div className="page-enter-child-1" style={brandColumnStyle}>
           <div style={brandLockupStyle}>
             <Image
               src="/aluminate logo.png"
@@ -62,56 +71,65 @@ export default function LoginPage({ user }: LoginProps) {
               priority
             />
           </div>
-          {/* Subtitle */}
           <p style={brandSubtitleStyle}>
             A DMPCS Alumni Tracking and Analytics System
           </p>
         </div>
 
-        {/* Right column: Login card */}
+        {/* Right — card morphs in */}
         <div style={cardColumnStyle}>
-          <div style={loginCardStyle}>
-            {/* Welcome header */}
+          <div
+            ref={cardRef}
+            className={`page-morph-card${exiting ? " exiting" : ""}`}
+            style={loginCardStyle}
+          >
             <div style={headerWrapper}>
               <h2 style={welcomeTitleStyle}>Welcome</h2>
-              <p style={welcomeSubtitleStyle}>Login to get started</p>
+              <p style={welcomeSubtitleStyle}>Login to Aluminate to get started</p>
             </div>
 
-            {/* Login form */}
             <form style={formStyle} onSubmit={handleSubmit}>
-              {/* Email input field */}
               <div style={inputGroupStyle}>
                 <label style={labelStyle}>Username</label>
                 <input
-                  type="username"
+                  type="text"
                   value={username}
-                  onChange={(event) => setUsername(event.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your Username"
                   style={inputFieldStyle}
                   required
                 />
               </div>
 
-              {/* Password input field */}
               <div style={inputGroupStyle}>
                 <label style={labelStyle}>Password</label>
                 <input
                   type="password"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   style={inputFieldStyle}
                   required
                 />
               </div>
 
-              {/* Login button */}
+              {status && (
+                <p style={{
+                  fontSize: "13px",
+                  color: status.startsWith("Invalid") ? "#c0392b" : "#555",
+                  margin: 0,
+                }}>
+                  {status}
+                </p>
+              )}
+
               <button type="submit" style={loginButtonStyle}>
                 Login
               </button>
             </form>
           </div>
         </div>
+
       </div>
     </div>
   );
@@ -140,47 +158,41 @@ const blobTopLeftStyle: React.CSSProperties = {
   ...cornerBlobBase,
   top: "-15%",
   left: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
 
 const blobTopRightStyle: React.CSSProperties = {
   ...cornerBlobBase,
   top: "-15%",
   right: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
 
 const blobBottomLeftStyle: React.CSSProperties = {
   ...cornerBlobBase,
   bottom: "-15%",
   left: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
 
 const blobBottomRightStyle: React.CSSProperties = {
   ...cornerBlobBase,
   bottom: "-15%",
   right: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
 
-// UPDATED: Centered layout with a specific gap to control distance
 const mainSplitLayout: React.CSSProperties = {
   display: "flex",
   width: "100%",
   height: "100%",
   alignItems: "center",
   justifyContent: "center",
-  gap: "100px", // Adjust this value to bring them closer or further apart
+  gap: "100px",
   padding: "0 20px",
   zIndex: 1,
 };
 
-// UPDATED: Removed fixed flex widths so elements take natural space
 const brandColumnStyle: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
@@ -202,7 +214,6 @@ const brandSubtitleStyle: React.CSSProperties = {
   marginLeft: "4px",
 };
 
-// UPDATED: Removed fixed flex widths and padding
 const cardColumnStyle: React.CSSProperties = {
   display: "flex",
   justifyContent: "center",
@@ -213,36 +224,41 @@ const loginCardStyle: React.CSSProperties = {
   width: "100%",
   minWidth: "480px",
   maxWidth: "560px",
+  minHeight: "580px",
   backgroundColor: "#ffffff",
   borderRadius: "24px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-  padding: "50px",
+  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+  padding: "50px 50px 70px 50px",
   display: "flex",
   flexDirection: "column",
-  gap: "28px",
+  gap: "0px",
+  justifyContent: "flex-start",
 };
 
 const headerWrapper: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  gap: "4px",
+  gap: "6px",
+  marginBottom: "32px",
 };
 
 const welcomeTitleStyle: React.CSSProperties = {
-  fontSize: "24px",
+  fontSize: "28px",
   fontWeight: 700,
   color: "#2a2a2a",
+  margin: 0,
 };
 
 const welcomeSubtitleStyle: React.CSSProperties = {
   fontSize: "13px",
   color: "#6c6c6c",
+  margin: 0,
 };
 
 const formStyle: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  gap: "18px",
+  gap: "20px",
 };
 
 const inputGroupStyle: React.CSSProperties = {
@@ -258,22 +274,27 @@ const labelStyle: React.CSSProperties = {
 
 const inputFieldStyle: React.CSSProperties = {
   width: "100%",
-  padding: "12px 16px",
-  borderRadius: "8px",
-  border: "1px solid #e0e0e0",
+  padding: "10px 12px",
+  borderRadius: "6px",
+  border: "1px solid #d0d0d0",
   fontSize: "14px",
   color: "#2a2a2a",
+  outline: "none",
+  boxSizing: "border-box",
+  backgroundColor: "#fafafa",
 };
 
 const loginButtonStyle: React.CSSProperties = {
-  width: "100%",
+  width: "60%",
+  alignSelf: "center",
   backgroundColor: "#9b1d2a",
   color: "#ffffff",
   fontSize: "14px",
   fontWeight: 600,
-  padding: "14px",
+  padding: "12px",
   borderRadius: "999px",
   border: "none",
   cursor: "pointer",
+  marginTop: "60px",
   transition: "background-color 0.2s ease, transform 0.15s ease",
 };
