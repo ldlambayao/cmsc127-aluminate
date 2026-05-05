@@ -28,6 +28,12 @@ export interface SurveyData {
     // ---- Page 2 ----
   experienceSatisfaction: Record<string, string | null>;
   learningOutcomeSatisfaction: Record<string, string | null>;
+
+  // ---- Page 3 ----
+  cultureRatings: Record<string, string | null>;
+  cultureExplanation: string;
+  servicesSatisfaction: Record<string, string | null>;
+  servicesOther: string;
 }
 
 interface FormState {
@@ -73,6 +79,15 @@ const initialState: SurveyData = {
   // ---- Page 2 ----
   experienceSatisfaction: {},
   learningOutcomeSatisfaction: {},
+
+  // ---- Page 3 ----
+  cultureRatings: {},
+  cultureExplanation: "",
+  servicesSatisfaction: {},
+  servicesOther: "",
+
+  // ---- Page 4 ----
+
 };
 
 export const useFormStore = create<FormState>((set) => ({

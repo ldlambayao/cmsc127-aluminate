@@ -25,7 +25,7 @@ interface Page5FormState {
     otherText: string;
   };
   improvementSuggestion: string;
-  recommendProgram: "yes" | "no" | null;
+  recommendProgram: "Yes" | "No" | null;
   recommendWhy: string;
   overallImprovementSuggestion: string;
   additionalComments: string;

@@ -3,19 +3,12 @@
 import { useState } from "react";
 
 // --- Types ---
-type InfluenceValue =
-  | "veryPositive"
-  | "positive"
-  | "noInfluence"
-  | "negative"
-  | "veryNegative"
-  | "notApplicable"
-  | null;
+type InfluenceValue = | "Very Positive" | "Positive" | "No Influence" | "Negative" | "Very Negative" | "Not Applicable" | null;
 
 interface Page4FormState {
   factorInfluences: { [key: string]: InfluenceValue };
   factorsOther: string;
-  consideredLeaving: "yes" | "no" | null;
+  consideredLeaving: "Yes" | "No" | null;
   leavingWhy: string;
   favoriteYearSemester: string;
   favoriteWhy: string;
@@ -28,17 +21,17 @@ interface Page4FormState {
 
 interface Page4FormProps {
   onBack?: () => void;
-  onSubmit?: (data: Page4FormState) => void;
+  onNext: () => void;
 }
 
 // --- Constants ---
 const influenceColumns: { value: InfluenceValue; label: string }[] = [
-  { value: "veryPositive",   label: "Very Positive Influence"  },
-  { value: "positive",       label: "Positive Influence"       },
-  { value: "noInfluence",    label: "No Influence"             },
-  { value: "negative",       label: "Negative Influence"       },
-  { value: "veryNegative",   label: "Very Negative Influence"  },
-  { value: "notApplicable",  label: "Not Applicable"           },
+  { value: "Very Positive",    label: "Very Positive Influence"  },
+  { value: "Positive",         label: "Positive Influence"       },
+  { value: "No Influence",     label: "No Influence"             },
+  { value: "Negative",         label: "Negative Influence"       },
+  { value: "Very Negative",    label: "Very Negative Influence"  },
+  { value: "Not Applicable",   label: "Not Applicable"           },
 ];
 
 const factorItems = [
@@ -66,7 +59,7 @@ const yearSemesterOptions = [
 ];
 
 // --- Main Component ---
-export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4FormProps) {
+export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4FormProps) {
   const [form, setForm] = useState<Page4FormState>({
     factorInfluences: {},
     factorsOther: "",
@@ -87,6 +80,10 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
       factorInfluences: { ...prev.factorInfluences, [item]: value },
     }));
   };
+
+  const handleNext = () => {
+    onNext?.();
+  }
 
   return (
     <div style={styles.content}>
@@ -253,9 +250,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>Next</button>
+          <button style={styles.nextBtn} onClick={handleNext}>Next</button>
         </div>
-
       </div>
     </div>
   );

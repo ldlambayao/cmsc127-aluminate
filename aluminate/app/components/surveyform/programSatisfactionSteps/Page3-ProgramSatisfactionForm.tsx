@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 // --- Types ---
-type AgreeValue = "stronglyAgree" | "agree" | "disagree" | "stronglyDisagree" | null;
-type SatisfactionValue = "verySatisfied" | "satisfied" | "dissatisfied" | "veryDissatisfied" | null;
+type AgreeValue = "Strongly Agree" | "Agree" | "Disagree" | "Strongly Disagree" | null;
+type SatisfactionValue = "Very Satisfied" | "Satisfied" | "Dissatisfied" | "Very Dissatisfied" | null;
 
 interface Page3FormState {
   cultureRatings: { [key: string]: AgreeValue };
@@ -15,23 +15,23 @@ interface Page3FormState {
 
 interface Page3FormProps {
   onBack?: () => void;
-  onSubmit?: (data: Page3FormState) => void;
+  onNext?: () => void;
 }
 
 // --- Constants ---
 // Column arrays use plain string (non-nullable) — the nullable types live only in form state
 const agreeColumns: { value: string; label: string }[] = [
-  { value: "stronglyAgree",    label: "Strongly Agree"    },
-  { value: "agree",            label: "Agree"             },
-  { value: "disagree",         label: "Disagree"          },
-  { value: "stronglyDisagree", label: "Strongly Disagree" },
+  { value: "Strongly Agree",    label: "Strongly Agree"    },
+  { value: "Agree",             label: "Agree"             },
+  { value: "Disagree",          label: "Disagree"          },
+  { value: "Strongly Disagree", label: "Strongly Disagree" },
 ];
 
 const satisfactionColumns: { value: string; label: string }[] = [
-  { value: "verySatisfied",    label: "Very Satisfied"    },
-  { value: "satisfied",        label: "Satisfied"         },
-  { value: "dissatisfied",     label: "Dissatisfied"      },
-  { value: "veryDissatisfied", label: "Very Dissatisfied" },
+  { value: "Very Satisfied",    label: "Very Satisfied"    },
+  { value: "Satisfied",         label: "Satisfied"         },
+  { value: "Dissatisfied",      label: "Dissatisfied"      },
+  { value: "Very Dissatisfied", label: "Very Dissatisfied" },
 ];
 
 const cultureItems = [
@@ -65,13 +65,7 @@ interface RatingTableProps {
   onChange: (item: string, value: string) => void;
 }
 
-function RatingTable({
-  items,
-  groupKey,
-  columns,
-  values,
-  onChange,
-}: RatingTableProps) {
+function RatingTable({ items, groupKey, columns, values, onChange }: RatingTableProps) {
   return (
     <div style={styles.tableWrapper}>
       {/* Header */}
@@ -111,13 +105,17 @@ function RatingTable({
 }
 
 // --- Main Component ---
-export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3FormProps) {
+export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
   const [form, setForm] = useState<Page3FormState>({
     cultureRatings: {},
     cultureExplanation: "",
     servicesSatisfaction: {},
     servicesOther: "",
   });
+
+  const handleNext = () => {
+    onNext?.();
+  }
 
   const handleCultureChange = (item: string, value: string) => {
     setForm((prev) => ({
@@ -212,9 +210,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>Next</button>
+          <button style={styles.nextBtn} onClick={handleNext}>Next</button>
         </div>
-
       </div>
     </div>
   );
