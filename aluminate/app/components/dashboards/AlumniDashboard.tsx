@@ -115,7 +115,6 @@ export default function AlumniDashboard() {
       <AlumniSidebar
         activePage={activePage}
         setActivePage={handleSetActivePage}
-        className="dash-sidebar-enter"
       />
 
       {/* Main Content */}

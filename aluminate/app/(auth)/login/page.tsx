@@ -80,7 +80,6 @@ export default function LoginPage({ user }: LoginProps) {
         <div style={cardColumnStyle}>
           <div
             ref={cardRef}
-            className={`page-morph-card${exiting ? " exiting" : ""}`}
             style={loginCardStyle}
           >
             <div style={headerWrapper}>
