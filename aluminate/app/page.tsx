@@ -3,34 +3,35 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div style={containerStyle}>
+    <div className="page-morph-bg" style={containerStyle}>
       {/* Corner gradient blobs */}
       <div style={blobTopLeftStyle} />
       <div style={blobTopRightStyle} />
       <div style={blobBottomLeftStyle} />
       <div style={blobBottomRightStyle} />
 
-      {/* Centered content */}
+      {/* Centered content — staggered children */}
       <div style={contentStyle}>
-        {/* Logo */}
-        <Image
-          src="/aluminate logo.png"
-          alt="Aluminate logo"
-          width={320}
-          height={80}
-          style={{ objectFit: "contain", marginBottom: "12px" }}
-          priority
-        />
+        <div className="page-enter-child-1">
+          <Image
+            src="/aluminate logo.png"
+            alt="Aluminate logo"
+            width={320}
+            height={80}
+            style={{ objectFit: "contain", marginBottom: "12px" }}
+            priority
+          />
+        </div>
 
-        {/* Subtitle */}
-        <p style={subtitleStyle}>
+        <p className="page-enter-child-2" style={subtitleStyle}>
           A DMPCS Alumni Tracking and Analytics System
         </p>
 
-        {/* Get Started button */}
-        <Link href="/login" style={buttonStyle}>
-          Get Started &nbsp;→
-        </Link>
+        <div className="page-enter-child-3">
+          <Link href="/login" style={buttonStyle}>
+            Get Started &nbsp;→
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -56,34 +57,23 @@ const cornerBlobBase: React.CSSProperties = {
 
 const blobTopLeftStyle: React.CSSProperties = {
   ...cornerBlobBase,
-  top: "-15%",
-  left: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  top: "-15%", left: "-10%",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
-
 const blobTopRightStyle: React.CSSProperties = {
   ...cornerBlobBase,
-  top: "-15%",
-  right: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  top: "-15%", right: "-10%",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
-
 const blobBottomLeftStyle: React.CSSProperties = {
   ...cornerBlobBase,
-  bottom: "-15%",
-  left: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  bottom: "-15%", left: "-10%",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
-
 const blobBottomRightStyle: React.CSSProperties = {
   ...cornerBlobBase,
-  bottom: "-15%",
-  right: "-10%",
-  background:
-    "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
+  bottom: "-15%", right: "-10%",
+  background: "radial-gradient(circle, rgba(255,200,200,0.7) 0%, rgba(252,210,210,0.3) 50%, transparent 70%)",
 };
 
 const contentStyle: React.CSSProperties = {
