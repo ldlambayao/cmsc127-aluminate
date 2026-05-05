@@ -110,12 +110,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   pill: {
     display: "inline-block",
-    backgroundColor: "#fce8ea",
-    color: "#b82035",
+    backgroundColor: "#e29692",
+    color: "#555",
     fontSize: "11px",
     fontWeight: 600,
     padding: "4px 12px",
     borderRadius: "20px",
-    alignSelf: "flex-start",
+    alignSelf: "flex-center",
   },
 };

@@ -137,6 +137,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 500,
     padding: "4px 14px",
     borderRadius: "20px",
-    alignSelf: "flex-start",
+    alignSelf: "flex-center",
   },
 };
