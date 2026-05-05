@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 interface Page5FormState {
@@ -38,46 +40,30 @@ interface Page5FormProps {
 
 // --- Main Component ---
 export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5FormProps) {
-  const [form, setForm] = useState<Page5FormState>({
-    strengths: {
-      curriculumStructure: false,
-      adequateFacilities: false,
-      classroomsAndSoftware: false,
-      facultyExpertise: false,
-      supportiveFaculty: false,
-      supportiveNonTeaching: false,
-      other: false,
-      otherText: "",
-    },
-    weaknesses: {
-      irrelevantCourses: false,
-      inadequateFacilities: false,
-      insufficientResources: false,
-      lackFacultyExpertise: false,
-      lackFacultySupport: false,
-      lackNonTeachingSupport: false,
-      other: false,
-      otherText: "",
-    },
-    improvementSuggestion: "",
-    recommendProgram: null,
-    recommendWhy: "",
-    overallImprovementSuggestion: "",
-    additionalComments: "",
-  });
+  const { formData, setField } = useFormStore();
 
-  const toggleStrength = (key: keyof Omit<Page5FormState["strengths"], "otherText">) => {
-    setForm((prev) => ({
-      ...prev,
-      strengths: { ...prev.strengths, [key]: !prev.strengths[key] },
-    }));
+  const updateP5 = (updates: Partial<typeof formData.page5Data>) => {
+    setField("page5Data", { ...formData.page5Data, ...updates });
   };
 
-  const toggleWeakness = (key: keyof Omit<Page5FormState["weaknesses"], "otherText">) => {
-    setForm((prev) => ({
-      ...prev,
-      weaknesses: { ...prev.weaknesses, [key]: !prev.weaknesses[key] },
-    }));
+  const toggleStrength = (key: string) => {
+    const current = formData.page5Data.strengths;
+    updateP5({
+      strengths: { ...current, [key]: !current[key] }
+    });
+  };
+
+  const toggleWeakness = (key: string) => {
+    const current = formData.page5Data.weaknesses;
+    updateP5({
+      weaknesses: { ...current, [key]: !current[key] }
+    });
+  };
+
+  const handleFinalSubmit = () => {
+    // This calls the onSubmit passed from your Wizard/Parent
+    // The Parent will likely take `formData` (the whole store) and send it to Supabase
+    onSubmit?.(formData.page5Data as unknown as Page5FormState);
   };
 
   return (
@@ -114,7 +100,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                 <label key={key} style={styles.checkboxLabel}>
                   <input
                     type="checkbox"
-                    checked={form.strengths[key]}
+                    checked={!!formData.page5Data.strengths[key]}
                     onChange={() => toggleStrength(key)}
                     style={styles.checkboxInput}
                   />
@@ -127,13 +113,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
               <textarea
                 style={styles.textarea}
                 rows={3}
-                value={form.strengths.otherText}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    strengths: { ...prev.strengths, otherText: e.target.value },
-                  }))
-                }
+                value={formData.page5Data.strengths.otherText as string || ""}
+                onChange={(e) => updateP5({ strengths: { ...formData.page5Data.strengths, otherText: e.target.value } })}
                 placeholder="Please specify..."
               />
             </div>
@@ -158,7 +139,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                 <label key={key} style={styles.checkboxLabel}>
                   <input
                     type="checkbox"
-                    checked={form.weaknesses[key]}
+                    checked={!!formData.page5Data.weaknesses[key]}
                     onChange={() => toggleWeakness(key)}
                     style={styles.checkboxInput}
                   />
@@ -171,13 +152,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
               <textarea
                 style={styles.textarea}
                 rows={3}
-                value={form.weaknesses.otherText}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    weaknesses: { ...prev.weaknesses, otherText: e.target.value },
-                  }))
-                }
+                value={formData.page5Data.weaknesses.otherText as string || ""}
+                onChange={(e) => updateP5({ weaknesses: { ...formData.page5Data.weaknesses, otherText: e.target.value } })}
                 placeholder="Please specify..."
               />
             </div>
@@ -191,8 +167,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.improvementSuggestion}
-              onChange={(e) => setForm({ ...form, improvementSuggestion: e.target.value })}
+              value={formData.page5Data.improvementSuggestion}
+              onChange={(e) => updateP5({ improvementSuggestion: e.target.value })}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -206,8 +182,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                   <input
                     type="radio"
                     name="recommendProgram"
-                    checked={form.recommendProgram === val}
-                    onChange={() => setForm({ ...form, recommendProgram: val })}
+                    checked={formData.page5Data.recommendProgram === val}
+                    onChange={() => updateP5({ recommendProgram: val })}
                     style={styles.radioInputNormal}
                   />
                   {val.charAt(0).toUpperCase() + val.slice(1)}
@@ -218,8 +194,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.recommendWhy}
-              onChange={(e) => setForm({ ...form, recommendWhy: e.target.value })}
+              value={formData.page5Data.recommendWhy}
+              onChange={(e) => updateP5({ recommendWhy: e.target.value })}
               placeholder="Please explain..."
             />
           </div>
@@ -232,8 +208,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.overallImprovementSuggestion}
-              onChange={(e) => setForm({ ...form, overallImprovementSuggestion: e.target.value })}
+              value={formData.page5Data.overallImprovementSuggestion}
+              onChange={(e) => updateP5({ overallImprovementSuggestion: e.target.value })}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -248,8 +224,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={5}
-              value={form.additionalComments}
-              onChange={(e) => setForm({ ...form, additionalComments: e.target.value })}
+              value={formData.page5Data.additionalComments}
+              onChange={(e) => updateP5({ additionalComments: e.target.value })}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -258,9 +234,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.submitBtn} onClick={() => onSubmit?.(form)}>Submit</button>
+          <button style={styles.submitBtn} onClick={handleFinalSubmit}>Submit</button>
         </div>
-
       </div>
     </div>
   );

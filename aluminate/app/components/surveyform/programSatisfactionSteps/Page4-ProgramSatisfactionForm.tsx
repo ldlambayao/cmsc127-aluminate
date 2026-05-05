@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 type InfluenceValue = | "Very Positive" | "Positive" | "No Influence" | "Negative" | "Very Negative" | "Not Applicable" | null;
@@ -60,25 +62,11 @@ const yearSemesterOptions = [
 
 // --- Main Component ---
 export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4FormProps) {
-  const [form, setForm] = useState<Page4FormState>({
-    factorInfluences: {},
-    factorsOther: "",
-    consideredLeaving: null,
-    leavingWhy: "",
-    favoriteYearSemester: "",
-    favoriteWhy: "",
-    mostHelpfulCourse: "",
-    helpfulFutureEndeavors: "",
-    shouldNotInclude: "",
-    shouldBeAdded: "",
-    otherChallenges: "",
-  });
+
+  const { formData, setField, setFactorChange } = useFormStore();
 
   const handleFactorChange = (item: string, value: InfluenceValue) => {
-    setForm((prev) => ({
-      ...prev,
-      factorInfluences: { ...prev.factorInfluences, [item]: value },
-    }));
+    setFactorChange(item, value as string);
   };
 
   const handleNext = () => {
@@ -133,7 +121,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
                         <input
                           type="radio"
                           name={`factor-${idx}`}
-                          checked={form.factorInfluences[item] === col.value}
+                          checked={formData.factorInfluences[item] === col.value}
                           onChange={() => handleFactorChange(item, col.value)}
                           style={styles.radioInputNormal}
                         />
@@ -151,8 +139,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.factorsOther}
-              onChange={(e) => setForm({ ...form, factorsOther: e.target.value })}
+              value={formData.factorsOther}
+              onChange={(e) => setField("factorsOther", e.target.value )}
               placeholder="Specify other factors..."
             />
           </div>
@@ -166,8 +154,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
                   <input
                     type="radio"
                     name="consideredLeaving"
-                    checked={form.consideredLeaving === val}
-                    onChange={() => setForm({ ...form, consideredLeaving: val })}
+                    checked={formData.consideredLeaving === val}
+                    onChange={() => setField("consideredLeaving", val)}
                     style={styles.radioInputNormal}
                   />
                   {val.charAt(0).toUpperCase() + val.slice(1)}
@@ -178,8 +166,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.leavingWhy}
-              onChange={(e) => setForm({ ...form, leavingWhy: e.target.value })}
+              value={formData.leavingWhy}
+              onChange={(e) => setField("leavingWhy", e.target.value )}
               placeholder="Please explain..."
             />
           </div>
@@ -193,8 +181,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
                   <input
                     type="radio"
                     name="favoriteYearSemester"
-                    checked={form.favoriteYearSemester === option}
-                    onChange={() => setForm({ ...form, favoriteYearSemester: option })}
+                    checked={formData.favoriteYearSemester === option}
+                    onChange={() => setField("favoriteYearSemester", option)}
                     style={styles.radioInputNormal}
                   />
                   {option}
@@ -205,8 +193,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.favoriteWhy}
-              onChange={(e) => setForm({ ...form, favoriteWhy: e.target.value })}
+              value={formData.favoriteWhy}
+              onChange={(e) => setField("favoriteWhy", e.target.value )}
               placeholder="Please explain..."
             />
           </div>
@@ -239,8 +227,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
               <textarea
                 style={styles.textarea}
                 rows={3}
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                value={(formData[key as keyof SurveyData] as string) || ""}
+                onChange={(e) => setField(key as keyof SurveyData, e.target.value)}
                 placeholder="Share your thoughts with us..."
               />
             </div>

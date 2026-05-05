@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 type AgreeValue = "Strongly Agree" | "Agree" | "Disagree" | "Strongly Disagree" | null;
@@ -62,7 +64,7 @@ interface RatingTableProps {
   groupKey: string;
   columns: { value: string; label: string }[];
   values: { [key: string]: string | null };
-  onChange: (item: string, value: string) => void;
+  onChange: (item: string, value: any) => void;
 }
 
 function RatingTable({ items, groupKey, columns, values, onChange }: RatingTableProps) {
@@ -106,29 +108,18 @@ function RatingTable({ items, groupKey, columns, values, onChange }: RatingTable
 
 // --- Main Component ---
 export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
-  const [form, setForm] = useState<Page3FormState>({
-    cultureRatings: {},
-    cultureExplanation: "",
-    servicesSatisfaction: {},
-    servicesOther: "",
-  });
-
   const handleNext = () => {
     onNext?.();
   }
 
-  const handleCultureChange = (item: string, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      cultureRatings: { ...prev.cultureRatings, [item]: value as AgreeValue },
-    }));
+  const { formData, setField, setCultureChange, setServicesChange } = useFormStore();
+
+  const handleCultureChange = (item: string, value: AgreeValue) => {
+    setCultureChange(item, value as string);
   };
 
-  const handleServicesChange = (item: string, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      servicesSatisfaction: { ...prev.servicesSatisfaction, [item]: value as SatisfactionValue },
-    }));
+  const handleServicesChange = (item: string, value: SatisfactionValue) => {
+    setServicesChange(item, value as string);
   };
 
   return (
@@ -159,7 +150,7 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
               items={cultureItems}
               groupKey="culture"
               columns={agreeColumns}
-              values={form.cultureRatings as { [key: string]: string | null }}
+              values={formData.cultureRatings as { [key: string]: AgreeValue }}
               onChange={handleCultureChange}
             />
           </div>
@@ -169,8 +160,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.cultureExplanation}
-              onChange={(e) => setForm({ ...form, cultureExplanation: e.target.value })}
+              value={formData.cultureExplanation}
+              onChange={(e) => setField("cultureExplanation", e.target.value)}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -190,7 +181,7 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
               items={servicesItems}
               groupKey="services"
               columns={satisfactionColumns}
-              values={form.servicesSatisfaction as { [key: string]: string | null }}
+              values={formData.servicesSatisfaction as { [key: string]: SatisfactionValue }}
               onChange={handleServicesChange}
             />
           </div>
@@ -200,8 +191,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.servicesOther}
-              onChange={(e) => setForm({ ...form, servicesOther: e.target.value })}
+              value={formData.servicesOther}
+              onChange={(e) => setField("servicesOther", e.target.value )}
               placeholder="Specify other offices or personnel..."
             />
           </div>

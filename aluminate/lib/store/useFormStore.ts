@@ -34,6 +34,30 @@ export interface SurveyData {
   cultureExplanation: string;
   servicesSatisfaction: Record<string, string | null>;
   servicesOther: string;
+
+  // ---- Page 4 ----
+  factorInfluences: Record<string, string | null>;
+  factorsOther: string;
+  consideredLeaving: string;
+  leavingWhy: string;
+  favoriteYearSemester: string;
+  favoriteWhy: string;
+  mostHelpfulCourse: string;
+  helpfulFutureEndeavors: string;
+  shouldNotInclude: string;
+  shouldBeAdded: string;
+  otherChallenges: string;
+
+  // ---- Page 5 ----
+  page5Data: {
+    strengths: Record<string, boolean | string>;
+    weaknesses: Record<string, boolean | string>;
+    improvementSuggestion: string;
+    recommendProgram: string;
+    recommendWhy: string;
+    overallImprovementSuggestion: string;
+    additionalComments: string;
+  }
 }
 
 interface FormState {
@@ -47,8 +71,12 @@ interface FormState {
   setLearningRating: (item: string, rating: string) => void;
 
   // ---- Page 3 setters ----
+  setCultureChange: (item: string, rating: string) => void;
+  setServicesChange: (item: string, rating: string) => void;
 
 
+  // ---- Page 4 setters ----
+  setFactorChange: (item: string, rating: string) => void;
 
   resetForm: () => void;
 }
@@ -87,12 +115,34 @@ const initialState: SurveyData = {
   servicesOther: "",
 
   // ---- Page 4 ----
+  factorInfluences: {},
+  factorsOther: "",
+  consideredLeaving: "",
+  leavingWhy: "",
+  favoriteYearSemester: "",
+  favoriteWhy: "",
+  mostHelpfulCourse: "",
+  helpfulFutureEndeavors: "",
+  shouldNotInclude: "",
+  shouldBeAdded: "",
+  otherChallenges: "",
 
+  // ---- Page 5 ----
+  page5Data: {
+    strengths: {},
+    weaknesses: {},
+    improvementSuggestion: "",
+    recommendProgram: "",
+    recommendWhy: "",
+    overallImprovementSuggestion: "",
+    additionalComments: "",
+  }
 };
 
 export const useFormStore = create<FormState>((set) => ({
   formData: initialState,
 
+  // ---- Page 1 setters ----
   setField: (field, value) =>
     set((state) => ({
       formData: {
@@ -105,27 +155,54 @@ export const useFormStore = create<FormState>((set) => ({
     set((state) => ({
       formData: {
         ...state.formData,
-        enrollmentFactors: {
-          ...state.formData.enrollmentFactors,
-          [factorName]: rating,
-        },
+        enrollmentFactors: { ...state.formData.enrollmentFactors, [factorName]: rating, },
       },
     })),
 
-    setExperienceRating: (item, rating) =>
-      set((state) => ({
-        formData: {
-          ...state.formData,
-          experienceSatisfaction: { ...state.formData.experienceSatisfaction, [item]: rating },
-        },
-      })),
+  // ---- Page 2 setters ----
+  setExperienceRating: (item, rating) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        experienceSatisfaction: { ...state.formData.experienceSatisfaction, [item]: rating },
+      },
+    })),
 
-    setLearningRating: (item, rating) =>
-      set((state) => ({
-        formData: {
-          ...state.formData,
-          learningOutcomeSatisfaction: { ...state.formData.learningOutcomeSatisfaction, [item]: rating },
-        },
-      })),
+  setLearningRating: (item, rating) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        learningOutcomeSatisfaction: { ...state.formData.learningOutcomeSatisfaction, [item]: rating },
+      },
+    })),
+
+
+  // ---- Page 3 setters ----
+  setCultureChange: (item, rating) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        cultureRatings: { ...state.formData.cultureRatings, [item]: rating },
+      },
+    })),
+
+  setServicesChange: (item, rating) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        servicesSatisfaction: { ...state.formData.servicesSatisfaction, [item]: rating },
+      },
+    })),
+
+
+  // ---- Page 4 setters ----
+  setFactorChange: (factorName, rating) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        factorInfluences: { ...state.formData.factorInfluences, [factorName]: rating },
+      },
+    })),
+
   resetForm: () => set({ formData: initialState }),
 }));

@@ -81,7 +81,7 @@ export default function ProgramSatisfactionFormPage() {
 
 
     }
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("satisfaction_survey_responses")
       .insert([payload]);
 
