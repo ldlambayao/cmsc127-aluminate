@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 type RatingValue = 1 | 2 | 3 | 4 | 5 | null;
@@ -56,6 +57,7 @@ const enrollmentFactorItems = [
 export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactionFormProps) {
   const supabase = getSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
+  const { formData, setField, setFactorRatings } = useFormStore()
 
   //const variables to store user input into
   const [] = useState("");
@@ -81,6 +83,50 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
     },
     preparationSuggestion: "",
   });
+
+  useEffect(() => {
+    async function getProfile() {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error("Supabase auth error:", userError);
+        setLoading(false);
+        return;
+      }
+
+      if (user) {
+        const result: any = await supabase
+          .from('users')
+          .select('alumni!inner(student_number)')
+          .eq('uuid', user.id)
+          .single();
+
+        if (result.error) {
+          console.error("Profile query error:", result.error);
+          setLoading(false);
+          return;
+        }
+
+        if (!result.data) {
+          console.warn("No profile data found for user", user.id);
+          setLoading(false);
+          return;
+        }
+
+        const data = result.data;
+        const alumni = data.alumni;
+
+        setForm((prev) => ({
+          ...prev,
+          studentNumber: alumni?.student_number ?? "",
+        }));
+      }
+
+      setLoading(false);
+    }
+
+    getProfile();
+
+  }, []);
 
   const handleLearnAboutToggle = (key: keyof FormState["learnAbout"]) => {
     if (key === "otherText") return;
@@ -139,7 +185,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <input
                 type="date"
                 style={styles.textInput}
-                value={form.date}
+                value={formData.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
               />
             </div>
@@ -170,7 +216,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
                     <input
                       type="radio"
                       name="timelinessRating"
-                      value={num}
+                      value={formData.timelinessRating || num}
                       checked={form.timelinessRating === num}
                       onChange={() =>
                         setForm({ ...form, timelinessRating: num as RatingValue })
