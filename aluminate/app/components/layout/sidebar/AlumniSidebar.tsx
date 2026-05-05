@@ -148,7 +148,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     gap: "4px",
-    padding: "16px 12px",
+    padding: "28px 12px",
     flex: 1,
   },
   navItem: {
