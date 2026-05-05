@@ -137,7 +137,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "center",  // Centers logo horizontally
     alignItems: "center",
-    padding: "0 20px 24px 20px",
+    padding: "0 20px 12px 20px",
   },
   divider: {
     border: "none",
