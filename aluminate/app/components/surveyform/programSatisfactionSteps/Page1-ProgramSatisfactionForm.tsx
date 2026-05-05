@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
-import { useFormStore } from "@/../lib/store/useFormStore";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 type RatingValue = 1 | 2 | 3 | 4 | 5 | null;
@@ -37,7 +37,7 @@ interface FormState {
 }
 
 interface ProgramSatisfactionFormProps {
-  onSubmit?: (formData: FormState) => void;
+  onNext: () => void;
 }
 
 // --- Constants ---
@@ -54,35 +54,10 @@ const enrollmentFactorItems = [
 ];
 
 // --- Component ---
-export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactionFormProps) {
+export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionFormProps) {
   const supabase = getSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
-  const { formData, setField, setFactorRatings } = useFormStore()
-
-  //const variables to store user input into
-  const [] = useState("");
-
-  const [form, setForm] = useState<FormState>({
-    date: "",
-    studentNumber: "",
-    timelinessRating: null,
-    learnAbout: {
-      upWebsite: false,
-      faculty: false,
-      friend: false,
-      other: false,
-      otherText: "",
-    },
-    enrollmentFactors: {},
-    transitionDifficulty: null,
-    transitionReason: "",
-    transitionHelp: {
-      bridging: false,
-      refresher: false,
-      other: false,
-    },
-    preparationSuggestion: "",
-  });
+  const { formData, setField, setFactorRating } = useFormStore()
 
   useEffect(() => {
     async function getProfile() {
@@ -115,10 +90,9 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
         const data = result.data;
         const alumni = data.alumni;
 
-        setForm((prev) => ({
-          ...prev,
-          studentNumber: alumni?.student_number ?? "",
-        }));
+        if (alumni?.student_number) {
+          setField("studentNumber", alumni.student_number);
+        }
       }
 
       setLoading(false);
@@ -128,38 +102,26 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
 
   }, []);
 
-  const handleLearnAboutToggle = (key: keyof FormState["learnAbout"]) => {
+  const handleLearnAboutToggle = (key: keyof typeof formData.learnAbout) => {
     if (key === "otherText") return;
-    setForm((prev) => ({
-      ...prev,
-      learnAbout: {
-        ...prev.learnAbout,
-        [key]: !prev.learnAbout[key],
-      },
-    }));
+    const currentVal = formData.learnAbout[key];
+    setField("learnAbout", {
+      ...formData.learnAbout,
+      [key]: !currentVal,
+    });
   };
 
-  const handleTransitionHelpToggle = (
-    key: keyof FormState["transitionHelp"]
-  ) => {
-    setForm((prev) => ({
-      ...prev,
-      transitionHelp: {
-        ...prev.transitionHelp,
-        [key]: !prev.transitionHelp[key],
-      },
-    }));
+  const handleTransitionHelpToggle = (key: keyof typeof formData.transitionHelp) => {
+    const currentVal = formData.transitionHelp[key];
+    setField("transitionHelp", {
+      ...formData.transitionHelp,
+      [key]: !currentVal,
+    });
   };
 
-  const setFactorRating = (item: string, val: RatingValue) => {
-    setForm((prev) => ({
-      ...prev,
-      enrollmentFactors: {
-        ...prev.enrollmentFactors,
-        [item]: val,
-      },
-    }));
-  };
+  const handleNext = () => {
+    onNext?.();
+  }
 
   return (
     <div style={styles.content}>
@@ -186,7 +148,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
                 type="date"
                 style={styles.textInput}
                 value={formData.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
+                onChange={(e) => setField("date", e.target.value)}
               />
             </div>
             <div style={styles.inputGroup}>
@@ -194,10 +156,8 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <input
                 type="text"
                 style={styles.textInput}
-                value={form.studentNumber}
-                onChange={(e) =>
-                  setForm({ ...form, studentNumber: e.target.value })
-                }
+                value={formData.studentNumber}
+                onChange={(e) => setField("studentNumber", e.target.value)}
               />
             </div>
           </div>
@@ -216,11 +176,8 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
                     <input
                       type="radio"
                       name="timelinessRating"
-                      value={formData.timelinessRating || num}
-                      checked={form.timelinessRating === num}
-                      onChange={() =>
-                        setForm({ ...form, timelinessRating: num as RatingValue })
-                      }
+                      checked={formData.timelinessRating === num}
+                      onChange={() => setField("timelinessRating", num)}
                       style={styles.radioInputLarge}
                     />
                   </div>
@@ -244,7 +201,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.learnAbout.upWebsite}
+                  checked={!!formData.learnAbout.upWebsite}
                   onChange={() => handleLearnAboutToggle("upWebsite")}
                   style={styles.checkboxInput}
                 />
@@ -253,7 +210,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.learnAbout.faculty}
+                  checked={!!formData.learnAbout.faculty}
                   onChange={() => handleLearnAboutToggle("faculty")}
                   style={styles.checkboxInput}
                 />
@@ -262,7 +219,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.learnAbout.friend}
+                  checked={!!formData.learnAbout.friend}
                   onChange={() => handleLearnAboutToggle("friend")}
                   style={styles.checkboxInput}
                 />
@@ -272,16 +229,11 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
                 <span style={styles.checkboxLabel}>Other:</span>
                 <input
                   type="text"
-                  value={form.learnAbout.otherText}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      learnAbout: {
-                        ...prev.learnAbout,
-                        otherText: e.target.value,
-                      },
-                    }))
-                  }
+                  value={formData.learnAbout.otherText}
+                  onChange={(e) => setField("learnAbout", {
+                    ...formData.learnAbout,
+                    otherText: e.target.value
+                  })}
                   style={styles.otherInput}
                 />
               </div>
@@ -326,19 +278,15 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
                   <div style={styles.factorLabelCol}>
                     <span style={styles.factorItemText}>{item}</span>
                   </div>
+                  {/* ... label part ... */}
                   <div style={styles.factorRadiosCol}>
                     {[1, 2, 3, 4, 5].map((val) => (
-                      <div key={val} style={styles.radioWrapperCenter}>
-                        <input
-                          type="radio"
-                          name={`factor-${idx}`}
-                          checked={form.enrollmentFactors[item] === val}
-                          onChange={() =>
-                            setFactorRating(item, val as RatingValue)
-                          }
-                          style={styles.radioInputNormal}
-                        />
-                      </div>
+                      <input
+                        type="radio"
+                        name={`factor-${idx}`}
+                        checked={formData.enrollmentFactors[item] === val}
+                        onChange={() => setFactorRating(item, val)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -365,14 +313,8 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
                     <input
                       type="radio"
                       name="transitionDifficulty"
-                      value={num}
-                      checked={form.transitionDifficulty === num}
-                      onChange={() =>
-                        setForm({
-                          ...form,
-                          transitionDifficulty: num as RatingValue,
-                        })
-                      }
+                      checked={formData.transitionDifficulty === num}
+                      onChange={() => setField("transitionDifficulty", num)}
                       style={styles.radioInputLarge}
                     />
                   </div>
@@ -389,11 +331,10 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.transitionReason}
-              onChange={(e) =>
-                setForm({ ...form, transitionReason: e.target.value })
-              }
+              value={formData.transitionReason}
+              onChange={(e) => setField("transitionReason", e.target.value)}
               placeholder="Share your reasons with us..."
+
             />
           </div>
 
@@ -405,7 +346,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.transitionHelp.bridging}
+                  checked={!!formData.transitionHelp.bridging}
                   onChange={() => handleTransitionHelpToggle("bridging")}
                   style={styles.checkboxInput}
                 />
@@ -414,7 +355,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.transitionHelp.refresher}
+                  checked={!!formData.transitionHelp.refresher}
                   onChange={() => handleTransitionHelpToggle("refresher")}
                   style={styles.checkboxInput}
                 />
@@ -423,12 +364,24 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.transitionHelp.other}
+                  checked={!!formData.transitionHelp.other}
                   onChange={() => handleTransitionHelpToggle("other")}
                   style={styles.checkboxInput}
                 />
                 Other
               </label>
+              <div style={styles.otherGroup}>
+                <input
+                  type="text"
+                  value={formData.transitionHelp.otherText}
+                  onChange={(e) => setField("transitionHelp", {
+                    ...formData.transitionHelp,
+                    otherText: e.target.value
+                  })}
+                  style={styles.otherInput}
+                  placeholder="Input other ways to make transition easier..."
+                />
+              </div>
             </div>
           </div>
 
@@ -440,10 +393,8 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.preparationSuggestion}
-              onChange={(e) =>
-                setForm({ ...form, preparationSuggestion: e.target.value })
-              }
+              value={formData.preparationSuggestion}
+              onChange={(e) => setField("preparationSuggestion", e.target.value)}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -451,7 +402,7 @@ export default function ProgramSatisfactionForm({ onSubmit }: ProgramSatisfactio
 
         {/* Submit Row */}
         <div style={styles.actionRow}>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>
+          <button style={styles.nextBtn} onClick={handleNext}>
             Next
           </button>
         </div>
