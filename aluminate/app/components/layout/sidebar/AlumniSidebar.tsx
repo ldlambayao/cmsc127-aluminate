@@ -10,10 +10,22 @@ const HomeIcon = () => (
   </svg>
 );
 
-const SurveyIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M8 7h8M8 12h8M8 17h4" />
+// Book icon for Program Satisfaction Form
+const ProgramIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    <line x1="9" y1="7" x2="15" y2="7" />
+    <line x1="9" y1="11" x2="15" y2="11" />
+  </svg>
+);
+
+// Briefcase icon for Alumni Tracer Form
+const TracerIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" />
+    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+    <path d="M2 12h20" />
   </svg>
 );
 
@@ -35,14 +47,17 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
   const supabase = getSupabaseBrowserClient();
   return (
     <aside style={styles.sidebar}>
-      {/* Logo */}
+      {/* Logo — centered */}
       <div style={styles.logo}>
         <Image
-        src="/aluminate logo.png"
-        alt="Aluminate Logo"
-        width={180}
-        height={180} />
+          src="/aluminate logo.png"
+          alt="Aluminate Logo"
+          width={180}
+          height={180} />
       </div>
+
+      {/* Divider under logo */}
+      <hr style={styles.divider} />
 
       {/* Nav */}
       <nav style={styles.nav}>
@@ -63,7 +78,7 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
           }}
           onClick={() => setActivePage("exit")}
         >
-          <SurveyIcon />
+          <ProgramIcon />
           Program Satisfaction Form
         </button>
         <button
@@ -73,10 +88,13 @@ export default function AlumniSidebar({ activePage, setActivePage }: SidebarProp
           }}
           onClick={() => setActivePage("tracer")}
         >
-          <SurveyIcon />
+          <TracerIcon />
           Alumni Tracer Form
         </button>
       </nav>
+
+      {/* Divider above logout */}
+      <hr style={styles.divider} />
 
       {/* Logout */}
       <button
@@ -107,7 +125,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: "100vh",
     position: "sticky",
     top: 0,
-    zIndex: 10,          // Ensures sidebar renders above main content so shadow isn't clipped
+    zIndex: 10,
     backgroundColor: "#ffffff",
     display: "flex",
     flexDirection: "column",
@@ -117,15 +135,20 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   logo: {
     display: "flex",
+    justifyContent: "center",  // Centers logo horizontally
     alignItems: "center",
-    gap: "8px",
-    padding: "0 20px 28px 20px",
+    padding: "0 20px 12px 20px",
+  },
+  divider: {
+    border: "none",
+    borderTop: "1px solid #ececec",
+    margin: "0",
   },
   nav: {
     display: "flex",
     flexDirection: "column",
     gap: "4px",
-    padding: "0 12px",
+    padding: "28px 12px",
     flex: 1,
   },
   navItem: {
@@ -133,7 +156,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     gap: "10px",
     padding: "10px 14px",
-    borderRadius: "8px",
+    borderRadius: "999px",     // Fully pill-shaped / more rounded
     border: "none",
     background: "transparent",
     color: "#555",
@@ -150,13 +173,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    padding: "10px 26px",
+    padding: "16px 26px 4px 26px",
     border: "none",
     background: "transparent",
     color: "#9b1d2a",
     fontSize: "14px",
     fontWeight: "500",
     cursor: "pointer",
-    marginTop: "auto",
   },
 };
