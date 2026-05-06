@@ -51,8 +51,8 @@ export default function DeleteRecordModal({ record, onClose, onSuccess }: Delete
       if (alumniError) throw alumniError;
 
       // Delete user if exists
-      if (alumniRow?.user_id) {
-        await supabase.from("users").delete().eq("id", alumniRow.user_id);
+      if ((alumniRow as any)?.user_id) {
+        await supabase.from("users").delete().eq("id", (alumniRow as any).user_id);
       }
 
       onSuccess();

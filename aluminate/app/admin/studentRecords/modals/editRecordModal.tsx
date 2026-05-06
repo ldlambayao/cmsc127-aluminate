@@ -64,11 +64,11 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
         .eq("program_name", form.program)
         .single();
 
-      const { error: alumniError } = await supabase
+      const { error: alumniError } = await (supabase as any)
         .from("alumni")
         .update({
           student_number: form.student_id,
-          program_id: programData?.id,
+          program_id: (programData as any)?.id,
           graduation_year: form.graduation_year || null,
           satisfaction_survey_status: form.satisfaction_status,
           tracer_survey_status: form.tracer_status,
@@ -83,11 +83,11 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
         .eq("id", record.id)
         .single();
 
-      if (alumniRow?.user_id) {
-        await supabase
+      if ((alumniRow as any)?.user_id) {
+        await (supabase as any)
           .from("users")
           .update({ fname, mname, lname })
-          .eq("id", alumniRow.user_id);
+          .eq("id", (alumniRow as any).user_id);
       }
 
       onSuccess();

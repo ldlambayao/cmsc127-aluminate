@@ -62,7 +62,7 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
         .eq("program_name", form.program)
         .single();
 
-      const { data: userData, error: userError } = await supabase
+      const { data: userData, error: userError } = await (supabase as any)
         .from("users")
         .insert({ fname, mname, lname })
         .select("id")
@@ -70,10 +70,10 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
 
       if (userError) throw userError;
 
-      const { error: alumniError } = await supabase.from("alumni").insert({
+      const { error: alumniError } = await (supabase as any).from("alumni").insert({
         student_number: form.student_id,
-        user_id: userData.id,
-        program_id: programData?.id,
+        user_id: (userData as any)?.id,
+        program_id: (programData as any)?.id,
         graduation_year: form.graduation_year || null,
         satisfaction_survey_status: form.satisfaction_status,
         tracer_survey_status: form.tracer_status,
