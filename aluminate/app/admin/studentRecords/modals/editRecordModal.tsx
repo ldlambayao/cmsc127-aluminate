@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
-import { AlumniRecord } from "@/app/admin/studentRecords/components/RecordTable";
+import { AlumniRecord } from "@/admin/studentRecords/components/RecordTable";
 
 interface EditRecordModalProps {
   record: AlumniRecord;
