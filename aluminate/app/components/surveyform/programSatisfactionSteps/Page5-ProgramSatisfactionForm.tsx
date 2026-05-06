@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 interface Page5FormState {
@@ -25,7 +27,7 @@ interface Page5FormState {
     otherText: string;
   };
   improvementSuggestion: string;
-  recommendProgram: "yes" | "no" | null;
+  recommendProgram: "Yes" | "No" | null;
   recommendWhy: string;
   overallImprovementSuggestion: string;
   additionalComments: string;
@@ -38,47 +40,48 @@ interface Page5FormProps {
 
 // --- Main Component ---
 export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5FormProps) {
-  const [form, setForm] = useState<Page5FormState>({
-    strengths: {
-      curriculumStructure: false,
-      adequateFacilities: false,
-      classroomsAndSoftware: false,
-      facultyExpertise: false,
-      supportiveFaculty: false,
-      supportiveNonTeaching: false,
-      other: false,
-      otherText: "",
-    },
-    weaknesses: {
-      irrelevantCourses: false,
-      inadequateFacilities: false,
-      insufficientResources: false,
-      lackFacultyExpertise: false,
-      lackFacultySupport: false,
-      lackNonTeachingSupport: false,
-      other: false,
-      otherText: "",
-    },
-    improvementSuggestion: "",
-    recommendProgram: null,
-    recommendWhy: "",
-    overallImprovementSuggestion: "",
-    additionalComments: "",
-  });
+  const { formData, setField, togglePage5Checkbox, setPage5Text } = useFormStore();
 
-  const toggleStrength = (key: keyof Omit<Page5FormState["strengths"], "otherText">) => {
-    setForm((prev) => ({
-      ...prev,
-      strengths: { ...prev.strengths, [key]: !prev.strengths[key] },
-    }));
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  const updateP5 = (updates: Partial<typeof formData.page5Data>) => {
+    setField("page5Data", { ...formData.page5Data, ...updates });
   };
 
-  const toggleWeakness = (key: keyof Omit<Page5FormState["weaknesses"], "otherText">) => {
-    setForm((prev) => ({
-      ...prev,
-      weaknesses: { ...prev.weaknesses, [key]: !prev.weaknesses[key] },
-    }));
+  const isChecklistValid = (obj: Record<string, any>) => {
+    const standardKeys = Object.keys(obj).filter(k => k !== "other" && k !== "otherText");
+    const anyStandardChecked = standardKeys.some(key => obj[key] === true);
+
+    const otherIsChecked = obj.other === true;
+    const otherTextHasContent = (obj.otherText || "").trim().length > 0;
+
+    return anyStandardChecked || (otherIsChecked && otherTextHasContent);
   };
+
+  const isPageValid = (() => {
+    if (!isChecklistValid(formData.page5Data.strengths)) return false;
+    if (!isChecklistValid(formData.page5Data.weaknesses)) return false;
+
+    if (formData.page5Data.improvementSuggestion.trim().length === 0 || formData.page5Data.recommendWhy.trim().length === 0) return false;
+    if (formData.page5Data.overallImprovementSuggestion.trim().length === 0 || formData.page5Data.additionalComments.trim().length === 0) return false;
+    if (!formData.page5Data.recommendProgram.trim()) return false;
+
+    return true;
+  })();
+
+  const handleFinalSubmit = () => {
+    if(isPageValid){
+      onSubmit?.(formData.page5Data as unknown as Page5FormState);
+    } else {
+      alert("Please answer all required questions before submitting.");
+    }
+  }
 
   return (
     <div style={styles.content}>
@@ -114,8 +117,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                 <label key={key} style={styles.checkboxLabel}>
                   <input
                     type="checkbox"
-                    checked={form.strengths[key]}
-                    onChange={() => toggleStrength(key)}
+                    checked={!!formData.page5Data.strengths[key]}
+                    onChange={() => togglePage5Checkbox('strengths', key)}
                     style={styles.checkboxInput}
                   />
                   {label}
@@ -127,13 +130,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
               <textarea
                 style={styles.textarea}
                 rows={3}
-                value={form.strengths.otherText}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    strengths: { ...prev.strengths, otherText: e.target.value },
-                  }))
-                }
+                value={formData.page5Data.strengths.otherText as string || ""}
+                onChange={(e) => setPage5Text('strengths', 'otherText', e.target.value)}
                 placeholder="Please specify..."
               />
             </div>
@@ -158,8 +156,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                 <label key={key} style={styles.checkboxLabel}>
                   <input
                     type="checkbox"
-                    checked={form.weaknesses[key]}
-                    onChange={() => toggleWeakness(key)}
+                    checked={!!formData.page5Data.weaknesses[key]}
+                    onChange={() => togglePage5Checkbox('weaknesses', key)}
                     style={styles.checkboxInput}
                   />
                   {label}
@@ -171,13 +169,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
               <textarea
                 style={styles.textarea}
                 rows={3}
-                value={form.weaknesses.otherText}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    weaknesses: { ...prev.weaknesses, otherText: e.target.value },
-                  }))
-                }
+                value={formData.page5Data.weaknesses.otherText as string || ""}
+                onChange={(e) => setPage5Text('weaknesses', 'otherText', e.target.value)}
                 placeholder="Please specify..."
               />
             </div>
@@ -191,8 +184,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.improvementSuggestion}
-              onChange={(e) => setForm({ ...form, improvementSuggestion: e.target.value })}
+              value={formData.page5Data.improvementSuggestion}
+              onChange={(e) => updateP5({ improvementSuggestion: e.target.value })}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -201,13 +194,13 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
           <div style={styles.inputGroup}>
             <label style={styles.questionLabel}>Will you recommend the BSAM program?</label>
             <div style={styles.radioList}>
-              {(["yes", "no"] as const).map((val) => (
+              {(["Yes", "No"] as const).map((val) => (
                 <label key={val} style={styles.radioLabel}>
                   <input
                     type="radio"
                     name="recommendProgram"
-                    checked={form.recommendProgram === val}
-                    onChange={() => setForm({ ...form, recommendProgram: val })}
+                    checked={formData.page5Data.recommendProgram === val}
+                    onChange={() => updateP5({ recommendProgram: val })}
                     style={styles.radioInputNormal}
                   />
                   {val.charAt(0).toUpperCase() + val.slice(1)}
@@ -218,8 +211,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.recommendWhy}
-              onChange={(e) => setForm({ ...form, recommendWhy: e.target.value })}
+              value={formData.page5Data.recommendWhy}
+              onChange={(e) => updateP5({ recommendWhy: e.target.value })}
               placeholder="Please explain..."
             />
           </div>
@@ -232,8 +225,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.overallImprovementSuggestion}
-              onChange={(e) => setForm({ ...form, overallImprovementSuggestion: e.target.value })}
+              value={formData.page5Data.overallImprovementSuggestion}
+              onChange={(e) => updateP5({ overallImprovementSuggestion: e.target.value })}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -248,8 +241,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
             <textarea
               style={styles.textarea}
               rows={5}
-              value={form.additionalComments}
-              onChange={(e) => setForm({ ...form, additionalComments: e.target.value })}
+              value={formData.page5Data.additionalComments}
+              onChange={(e) => updateP5({ additionalComments: e.target.value })}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -258,9 +251,10 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.submitBtn} onClick={() => onSubmit?.(form)}>Submit</button>
+          <button style={{...styles.submitBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleFinalSubmit} disabled={!isPageValid}>
+            Submit
+          </button>
         </div>
-
       </div>
     </div>
   );
@@ -291,4 +285,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow:   { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:     { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },
   submitBtn:   { backgroundColor: "#9b1d2a", color: "#ffffff", border: "none", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 6px rgba(155,29,42,0.2)" },
+  disabledBtn: { backgroundColor: "#ccc", cursor: "not-allowed", boxShadow: "none", },
 };

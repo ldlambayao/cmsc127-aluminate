@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
-type SatisfactionValue = "verySatisfied" | "satisfied" | "dissatisfied" | "veryDissatisfied" | null;
+type SatisfactionValue = "Very Satisfied" | "Satisfied" | "Dissatisfied" | "Very Dissatisfied" | null;
 
 interface Page2FormState {
   // Overall Satisfaction – Experience items
@@ -15,15 +17,15 @@ interface Page2FormState {
 
 interface Page2FormProps {
   onBack?: () => void;
-  onSubmit?: (formData: Page2FormState) => void;
+  onNext?: () => void;
 }
 
 // --- Constants ---
 const satisfactionColumns: { value: SatisfactionValue; label: string }[] = [
-  { value: "verySatisfied",    label: "Very Satisfied"    },
-  { value: "satisfied",        label: "Satisfied"         },
-  { value: "dissatisfied",     label: "Dissatisfied"      },
-  { value: "veryDissatisfied", label: "Very Dissatisfied" },
+  { value: "Very Satisfied",    label: "Very Satisfied"    },
+  { value: "Satisfied",        label: "Satisfied"         },
+  { value: "Dissatisfied",     label: "Dissatisfied"      },
+  { value: "Very Dissatisfied", label: "Very Dissatisfied" },
 ];
 
 const experienceItems = [
@@ -100,31 +102,49 @@ function SatisfactionTable({ items, groupKey, values, onChange }: SatisfactionTa
 }
 
 // --- Main Page 2 Component ---
-export default function Page2ProgramSatisfactionForm({ onBack, onSubmit }: Page2FormProps) {
-  const [form, setForm] = useState<Page2FormState>({
-    experienceSatisfaction: {},
-    learningOutcomeSatisfaction: {},
-  });
+export default function Page2ProgramSatisfactionForm({ onBack, onNext }: Page2FormProps) {
+
+  const { formData, setExperienceRating, setLearningRating } = useFormStore();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
 
   const handleExperienceChange = (item: string, value: SatisfactionValue) => {
-    setForm((prev) => ({
-      ...prev,
-      experienceSatisfaction: {
-        ...prev.experienceSatisfaction,
-        [item]: value,
-      },
-    }));
+    setExperienceRating(item, value as string);
   };
 
   const handleLearningOutcomeChange = (item: string, value: SatisfactionValue) => {
-    setForm((prev) => ({
-      ...prev,
-      learningOutcomeSatisfaction: {
-        ...prev.learningOutcomeSatisfaction,
-        [item]: value,
-      },
-    }));
+    setLearningRating(item, value as string);
   };
+
+  const isPageValid = (() => {
+    const allexperienceItemsRated = experienceItems.every(item =>
+      formData.experienceSatisfaction[item] !== undefined &&
+      formData.experienceSatisfaction[item] !== null
+    );
+    if (!allexperienceItemsRated) return false;
+    const allLearningOutcomesRated = learningOutcomeItems.every(item =>
+      formData.learningOutcomeSatisfaction[item] !== undefined &&
+      formData.learningOutcomeSatisfaction[item] !== null
+    );
+    if (!allLearningOutcomesRated) return false;
+
+
+    return true;
+  })();
+
+  const handleNext = () => {
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
+  }
 
   return (
     <div style={styles.content}>
@@ -153,7 +173,7 @@ export default function Page2ProgramSatisfactionForm({ onBack, onSubmit }: Page2
             <SatisfactionTable
               items={experienceItems}
               groupKey="experience"
-              values={form.experienceSatisfaction}
+              values={formData.experienceSatisfaction as { [key: string]: SatisfactionValue }}
               onChange={handleExperienceChange}
             />
           </div>
@@ -166,7 +186,7 @@ export default function Page2ProgramSatisfactionForm({ onBack, onSubmit }: Page2
             <SatisfactionTable
               items={learningOutcomeItems}
               groupKey="learningOutcome"
-              values={form.learningOutcomeSatisfaction}
+              values={formData.learningOutcomeSatisfaction as { [key: string]: SatisfactionValue }}
               onChange={handleLearningOutcomeChange}
             />
           </div>
@@ -177,7 +197,7 @@ export default function Page2ProgramSatisfactionForm({ onBack, onSubmit }: Page2
           <button style={styles.backBtn} onClick={onBack}>
             Back
           </button>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
             Next
           </button>
         </div>
@@ -342,5 +362,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: "600",
     cursor: "pointer",
     boxShadow: "0 2px 6px rgba(155, 29, 42, 0.2)",
+  },
+  disabledBtn: {
+    backgroundColor: "#ccc",
+    cursor: "not-allowed",
+    boxShadow: "none",
   },
 };
