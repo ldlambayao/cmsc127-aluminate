@@ -11,6 +11,11 @@ type SatisfactionLevel = "Very Satisfied" | "Satisfied" | "Neutral" | "Dissatisf
 type InterviewAnswer = "Yes" | "No" | "Maybe, I'll join later at some other time" | "";
 
 interface FormData {
+  timeToFindJob: string;
+  currentEmploymentStatus: string;
+  dateHired: string;
+  currentWorkplace: string;
+  currentPosition: string;
   lastName: string;
   firstName: string;
   middleInitial: string;
@@ -28,11 +33,6 @@ interface FormData {
   programImprovements: string;
   emailUpdates: string;
   alumniInterview: InterviewAnswer;
-  timeToFindJob: string;
-  currentEmploymentStatus: string;
-  dateHired: string;
-  currentWorkplace: string;
-  currentPosition: string;
 }
 
 export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
@@ -58,6 +58,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const [dateHired, setDateHired] = useState("");
   const [currentWorkplace, setCurrentWorkplace] = useState("");
   const [currentPosition, setCurrentPosition] = useState("");
+
   const [formError, setFormError] = useState("");
 
   const [form, setForm] = useState<FormData>({

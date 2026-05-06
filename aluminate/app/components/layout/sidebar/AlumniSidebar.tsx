@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 import { useRouter } from "next/navigation";
 
@@ -43,9 +44,43 @@ interface SidebarProps {
   className?: string;
 }
 
+interface AlumniRow {
+  tracer_survey_status: string | null;
+  satisfaction_survey_status: string | null;
+}
+
 export default function AlumniSidebar({ activePage, setActivePage, className }: SidebarProps) {
   const router = useRouter();
   const supabase = getSupabaseBrowserClient();
+
+  const [status, setStatus] = useState({
+    tracer: false,
+    satisfaction: false,
+  });
+
+  useEffect(() => {
+    const fetchSurveyStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data, error } = await supabase
+          .from("alumni")
+          .select("tracer_survey_status, satisfaction_survey_status")
+          .eq("uuid", user.id) // Assuming 'id' is the primary key/auth link
+          .single();
+
+        if (!error && data) {
+          const alumniData = data as AlumniRow;
+          setStatus({
+            tracer: alumniData.tracer_survey_status === "Completed",
+            satisfaction: alumniData.satisfaction_survey_status === "Completed",
+          });
+        }
+      }
+    };
+
+    fetchSurveyStatus();
+  }, [supabase]);
   return (
     <aside style={styles.sidebar} className={className}>
       {/* Logo — centered */}
@@ -78,8 +113,10 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
           style={{
             ...styles.navItem,
             ...(activePage === "exit" ? styles.navItemActive : {}),
+            ...(status.satisfaction ? styles.disabledNavItem : {}),
           }}
           onClick={() => setActivePage("exit")}
+          disabled={status.satisfaction}
         >
           <ProgramIcon />
           Program Satisfaction Form
@@ -88,8 +125,10 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
           style={{
             ...styles.navItem,
             ...(activePage === "tracer" ? styles.navItemActive : {}),
+            ...(status.tracer ? styles.disabledNavItem : {}),
           }}
           onClick={() => setActivePage("tracer")}
+          disabled={status.tracer}
         >
           <TracerIcon />
           Alumni Tracer Form
@@ -183,5 +222,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "14px",
     fontWeight: "500",
     cursor: "pointer",
+  },
+  disabledNavItem: {
+    backgroundColor: "#f5f5f5",
+    color: "#aaa",
+    cursor: "not-allowed",
+    opacity: 0.7,
   },
 };

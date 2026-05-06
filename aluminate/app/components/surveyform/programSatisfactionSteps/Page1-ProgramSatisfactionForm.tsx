@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
 type RatingValue = 1 | 2 | 3 | 4 | 5 | null;
@@ -35,7 +37,7 @@ interface FormState {
 }
 
 interface ProgramSatisfactionFormProps {
-  onSubmit?: (formData: FormState) => void;
+  onNext: () => void;
 }
 
 // --- Constants ---
@@ -52,63 +54,113 @@ const enrollmentFactorItems = [
 ];
 
 // --- Component ---
-export default function ProgramSatisfactionForm({
-  onSubmit,
-}: ProgramSatisfactionFormProps) {
-  const [form, setForm] = useState<FormState>({
-    date: "",
-    studentNumber: "",
-    timelinessRating: null,
-    learnAbout: {
-      upWebsite: false,
-      faculty: false,
-      friend: false,
-      other: false,
-      otherText: "",
-    },
-    enrollmentFactors: {},
-    transitionDifficulty: null,
-    transitionReason: "",
-    transitionHelp: {
-      bridging: false,
-      refresher: false,
-      other: false,
-    },
-    preparationSuggestion: "",
-  });
+export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionFormProps) {
+  const supabase = getSupabaseBrowserClient();
+  const [loading, setLoading] = useState(true);
+  const { formData, setField, setFactorRating } = useFormStore()
 
-  const handleLearnAboutToggle = (key: keyof FormState["learnAbout"]) => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+
+    async function getProfile() {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error("Supabase auth error:", userError);
+        setLoading(false);
+        return;
+      }
+
+      if (user) {
+        const result: any = await supabase
+          .from('users')
+          .select('alumni!inner(student_number)')
+          .eq('uuid', user.id)
+          .single();
+
+        if (result.error) {
+          console.error("Profile query error:", result.error);
+          setLoading(false);
+          return;
+        }
+
+        if (!result.data) {
+          console.warn("No profile data found for user", user.id);
+          setLoading(false);
+          return;
+        }
+
+        const data = result.data;
+        const alumni = data.alumni;
+
+        if (alumni?.student_number) {
+          setField("studentNumber", alumni.student_number);
+        }
+      }
+
+      setLoading(false);
+    }
+
+    getProfile();
+
+  }, []);
+
+  const handleLearnAboutToggle = (key: keyof typeof formData.learnAbout) => {
     if (key === "otherText") return;
-    setForm((prev) => ({
-      ...prev,
-      learnAbout: {
-        ...prev.learnAbout,
-        [key]: !prev.learnAbout[key],
-      },
-    }));
+    const currentVal = formData.learnAbout[key];
+    setField("learnAbout", {
+      ...formData.learnAbout,
+      [key]: !currentVal,
+    });
   };
 
-  const handleTransitionHelpToggle = (
-    key: keyof FormState["transitionHelp"]
-  ) => {
-    setForm((prev) => ({
-      ...prev,
-      transitionHelp: {
-        ...prev.transitionHelp,
-        [key]: !prev.transitionHelp[key],
-      },
-    }));
+  const handleTransitionHelpToggle = (key: keyof typeof formData.transitionHelp) => {
+    const currentVal = formData.transitionHelp[key];
+    setField("transitionHelp", {
+      ...formData.transitionHelp,
+      [key]: !currentVal,
+    });
   };
 
-  const setFactorRating = (item: string, val: RatingValue) => {
-    setForm((prev) => ({
-      ...prev,
-      enrollmentFactors: {
-        ...prev.enrollmentFactors,
-        [item]: val,
-      },
-    }));
-  };
+  const handleNext = () => {
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
+  }
+
+  const isPageValid = (() => {
+    if (!formData.date || !formData.studentNumber.trim()) return false;
+    if (formData.timelinessRating === null) return false;
+
+    const hasLearnAbout =
+      formData.learnAbout.upWebsite ||
+      formData.learnAbout.faculty ||
+      formData.learnAbout.friend ||
+      formData.learnAbout.otherText.trim().length > 0;
+    if (!hasLearnAbout) return false;
+
+    const allFactorsRated = enrollmentFactorItems.every(item =>
+      formData.enrollmentFactors[item] !== undefined &&
+      formData.enrollmentFactors[item] !== null
+    );
+    if (!allFactorsRated) return false;
+
+    if (formData.transitionDifficulty === null) return false;
+    const transitionHelped =
+      formData.transitionHelp.bridging ||
+      formData.transitionHelp.refresher ||
+      formData.transitionHelp.other ||
+      formData.transitionHelp.otherText.trim().length > 0;
+    if (!transitionHelped) return false;
+    if (!formData.transitionReason || formData.transitionReason.trim().length === 0 || formData.preparationSuggestion.trim().length === 0) return false;
+
+    return true;
+  })();
 
   return (
     <div style={styles.content}>
@@ -134,8 +186,8 @@ export default function ProgramSatisfactionForm({
               <input
                 type="date"
                 style={styles.textInput}
-                value={form.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
+                value={formData.date}
+                onChange={(e) => setField("date", e.target.value)}
               />
             </div>
             <div style={styles.inputGroup}>
@@ -143,10 +195,8 @@ export default function ProgramSatisfactionForm({
               <input
                 type="text"
                 style={styles.textInput}
-                value={form.studentNumber}
-                onChange={(e) =>
-                  setForm({ ...form, studentNumber: e.target.value })
-                }
+                value={formData.studentNumber}
+                onChange={(e) => setField("studentNumber", e.target.value)}
               />
             </div>
           </div>
@@ -165,11 +215,8 @@ export default function ProgramSatisfactionForm({
                     <input
                       type="radio"
                       name="timelinessRating"
-                      value={num}
-                      checked={form.timelinessRating === num}
-                      onChange={() =>
-                        setForm({ ...form, timelinessRating: num as RatingValue })
-                      }
+                      checked={formData.timelinessRating === num}
+                      onChange={() => setField("timelinessRating", num)}
                       style={styles.radioInputLarge}
                     />
                   </div>
@@ -193,7 +240,7 @@ export default function ProgramSatisfactionForm({
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.learnAbout.upWebsite}
+                  checked={!!formData.learnAbout.upWebsite}
                   onChange={() => handleLearnAboutToggle("upWebsite")}
                   style={styles.checkboxInput}
                 />
@@ -202,7 +249,7 @@ export default function ProgramSatisfactionForm({
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.learnAbout.faculty}
+                  checked={!!formData.learnAbout.faculty}
                   onChange={() => handleLearnAboutToggle("faculty")}
                   style={styles.checkboxInput}
                 />
@@ -211,7 +258,7 @@ export default function ProgramSatisfactionForm({
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.learnAbout.friend}
+                  checked={!!formData.learnAbout.friend}
                   onChange={() => handleLearnAboutToggle("friend")}
                   style={styles.checkboxInput}
                 />
@@ -221,16 +268,11 @@ export default function ProgramSatisfactionForm({
                 <span style={styles.checkboxLabel}>Other:</span>
                 <input
                   type="text"
-                  value={form.learnAbout.otherText}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      learnAbout: {
-                        ...prev.learnAbout,
-                        otherText: e.target.value,
-                      },
-                    }))
-                  }
+                  value={formData.learnAbout.otherText}
+                  onChange={(e) => setField("learnAbout", {
+                    ...formData.learnAbout,
+                    otherText: e.target.value
+                  })}
                   style={styles.otherInput}
                 />
               </div>
@@ -275,19 +317,15 @@ export default function ProgramSatisfactionForm({
                   <div style={styles.factorLabelCol}>
                     <span style={styles.factorItemText}>{item}</span>
                   </div>
+                  {/* ... label part ... */}
                   <div style={styles.factorRadiosCol}>
                     {[1, 2, 3, 4, 5].map((val) => (
-                      <div key={val} style={styles.radioWrapperCenter}>
-                        <input
-                          type="radio"
-                          name={`factor-${idx}`}
-                          checked={form.enrollmentFactors[item] === val}
-                          onChange={() =>
-                            setFactorRating(item, val as RatingValue)
-                          }
-                          style={styles.radioInputNormal}
-                        />
-                      </div>
+                      <input
+                        type="radio"
+                        name={`factor-${idx}`}
+                        checked={formData.enrollmentFactors[item] === val}
+                        onChange={() => setFactorRating(item, val)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -314,14 +352,8 @@ export default function ProgramSatisfactionForm({
                     <input
                       type="radio"
                       name="transitionDifficulty"
-                      value={num}
-                      checked={form.transitionDifficulty === num}
-                      onChange={() =>
-                        setForm({
-                          ...form,
-                          transitionDifficulty: num as RatingValue,
-                        })
-                      }
+                      checked={formData.transitionDifficulty === num}
+                      onChange={() => setField("transitionDifficulty", num)}
                       style={styles.radioInputLarge}
                     />
                   </div>
@@ -338,11 +370,10 @@ export default function ProgramSatisfactionForm({
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.transitionReason}
-              onChange={(e) =>
-                setForm({ ...form, transitionReason: e.target.value })
-              }
+              value={formData.transitionReason}
+              onChange={(e) => setField("transitionReason", e.target.value)}
               placeholder="Share your reasons with us..."
+
             />
           </div>
 
@@ -354,7 +385,7 @@ export default function ProgramSatisfactionForm({
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.transitionHelp.bridging}
+                  checked={!!formData.transitionHelp.bridging}
                   onChange={() => handleTransitionHelpToggle("bridging")}
                   style={styles.checkboxInput}
                 />
@@ -363,7 +394,7 @@ export default function ProgramSatisfactionForm({
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.transitionHelp.refresher}
+                  checked={!!formData.transitionHelp.refresher}
                   onChange={() => handleTransitionHelpToggle("refresher")}
                   style={styles.checkboxInput}
                 />
@@ -372,12 +403,24 @@ export default function ProgramSatisfactionForm({
               <label style={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.transitionHelp.other}
+                  checked={!!formData.transitionHelp.other}
                   onChange={() => handleTransitionHelpToggle("other")}
                   style={styles.checkboxInput}
                 />
                 Other
               </label>
+              <div style={styles.otherGroup}>
+                <input
+                  type="text"
+                  value={formData.transitionHelp.otherText}
+                  onChange={(e) => setField("transitionHelp", {
+                    ...formData.transitionHelp,
+                    otherText: e.target.value
+                  })}
+                  style={styles.otherInput}
+                  placeholder="Input other ways to make transition easier..."
+                />
+              </div>
             </div>
           </div>
 
@@ -389,10 +432,8 @@ export default function ProgramSatisfactionForm({
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.preparationSuggestion}
-              onChange={(e) =>
-                setForm({ ...form, preparationSuggestion: e.target.value })
-              }
+              value={formData.preparationSuggestion}
+              onChange={(e) => setField("preparationSuggestion", e.target.value)}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -400,7 +441,7 @@ export default function ProgramSatisfactionForm({
 
         {/* Submit Row */}
         <div style={styles.actionRow}>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
             Next
           </button>
         </div>
@@ -665,5 +706,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: "600",
     cursor: "pointer",
     boxShadow: "0 2px 6px rgba(155, 29, 42, 0.2)",
+  },
+  disabledBtn: {
+    backgroundColor: "#ccc",
+    cursor: "not-allowed",
+    boxShadow: "none",
   },
 };

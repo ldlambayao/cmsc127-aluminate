@@ -1,21 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
-type InfluenceValue =
-  | "veryPositive"
-  | "positive"
-  | "noInfluence"
-  | "negative"
-  | "veryNegative"
-  | "notApplicable"
-  | null;
+type InfluenceValue = | "Very Positive" | "Positive" | "No Influence" | "Negative" | "Very Negative" | "Not Applicable" | null;
 
 interface Page4FormState {
   factorInfluences: { [key: string]: InfluenceValue };
   factorsOther: string;
-  consideredLeaving: "yes" | "no" | null;
+  consideredLeaving: "Yes" | "No" | null;
   leavingWhy: string;
   favoriteYearSemester: string;
   favoriteWhy: string;
@@ -28,17 +23,17 @@ interface Page4FormState {
 
 interface Page4FormProps {
   onBack?: () => void;
-  onSubmit?: (data: Page4FormState) => void;
+  onNext: () => void;
 }
 
 // --- Constants ---
 const influenceColumns: { value: InfluenceValue; label: string }[] = [
-  { value: "veryPositive",   label: "Very Positive Influence"  },
-  { value: "positive",       label: "Positive Influence"       },
-  { value: "noInfluence",    label: "No Influence"             },
-  { value: "negative",       label: "Negative Influence"       },
-  { value: "veryNegative",   label: "Very Negative Influence"  },
-  { value: "notApplicable",  label: "Not Applicable"           },
+  { value: "Very Positive",    label: "Very Positive Influence"  },
+  { value: "Positive",         label: "Positive Influence"       },
+  { value: "No Influence",     label: "No Influence"             },
+  { value: "Negative",         label: "Negative Influence"       },
+  { value: "Very Negative",    label: "Very Negative Influence"  },
+  { value: "Not Applicable",   label: "Not Applicable"           },
 ];
 
 const factorItems = [
@@ -66,27 +61,44 @@ const yearSemesterOptions = [
 ];
 
 // --- Main Component ---
-export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4FormProps) {
-  const [form, setForm] = useState<Page4FormState>({
-    factorInfluences: {},
-    factorsOther: "",
-    consideredLeaving: null,
-    leavingWhy: "",
-    favoriteYearSemester: "",
-    favoriteWhy: "",
-    mostHelpfulCourse: "",
-    helpfulFutureEndeavors: "",
-    shouldNotInclude: "",
-    shouldBeAdded: "",
-    otherChallenges: "",
-  });
+export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4FormProps) {
+
+  const { formData, setField, setFactorChange } = useFormStore();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
 
   const handleFactorChange = (item: string, value: InfluenceValue) => {
-    setForm((prev) => ({
-      ...prev,
-      factorInfluences: { ...prev.factorInfluences, [item]: value },
-    }));
+    setFactorChange(item, value as string);
   };
+
+  const isPageValid = (() => {
+    const allFactorInfluencesRated = factorItems.every(item =>
+      formData.factorInfluences[item] !== undefined &&
+      formData.factorInfluences[item] !== null
+    );
+    if (!allFactorInfluencesRated) return false;
+
+    if (formData.factorsOther.trim().length === 0 || formData.consideredLeaving === null || formData.leavingWhy.trim().length === 0) return false;
+    if (formData.favoriteYearSemester.trim().length === 0 || formData.favoriteWhy.trim().length === 0 || formData.mostHelpfulCourse.trim().length === 0) return false;
+    if (formData.helpfulFutureEndeavors.trim().length === 0 || formData.shouldNotInclude.trim().length === 0 || formData.shouldBeAdded.trim().length === 0) return false;
+    if (formData.otherChallenges.trim().length === 0) return false;
+
+    return true;
+  })();
+
+  const handleNext = () => {
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
+  }
 
   return (
     <div style={styles.content}>
@@ -136,7 +148,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
                         <input
                           type="radio"
                           name={`factor-${idx}`}
-                          checked={form.factorInfluences[item] === col.value}
+                          checked={formData.factorInfluences[item] === col.value}
                           onChange={() => handleFactorChange(item, col.value)}
                           style={styles.radioInputNormal}
                         />
@@ -154,8 +166,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.factorsOther}
-              onChange={(e) => setForm({ ...form, factorsOther: e.target.value })}
+              value={formData.factorsOther}
+              onChange={(e) => setField("factorsOther", e.target.value )}
               placeholder="Specify other factors..."
             />
           </div>
@@ -164,13 +176,13 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
           <div style={styles.inputGroup}>
             <label style={styles.questionLabel}>Did you consider leaving the program?</label>
             <div style={styles.radioList}>
-              {(["yes", "no"] as const).map((val) => (
+              {(["Yes", "No"] as const).map((val) => (
                 <label key={val} style={styles.radioLabel}>
                   <input
                     type="radio"
                     name="consideredLeaving"
-                    checked={form.consideredLeaving === val}
-                    onChange={() => setForm({ ...form, consideredLeaving: val })}
+                    checked={formData.consideredLeaving === val}
+                    onChange={() => setField("consideredLeaving", val)}
                     style={styles.radioInputNormal}
                   />
                   {val.charAt(0).toUpperCase() + val.slice(1)}
@@ -181,8 +193,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.leavingWhy}
-              onChange={(e) => setForm({ ...form, leavingWhy: e.target.value })}
+              value={formData.leavingWhy}
+              onChange={(e) => setField("leavingWhy", e.target.value )}
               placeholder="Please explain..."
             />
           </div>
@@ -196,8 +208,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
                   <input
                     type="radio"
                     name="favoriteYearSemester"
-                    checked={form.favoriteYearSemester === option}
-                    onChange={() => setForm({ ...form, favoriteYearSemester: option })}
+                    checked={formData.favoriteYearSemester === option}
+                    onChange={() => setField("favoriteYearSemester", option)}
                     style={styles.radioInputNormal}
                   />
                   {option}
@@ -208,8 +220,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.favoriteWhy}
-              onChange={(e) => setForm({ ...form, favoriteWhy: e.target.value })}
+              value={formData.favoriteWhy}
+              onChange={(e) => setField("favoriteWhy", e.target.value )}
               placeholder="Please explain..."
             />
           </div>
@@ -242,8 +254,8 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
               <textarea
                 style={styles.textarea}
                 rows={3}
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                value={(formData[key as keyof SurveyData] as string) || ""}
+                onChange={(e) => setField(key as keyof SurveyData, e.target.value)}
                 placeholder="Share your thoughts with us..."
               />
             </div>
@@ -253,9 +265,10 @@ export default function Page4ProgramSatisfactionForm({ onBack, onSubmit }: Page4
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>Next</button>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
+            Next
+          </button>
         </div>
-
       </div>
     </div>
   );
@@ -292,4 +305,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow: { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:   { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },
   nextBtn:   { backgroundColor: "#9b1d2a", color: "#ffffff", border: "none", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 6px rgba(155,29,42,0.2)" },
+  disabledBtn: { backgroundColor: "#ccc", cursor: "not-allowed", boxShadow: "none", },
 };

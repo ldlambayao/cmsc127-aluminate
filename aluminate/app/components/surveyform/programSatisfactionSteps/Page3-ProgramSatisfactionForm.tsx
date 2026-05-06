@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { useFormStore, SurveyData } from "@/../lib/store/useFormStore";
 
 // --- Types ---
-type AgreeValue = "stronglyAgree" | "agree" | "disagree" | "stronglyDisagree" | null;
-type SatisfactionValue = "verySatisfied" | "satisfied" | "dissatisfied" | "veryDissatisfied" | null;
+type AgreeValue = "Strongly Agree" | "Agree" | "Disagree" | "Strongly Disagree" | null;
+type SatisfactionValue = "Very Satisfied" | "Satisfied" | "Dissatisfied" | "Very Dissatisfied" | null;
 
 interface Page3FormState {
   cultureRatings: { [key: string]: AgreeValue };
@@ -15,23 +17,23 @@ interface Page3FormState {
 
 interface Page3FormProps {
   onBack?: () => void;
-  onSubmit?: (data: Page3FormState) => void;
+  onNext?: () => void;
 }
 
 // --- Constants ---
 // Column arrays use plain string (non-nullable) — the nullable types live only in form state
 const agreeColumns: { value: string; label: string }[] = [
-  { value: "stronglyAgree",    label: "Strongly Agree"    },
-  { value: "agree",            label: "Agree"             },
-  { value: "disagree",         label: "Disagree"          },
-  { value: "stronglyDisagree", label: "Strongly Disagree" },
+  { value: "Strongly Agree",    label: "Strongly Agree"    },
+  { value: "Agree",             label: "Agree"             },
+  { value: "Disagree",          label: "Disagree"          },
+  { value: "Strongly Disagree", label: "Strongly Disagree" },
 ];
 
 const satisfactionColumns: { value: string; label: string }[] = [
-  { value: "verySatisfied",    label: "Very Satisfied"    },
-  { value: "satisfied",        label: "Satisfied"         },
-  { value: "dissatisfied",     label: "Dissatisfied"      },
-  { value: "veryDissatisfied", label: "Very Dissatisfied" },
+  { value: "Very Satisfied",    label: "Very Satisfied"    },
+  { value: "Satisfied",         label: "Satisfied"         },
+  { value: "Dissatisfied",      label: "Dissatisfied"      },
+  { value: "Very Dissatisfied", label: "Very Dissatisfied" },
 ];
 
 const cultureItems = [
@@ -62,16 +64,10 @@ interface RatingTableProps {
   groupKey: string;
   columns: { value: string; label: string }[];
   values: { [key: string]: string | null };
-  onChange: (item: string, value: string) => void;
+  onChange: (item: string, value: any) => void;
 }
 
-function RatingTable({
-  items,
-  groupKey,
-  columns,
-  values,
-  onChange,
-}: RatingTableProps) {
+function RatingTable({ items, groupKey, columns, values, onChange }: RatingTableProps) {
   return (
     <div style={styles.tableWrapper}>
       {/* Header */}
@@ -111,27 +107,49 @@ function RatingTable({
 }
 
 // --- Main Component ---
-export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3FormProps) {
-  const [form, setForm] = useState<Page3FormState>({
-    cultureRatings: {},
-    cultureExplanation: "",
-    servicesSatisfaction: {},
-    servicesOther: "",
-  });
+export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
+  const { formData, setField, setCultureChange, setServicesChange } = useFormStore();
 
-  const handleCultureChange = (item: string, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      cultureRatings: { ...prev.cultureRatings, [item]: value as AgreeValue },
-    }));
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  const handleCultureChange = (item: string, value: AgreeValue) => {
+    setCultureChange(item, value as string);
   };
 
-  const handleServicesChange = (item: string, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      servicesSatisfaction: { ...prev.servicesSatisfaction, [item]: value as SatisfactionValue },
-    }));
+  const handleServicesChange = (item: string, value: SatisfactionValue) => {
+    setServicesChange(item, value as string);
   };
+
+  const isPageValid = (() => {
+    if (formData.cultureExplanation.trim().length === 0 || formData.servicesOther.trim().length === 0) return false;
+    const allServicesSatisfactionsRated = servicesItems.every(item =>
+      formData.servicesSatisfaction[item] !== undefined &&
+      formData.servicesSatisfaction[item] !== null
+    );
+    if (!allServicesSatisfactionsRated) return false;
+
+    const allCultureRatingsRated = cultureItems.every(item =>
+      formData.cultureRatings[item] !== undefined &&
+      formData.cultureRatings[item] !== null
+    );
+    if (!allCultureRatingsRated) return false;
+
+    return true;
+  })();
+
+  const handleNext = () => {
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
+  }
 
   return (
     <div style={styles.content}>
@@ -161,7 +179,7 @@ export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3
               items={cultureItems}
               groupKey="culture"
               columns={agreeColumns}
-              values={form.cultureRatings as { [key: string]: string | null }}
+              values={formData.cultureRatings as { [key: string]: AgreeValue }}
               onChange={handleCultureChange}
             />
           </div>
@@ -171,8 +189,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3
             <textarea
               style={styles.textarea}
               rows={4}
-              value={form.cultureExplanation}
-              onChange={(e) => setForm({ ...form, cultureExplanation: e.target.value })}
+              value={formData.cultureExplanation}
+              onChange={(e) => setField("cultureExplanation", e.target.value)}
               placeholder="Share your thoughts with us..."
             />
           </div>
@@ -192,7 +210,7 @@ export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3
               items={servicesItems}
               groupKey="services"
               columns={satisfactionColumns}
-              values={form.servicesSatisfaction as { [key: string]: string | null }}
+              values={formData.servicesSatisfaction as { [key: string]: SatisfactionValue }}
               onChange={handleServicesChange}
             />
           </div>
@@ -202,8 +220,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3
             <textarea
               style={styles.textarea}
               rows={3}
-              value={form.servicesOther}
-              onChange={(e) => setForm({ ...form, servicesOther: e.target.value })}
+              value={formData.servicesOther}
+              onChange={(e) => setField("servicesOther", e.target.value )}
               placeholder="Specify other offices or personnel..."
             />
           </div>
@@ -212,9 +230,10 @@ export default function Page3ProgramSatisfactionForm({ onBack, onSubmit }: Page3
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.nextBtn} onClick={() => onSubmit?.(form)}>Next</button>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
+            Next
+          </button>
         </div>
-
       </div>
     </div>
   );
@@ -248,4 +267,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow: { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:   { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },
   nextBtn:   { backgroundColor: "#9b1d2a", color: "#ffffff", border: "none", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 6px rgba(155,29,42,0.2)" },
+  disabledBtn: { backgroundColor: "#ccc", cursor: "not-allowed", boxShadow: "none", },
 };
