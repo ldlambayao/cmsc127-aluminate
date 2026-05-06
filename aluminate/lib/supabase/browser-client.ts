@@ -85,6 +85,10 @@ export function getSupabaseBrowserClient(): SupabaseClient<Database> {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
+    // Return a dummy client during build time; error will occur at runtime if used
+    if (typeof window === "undefined") {
+      return createBrowserClient<Database>("https://placeholder.supabase.co", "placeholder-key");
+    }
     throw new Error(
       "Missing environment variables: NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY"
     );
