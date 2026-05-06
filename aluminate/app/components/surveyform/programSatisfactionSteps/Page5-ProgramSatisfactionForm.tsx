@@ -42,6 +42,14 @@ interface Page5FormProps {
 export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5FormProps) {
   const { formData, setField, togglePage5Checkbox, setPage5Text } = useFormStore();
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   const updateP5 = (updates: Partial<typeof formData.page5Data>) => {
     setField("page5Data", { ...formData.page5Data, ...updates });
   };

@@ -65,6 +65,14 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
 
   const { formData, setField, setFactorChange } = useFormStore();
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   const handleFactorChange = (item: string, value: InfluenceValue) => {
     setFactorChange(item, value as string);
   };

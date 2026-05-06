@@ -110,6 +110,14 @@ function RatingTable({ items, groupKey, columns, values, onChange }: RatingTable
 export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
   const { formData, setField, setCultureChange, setServicesChange } = useFormStore();
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   const handleCultureChange = (item: string, value: AgreeValue) => {
     setCultureChange(item, value as string);
   };

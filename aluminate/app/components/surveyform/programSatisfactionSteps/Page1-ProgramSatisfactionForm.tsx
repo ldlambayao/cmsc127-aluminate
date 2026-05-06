@@ -60,6 +60,12 @@ export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionF
   const { formData, setField, setFactorRating } = useFormStore()
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+
     async function getProfile() {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) {

@@ -106,6 +106,14 @@ export default function Page2ProgramSatisfactionForm({ onBack, onNext }: Page2Fo
 
   const { formData, setExperienceRating, setLearningRating } = useFormStore();
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   const handleExperienceChange = (item: string, value: SatisfactionValue) => {
     setExperienceRating(item, value as string);
   };
