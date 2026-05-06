@@ -78,6 +78,10 @@ interface FormState {
   // ---- Page 4 setters ----
   setFactorChange: (item: string, rating: string) => void;
 
+  // ---- Page 5 setters ----
+  togglePage5Checkbox: (category: 'strengths' | 'weaknesses', key: string) => void;
+  setPage5Text: (category: 'strengths' | 'weaknesses' | 'general', field: string, value: string) => void;
+
   resetForm: () => void;
 }
 
@@ -87,19 +91,19 @@ const initialState: SurveyData = {
   studentNumber: "",
   timelinessRating: null,
   learnAbout: {
-    upWebsite: null,
-    faculty: null,
-    friend: null,
-    other: null,
+    upWebsite: false,
+    faculty: false,
+    friend: false,
+    other: false,
     otherText: "",
   },
   enrollmentFactors: {},
   transitionDifficulty: null,
   transitionReason: "",
   transitionHelp: {
-    bridging: null,
-    refresher: null,
-    other: null,
+    bridging: false,
+    refresher: false,
+    other: false,
     otherText: "",
   },
   preparationSuggestion: "",
@@ -129,8 +133,26 @@ const initialState: SurveyData = {
 
   // ---- Page 5 ----
   page5Data: {
-    strengths: {},
-    weaknesses: {},
+    strengths: {
+      curriculumStructure: false,
+      adequateFacilities: false,
+      classroomsAndSoftware: false,
+      facultyExpertise: false,
+      supportiveFaculty: false,
+      supportiveNonTeaching: false,
+      other: false,
+      otherText: "",
+    },
+    weaknesses: {
+      irrelevantCourses: false,
+      inadequateFacilities: false,
+      insufficientResources: false,
+      lackFacultyExpertise: false,
+      lackFacultySupport: false,
+      lackNonTeachingSupport: false,
+      other: false,
+      otherText: "",
+    },
     improvementSuggestion: "",
     recommendProgram: "",
     recommendWhy: "",
@@ -203,6 +225,48 @@ export const useFormStore = create<FormState>((set) => ({
         factorInfluences: { ...state.formData.factorInfluences, [factorName]: rating },
       },
     })),
+
+  // ---- Page 5 setters -----
+  togglePage5Checkbox: (category, key) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        page5Data: {
+          ...state.formData.page5Data,
+          [category]: {
+            ...state.formData.page5Data[category],
+            [key]: !state.formData.page5Data[category][key],
+          },
+        },
+      },
+    })),
+
+  setPage5Text: (category, field, value) =>
+    set((state) => {
+      const { page5Data } = state.formData;
+
+      if (category === 'general') {
+        return {
+          formData: {
+            ...state.formData,
+            page5Data: { ...page5Data, [field]: value },
+          },
+        };
+      } else {
+        return {
+          formData: {
+            ...state.formData,
+            page5Data: {
+              ...page5Data,
+              [category]: {
+                ...page5Data[category as 'strengths' | 'weaknesses'],
+                [field]: value,
+              },
+            },
+          },
+        };
+      }
+    }),
 
   resetForm: () => set({ formData: initialState }),
 }));

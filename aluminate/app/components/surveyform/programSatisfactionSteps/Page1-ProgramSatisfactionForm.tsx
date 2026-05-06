@@ -120,8 +120,41 @@ export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionF
   };
 
   const handleNext = () => {
-    onNext?.();
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
   }
+
+  const isPageValid = (() => {
+    if (!formData.date || !formData.studentNumber.trim()) return false;
+    if (formData.timelinessRating === null) return false;
+
+    const hasLearnAbout =
+      formData.learnAbout.upWebsite ||
+      formData.learnAbout.faculty ||
+      formData.learnAbout.friend ||
+      formData.learnAbout.otherText.trim().length > 0;
+    if (!hasLearnAbout) return false;
+
+    const allFactorsRated = enrollmentFactorItems.every(item =>
+      formData.enrollmentFactors[item] !== undefined &&
+      formData.enrollmentFactors[item] !== null
+    );
+    if (!allFactorsRated) return false;
+
+    if (formData.transitionDifficulty === null) return false;
+    const transitionHelped =
+      formData.transitionHelp.bridging ||
+      formData.transitionHelp.refresher ||
+      formData.transitionHelp.other ||
+      formData.transitionHelp.otherText.trim().length > 0;
+    if (!transitionHelped) return false;
+    if (!formData.transitionReason || formData.transitionReason.trim().length === 0 || formData.preparationSuggestion.trim().length === 0) return false;
+
+    return true;
+  })();
 
   return (
     <div style={styles.content}>
@@ -402,7 +435,7 @@ export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionF
 
         {/* Submit Row */}
         <div style={styles.actionRow}>
-          <button style={styles.nextBtn} onClick={handleNext}>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
             Next
           </button>
         </div>
@@ -667,5 +700,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: "600",
     cursor: "pointer",
     boxShadow: "0 2px 6px rgba(155, 29, 42, 0.2)",
+  },
+  disabledBtn: {
+    backgroundColor: "#ccc",
+    cursor: "not-allowed",
+    boxShadow: "none",
   },
 };

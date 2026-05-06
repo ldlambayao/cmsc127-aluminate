@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormStore } from "@/../lib/store/useFormStore";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
@@ -27,9 +27,20 @@ export default function ProgramSatisfactionFormPage() {
   };
 
   const handleFinalSubmit = async() => {
+    const supabase = getSupabaseBrowserClient();
+
+    const { data: alumnusData } = await supabase
+      .from('alumni')
+      .select('alumnus_id')
+      .eq('student_number', formData.studentNumber)
+      .single() as { data: { alumnus_id: any } };
+
+    const alumnusId = alumnusData.alumnus_id;
+
     const payload = {
       // ---- Page 1 ----
       submission_date: formData.date,
+      alumnus_id: alumnusId,
       p1q1: formData.timelinessRating,
       p1q2c1: formData.learnAbout.upWebsite,
       p1q2c2: formData.learnAbout.faculty,
@@ -74,27 +85,108 @@ export default function ProgramSatisfactionFormPage() {
       p2q19: formData.learningOutcomeSatisfaction["Readiness in confidence to pursue a master's degree in computer science"],
 
       // ---- Page 3 ----
+      p3q1: formData.cultureRatings["Immersion to the values of a liberal arts background"],
+      p3q2: formData.cultureRatings["Faculty members are exemplars of 'honor and excellence'"],
+      p3q3: formData.cultureRatings["Students are encouraged to participate"],
+      p3q4: formData.cultureRatings["The expertise of the faculty"],
+      p3q5: formData.cultureExplanation,
+      p3q6: formData.servicesSatisfaction["DMPCS Staff"],
+      p3q7: formData.servicesSatisfaction["Faculty members in general"],
+      p3q8: formData.servicesSatisfaction["Faculty members who handle the courses"],
+      p3q9: formData.servicesSatisfaction["Office of the University Registrar"],
+      p3q10: formData.servicesSatisfaction["Dean's Office"],
+      p3q11: formData.servicesSatisfaction["Guidance and Counseling Office"],
+      p3q12: formData.servicesSatisfaction["University Library"],
+      p3q13: formData.servicesSatisfaction["ICT Office"],
+      p3q14: formData.servicesSatisfaction["Office of Student Affairs"],
+      p3q15: formData.servicesSatisfaction["Canteen"],
+      p3q16: formData.servicesSatisfaction["Guards"],
+      p3q17: formData.servicesOther,
 
       // ---- Page 4 ----
+      p4q1: formData.factorInfluences["Family obligations"],
+      p4q2: formData.factorInfluences["Challenges of requirements for each course"],
+      p4q3: formData.factorInfluences["Volume of requirements for each course"],
+      p4q4: formData.factorInfluences["Lack of access to the intended faculty"],
+      p4q5: formData.factorInfluences["Work conditions/demands"],
+      p4q6: formData.factorInfluences["Financial concerns"],
+      p4q7: formData.factorInfluences["Lack of motivation"],
+      p4q8: formData.factorInfluences["Health issues"],
+      p4q9: formData.factorInfluences["Challenges about the program in general"],
+      p4q10: formData.factorInfluences["Challenges about the faculty in general"],
+      p4q11: formData.factorsOther,
+      p4q12: formData.consideredLeaving,
+      p4q13: formData.leavingWhy,
+      p4q14: formData.favoriteYearSemester,
+      p4q15: formData.favoriteWhy,
+      p4q16: formData.mostHelpfulCourse,
+      p4q17: formData.helpfulFutureEndeavors,
+      p4q18: formData.shouldNotInclude,
+      p4q19: formData.shouldBeAdded,
+      p4q20: formData.otherChallenges,
 
       // ---- Page 5 ----
-
+      p5q1c1: formData.page5Data.strengths.curriculumStructure,
+      p5q1c2: formData.page5Data.strengths.adequateFacilities,
+      p5q1c3: formData.page5Data.strengths.classroomsAndSoftware,
+      p5q1c4: formData.page5Data.strengths.facultyExpertise,
+      p5q1c5: formData.page5Data.strengths.supportiveFaculty,
+      p5q1c6: formData.page5Data.strengths.supportiveNonTeaching,
+      p5q1c7: formData.page5Data.strengths.other,
+      p5q2: formData.page5Data.strengths.otherText,
+      p5q3c1: formData.page5Data.weaknesses.irrelevantCourses,
+      p5q3c2: formData.page5Data.weaknesses.inadequateFacilities,
+      p5q3c3: formData.page5Data.weaknesses.insufficientResources,
+      p5q3c4: formData.page5Data.weaknesses.lackFacultyExpertise,
+      p5q3c5: formData.page5Data.weaknesses.lackFacultySupport,
+      p5q3c6: formData.page5Data.weaknesses.lackNonTeachingSupport,
+      p5q3c7: formData.page5Data.weaknesses.other,
+      p5q4: formData.page5Data.weaknesses.otherText,
+      p5q5: formData.page5Data.improvementSuggestion,
+      p5q6: formData.page5Data.recommendProgram,
+      p5q7: formData.page5Data.recommendWhy,
+      p5q8: formData.page5Data.overallImprovementSuggestion,
+      p5q9: formData.page5Data.additionalComments,
 
     }
-    const { data, error } = await supabase
-      .from("satisfaction_survey_responses")
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error("No user found! Please log in to submit form data.");
+      alert("No user found! Please log in to submit form data.");
+      return;
+    }
+
+    const { data: alumniData, error: alumniError } = await supabase
+      .from('alumni')
+      .select('alumnus_id')
+      .eq('uuid', user.id)
+      .single() as { data: { alumnus_id: any } | null, error: any };
+    if (alumniError || !alumniData) {
+      console.error("Alumnus record not found:", alumniError);
+      alert("Could not find your alumni profile.");
+      return;
+    }
+
+    const currentAlumnusId = alumniData.alumnus_id;
+
+    const { error: insertError } = await (supabase
+      .from("satisfaction_survey_response") as any)
       .insert([payload]);
 
-    if (error) {
-      console.error("Submission error:", error);
+    if (insertError) {
+      console.error("Submission error:", insertError);
       alert("Error submitting form. Please try again.");
     } else {
       alert("Thank you for your feedback!");
-      resetForm();
-      router.push("/alumni");
+      const { error: updateError } = await (supabase as any)
+        .from('alumni')
+        .update({ satisfaction_survey_status: "Completed" })
+        .eq('alumnus_id', currentAlumnusId);
     }
+    resetForm();
+    router.push("/alumni");
   }
-
   return (
     <div style={styles.shell}>
       <AlumniSidebar activePage="exit" setActivePage={handleSetActivePage} />
@@ -133,7 +225,7 @@ export default function ProgramSatisfactionFormPage() {
       </main>
     </div>
   );
-}
+};
 
 const styles: { [key: string]: React.CSSProperties } = {
   shell: {

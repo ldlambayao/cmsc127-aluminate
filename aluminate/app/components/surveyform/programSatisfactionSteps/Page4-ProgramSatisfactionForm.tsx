@@ -69,8 +69,27 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
     setFactorChange(item, value as string);
   };
 
+  const isPageValid = (() => {
+    const allFactorInfluencesRated = factorItems.every(item =>
+      formData.factorInfluences[item] !== undefined &&
+      formData.factorInfluences[item] !== null
+    );
+    if (!allFactorInfluencesRated) return false;
+
+    if (formData.factorsOther.trim().length === 0 || formData.consideredLeaving === null || formData.leavingWhy.trim().length === 0) return false;
+    if (formData.favoriteYearSemester.trim().length === 0 || formData.favoriteWhy.trim().length === 0 || formData.mostHelpfulCourse.trim().length === 0) return false;
+    if (formData.helpfulFutureEndeavors.trim().length === 0 || formData.shouldNotInclude.trim().length === 0 || formData.shouldBeAdded.trim().length === 0) return false;
+    if (formData.otherChallenges.trim().length === 0) return false;
+
+    return true;
+  })();
+
   const handleNext = () => {
-    onNext?.();
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
   }
 
   return (
@@ -149,7 +168,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
           <div style={styles.inputGroup}>
             <label style={styles.questionLabel}>Did you consider leaving the program?</label>
             <div style={styles.radioList}>
-              {(["yes", "no"] as const).map((val) => (
+              {(["Yes", "No"] as const).map((val) => (
                 <label key={val} style={styles.radioLabel}>
                   <input
                     type="radio"
@@ -238,7 +257,9 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.nextBtn} onClick={handleNext}>Next</button>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
+            Next
+          </button>
         </div>
       </div>
     </div>
@@ -276,4 +297,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow: { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:   { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },
   nextBtn:   { backgroundColor: "#9b1d2a", color: "#ffffff", border: "none", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 6px rgba(155,29,42,0.2)" },
+  disabledBtn: { backgroundColor: "#ccc", cursor: "not-allowed", boxShadow: "none", },
 };

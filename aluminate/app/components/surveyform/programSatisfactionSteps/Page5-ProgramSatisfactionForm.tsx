@@ -40,31 +40,40 @@ interface Page5FormProps {
 
 // --- Main Component ---
 export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5FormProps) {
-  const { formData, setField } = useFormStore();
+  const { formData, setField, togglePage5Checkbox, setPage5Text } = useFormStore();
 
   const updateP5 = (updates: Partial<typeof formData.page5Data>) => {
     setField("page5Data", { ...formData.page5Data, ...updates });
   };
 
-  const toggleStrength = (key: string) => {
-    const current = formData.page5Data.strengths;
-    updateP5({
-      strengths: { ...current, [key]: !current[key] }
-    });
+  const isChecklistValid = (obj: Record<string, any>) => {
+    const standardKeys = Object.keys(obj).filter(k => k !== "other" && k !== "otherText");
+    const anyStandardChecked = standardKeys.some(key => obj[key] === true);
+
+    const otherIsChecked = obj.other === true;
+    const otherTextHasContent = (obj.otherText || "").trim().length > 0;
+
+    return anyStandardChecked || (otherIsChecked && otherTextHasContent);
   };
 
-  const toggleWeakness = (key: string) => {
-    const current = formData.page5Data.weaknesses;
-    updateP5({
-      weaknesses: { ...current, [key]: !current[key] }
-    });
-  };
+  const isPageValid = (() => {
+    if (!isChecklistValid(formData.page5Data.strengths)) return false;
+    if (!isChecklistValid(formData.page5Data.weaknesses)) return false;
+
+    if (formData.page5Data.improvementSuggestion.trim().length === 0 || formData.page5Data.recommendWhy.trim().length === 0) return false;
+    if (formData.page5Data.overallImprovementSuggestion.trim().length === 0 || formData.page5Data.additionalComments.trim().length === 0) return false;
+    if (!formData.page5Data.recommendProgram.trim()) return false;
+
+    return true;
+  })();
 
   const handleFinalSubmit = () => {
-    // This calls the onSubmit passed from your Wizard/Parent
-    // The Parent will likely take `formData` (the whole store) and send it to Supabase
-    onSubmit?.(formData.page5Data as unknown as Page5FormState);
-  };
+    if(isPageValid){
+      onSubmit?.(formData.page5Data as unknown as Page5FormState);
+    } else {
+      alert("Please answer all required questions before submitting.");
+    }
+  }
 
   return (
     <div style={styles.content}>
@@ -101,7 +110,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                   <input
                     type="checkbox"
                     checked={!!formData.page5Data.strengths[key]}
-                    onChange={() => toggleStrength(key)}
+                    onChange={() => togglePage5Checkbox('strengths', key)}
                     style={styles.checkboxInput}
                   />
                   {label}
@@ -114,7 +123,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                 style={styles.textarea}
                 rows={3}
                 value={formData.page5Data.strengths.otherText as string || ""}
-                onChange={(e) => updateP5({ strengths: { ...formData.page5Data.strengths, otherText: e.target.value } })}
+                onChange={(e) => setPage5Text('strengths', 'otherText', e.target.value)}
                 placeholder="Please specify..."
               />
             </div>
@@ -140,7 +149,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                   <input
                     type="checkbox"
                     checked={!!formData.page5Data.weaknesses[key]}
-                    onChange={() => toggleWeakness(key)}
+                    onChange={() => togglePage5Checkbox('weaknesses', key)}
                     style={styles.checkboxInput}
                   />
                   {label}
@@ -153,7 +162,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
                 style={styles.textarea}
                 rows={3}
                 value={formData.page5Data.weaknesses.otherText as string || ""}
-                onChange={(e) => updateP5({ weaknesses: { ...formData.page5Data.weaknesses, otherText: e.target.value } })}
+                onChange={(e) => setPage5Text('weaknesses', 'otherText', e.target.value)}
                 placeholder="Please specify..."
               />
             </div>
@@ -177,7 +186,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
           <div style={styles.inputGroup}>
             <label style={styles.questionLabel}>Will you recommend the BSAM program?</label>
             <div style={styles.radioList}>
-              {(["yes", "no"] as const).map((val) => (
+              {(["Yes", "No"] as const).map((val) => (
                 <label key={val} style={styles.radioLabel}>
                   <input
                     type="radio"
@@ -234,7 +243,9 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.submitBtn} onClick={handleFinalSubmit}>Submit</button>
+          <button style={{...styles.submitBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleFinalSubmit} disabled={!isPageValid}>
+            Submit
+          </button>
         </div>
       </div>
     </div>
@@ -266,4 +277,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow:   { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:     { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },
   submitBtn:   { backgroundColor: "#9b1d2a", color: "#ffffff", border: "none", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 6px rgba(155,29,42,0.2)" },
+  disabledBtn: { backgroundColor: "#ccc", cursor: "not-allowed", boxShadow: "none", },
 };

@@ -108,10 +108,6 @@ function RatingTable({ items, groupKey, columns, values, onChange }: RatingTable
 
 // --- Main Component ---
 export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
-  const handleNext = () => {
-    onNext?.();
-  }
-
   const { formData, setField, setCultureChange, setServicesChange } = useFormStore();
 
   const handleCultureChange = (item: string, value: AgreeValue) => {
@@ -121,6 +117,31 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
   const handleServicesChange = (item: string, value: SatisfactionValue) => {
     setServicesChange(item, value as string);
   };
+
+  const isPageValid = (() => {
+    if (formData.cultureExplanation.trim().length === 0 || formData.servicesOther.trim().length === 0) return false;
+    const allServicesSatisfactionsRated = servicesItems.every(item =>
+      formData.servicesSatisfaction[item] !== undefined &&
+      formData.servicesSatisfaction[item] !== null
+    );
+    if (!allServicesSatisfactionsRated) return false;
+
+    const allCultureRatingsRated = cultureItems.every(item =>
+      formData.cultureRatings[item] !== undefined &&
+      formData.cultureRatings[item] !== null
+    );
+    if (!allCultureRatingsRated) return false;
+
+    return true;
+  })();
+
+  const handleNext = () => {
+    if(isPageValid){
+      onNext?.();
+    } else {
+      alert("Please answer all required questions before proceeding.");
+    }
+  }
 
   return (
     <div style={styles.content}>
@@ -201,7 +222,9 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={styles.nextBtn} onClick={handleNext}>Next</button>
+          <button style={{...styles.nextBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleNext} disabled={!isPageValid}>
+            Next
+          </button>
         </div>
       </div>
     </div>
@@ -236,4 +259,5 @@ const styles: { [key: string]: React.CSSProperties } = {
   actionRow: { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:   { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },
   nextBtn:   { backgroundColor: "#9b1d2a", color: "#ffffff", border: "none", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 6px rgba(155,29,42,0.2)" },
+  disabledBtn: { backgroundColor: "#ccc", cursor: "not-allowed", boxShadow: "none", },
 };
