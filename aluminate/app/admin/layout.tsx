@@ -1,26 +1,29 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import AdminSidebar from "@/components/layout/sidebar/AdminSidebar";
+import { ReactNode } from "react";
 
-function getActivePage(pathname: string): string {
-  if (pathname === "/admin") return "home";
-  if (pathname.startsWith("/admin/studentRecords")) return "records";
-  if (pathname.startsWith("/admin/programSatisfactionResults")) return "satisfaction";
-  if (pathname.startsWith("/admin/alumniTracerResults")) return "tracer";
-  return "home";
+interface AdminLayoutProps {
+  children: ReactNode;
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
+export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
-  const activePage = getActivePage(pathname);
+  const pathname = usePathname();
+
+  const getActivePage = () => {
+    if (pathname.includes("studentRecords")) return "records";
+    if (pathname.includes("programSatisfactionResults")) return "satisfaction";
+    if (pathname.includes("alumniTracerResults")) return "tracer";
+    return "home";
+  };
+
+  const [activePage, setActivePage] = useState(getActivePage());
 
   const handleSetActivePage = (page: string) => {
+    setActivePage(page);
     if (page === "home") router.push("/admin");
     if (page === "records") router.push("/admin/studentRecords");
     if (page === "satisfaction") router.push("/admin/programSatisfactionResults");
@@ -28,9 +31,11 @@ export default function AdminLayout({
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f4f5f7" }}>
       <AdminSidebar activePage={activePage} setActivePage={handleSetActivePage} />
-      <main style={{ flex: 1, backgroundColor: "#f4f5f7" }}>{children}</main>
+      <div style={{ flex: 1, overflow: "hidden" }}>
+        {children}
+      </div>
     </div>
   );
 }
