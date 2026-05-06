@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 export default function AlumniTracerResults() {
   return (
     <div className="p-6">

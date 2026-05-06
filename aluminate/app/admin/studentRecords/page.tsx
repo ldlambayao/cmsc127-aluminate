@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useCallback } from "react";
 import TotalGraduateAlumni from "@/components/studentRecords/TotalGraduateAlumni";
 import SatisfactionSurveyParticipation from "@/components/studentRecords/SatisfactionSurveyParticipation";
