@@ -34,7 +34,7 @@ export default function AdminDashboard() {
           return;
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("users")
           .select("fname, role")
           .eq("uuid", sessionUser.id)
@@ -43,8 +43,8 @@ export default function AdminDashboard() {
         if (error) throw error;
 
         setUser({
-          name: data?.fname ?? "Admin",
-          role: data?.role ?? "Department Chair",
+          name: (data as any)?.fname ?? "Admin",
+          role: (data as any)?.role ?? "Department Chair",
         });
       } catch (err) {
         console.error(err);
