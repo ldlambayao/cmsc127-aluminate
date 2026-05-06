@@ -81,14 +81,19 @@ export function getSupabaseBrowserClient(): SupabaseClient<Database> {
     return client;
   }
 
+  // During build time (server-side rendering), return a dummy client to avoid initialization errors
+  if (typeof window === "undefined") {
+    // Return a minimal object that won't fail during build
+    return {
+      auth: {},
+      from: () => ({})
+    } as unknown as SupabaseClient<Database>;
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    // Return a dummy client during build time; error will occur at runtime if used
-    if (typeof window === "undefined") {
-      return createBrowserClient<Database>("https://placeholder.supabase.co", "placeholder-key");
-    }
     throw new Error(
       "Missing environment variables: NEXT_PUBLIC_SUPABASE_URL and/or NEXT_PUBLIC_SUPABASE_ANON_KEY"
     );
