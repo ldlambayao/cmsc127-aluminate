@@ -72,7 +72,7 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
         if (!error && data) {
           const alumniData = data as AlumniRow;
           setStatus({
-            tracer: alumniData.tracer_survey_status === "Completed",
+            tracer: alumniData.tracer_survey_status === "Completed" || alumniData.tracer_survey_status === "Not Open",
             satisfaction: alumniData.satisfaction_survey_status === "Completed",
           });
         }
