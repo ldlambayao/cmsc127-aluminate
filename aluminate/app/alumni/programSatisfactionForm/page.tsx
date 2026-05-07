@@ -13,6 +13,7 @@ import Page2 from "@/components/surveyform/programSatisfactionSteps/Page2-Progra
 import Page3 from "@/components/surveyform/programSatisfactionSteps/Page3-ProgramSatisfactionForm";
 import Page4 from "@/components/surveyform/programSatisfactionSteps/Page4-ProgramSatisfactionForm";
 import Page5 from "@/components/surveyform/programSatisfactionSteps/Page5-ProgramSatisfactionForm";
+import FormProgressBar from "@/components/surveyform/programSatisfactionSteps/FormProgressBar";
 
 type Step = "intro" | "page1" | "page2" | "page3" | "page4" | "page5";
 
@@ -53,7 +54,7 @@ export default function ProgramSatisfactionFormPage() {
       p1q4c1: formData.transitionHelp.bridging,
       p1q4c2: formData.transitionHelp.refresher,
       p1q4c3: formData.transitionHelp.other,
-      p1q4t1: formData.transitionHelp.otherText, // CHANGE THIS
+      p1q4t1: formData.transitionHelp.otherText,
       p1q5: formData.preparationSuggestion,
       p1q6q1: formData.enrollmentFactors["Reputation of UP Mindanao"],
       p1q6q2: formData.enrollmentFactors["Reputation of UP Mindanao Department of Math, Physics and Computer Science"],
@@ -149,7 +150,6 @@ export default function ProgramSatisfactionFormPage() {
       p5q7: formData.page5Data.recommendWhy,
       p5q8: formData.page5Data.overallImprovementSuggestion,
       p5q9: formData.page5Data.additionalComments,
-
     }
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -189,6 +189,7 @@ export default function ProgramSatisfactionFormPage() {
     resetForm();
     router.push("/alumni");
   }
+
   return (
     <div style={styles.shell}>
       <AlumniSidebar activePage="exit" setActivePage={handleSetActivePage} />
@@ -197,32 +198,43 @@ export default function ProgramSatisfactionFormPage() {
         {step === "intro" && (
           <ProgramSatisfactionFormIntro onProceed={() => setStep("page1")} />
         )}
-        {step === "page1" && (
-          <Page1 onNext={() => setStep("page2")} />
-        )}
-        {step === "page2" && (
-          <Page2
-            onBack={() => setStep("page1")}
-            onNext={() => setStep("page3")}
-          />
-        )}
-        {step === "page3" && (
-          <Page3
-            onBack={() => setStep("page2")}
-            onNext={() => setStep("page4")}
-          />
-        )}
-        {step === "page4" && (
-          <Page4
-            onBack={() => setStep("page3")}
-            onNext={() => setStep("page5")}
-          />
-        )}
-        {step === "page5" && (
-          <Page5
-            onBack={() => setStep("page4")}
-            onSubmit={handleFinalSubmit}
-          />
+        {step !== "intro" && (
+          <>
+            {step === "page1" && (
+              <Page1
+                onNext={() => setStep("page2")}
+                progressBar={<FormProgressBar currentStep={step} />}
+              />
+            )}
+            {step === "page2" && (
+              <Page2
+                onBack={() => setStep("page1")}
+                onNext={() => setStep("page3")}
+                progressBar={<FormProgressBar currentStep={step} />}
+              />
+            )}
+            {step === "page3" && (
+              <Page3
+                onBack={() => setStep("page2")}
+                onNext={() => setStep("page4")}
+                progressBar={<FormProgressBar currentStep={step} />}
+              />
+            )}
+            {step === "page4" && (
+              <Page4
+                onBack={() => setStep("page3")}
+                onNext={() => setStep("page5")}
+                progressBar={<FormProgressBar currentStep={step} />}
+              />
+            )}
+            {step === "page5" && (
+              <Page5
+                onBack={() => setStep("page4")}
+                onSubmit={handleFinalSubmit}
+                progressBar={<FormProgressBar currentStep={step} />}
+              />
+            )}
+          </>
         )}
       </main>
     </div>

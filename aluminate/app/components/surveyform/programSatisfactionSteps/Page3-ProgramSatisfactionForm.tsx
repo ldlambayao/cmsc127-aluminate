@@ -18,6 +18,7 @@ interface Page3FormState {
 interface Page3FormProps {
   onBack?: () => void;
   onNext?: () => void;
+  progressBar?: React.ReactNode;
 }
 
 // --- Constants ---
@@ -107,7 +108,7 @@ function RatingTable({ items, groupKey, columns, values, onChange }: RatingTable
 }
 
 // --- Main Component ---
-export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
+export default function Page3ProgramSatisfactionForm({ onBack, onNext, progressBar }: Page3FormProps) {
   const { formData, setField, setCultureChange, setServicesChange } = useFormStore();
 
   useEffect(() => {
@@ -153,6 +154,7 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
 
   return (
     <div style={styles.content}>
+      {progressBar}
       {/* Page Header */}
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Program Satisfaction Form</h1>

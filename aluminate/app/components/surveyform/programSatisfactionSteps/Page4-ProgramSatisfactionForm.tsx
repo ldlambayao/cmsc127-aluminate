@@ -24,6 +24,7 @@ interface Page4FormState {
 interface Page4FormProps {
   onBack?: () => void;
   onNext: () => void;
+  progressBar?: React.ReactNode;
 }
 
 // --- Constants ---
@@ -61,7 +62,7 @@ const yearSemesterOptions = [
 ];
 
 // --- Main Component ---
-export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4FormProps) {
+export default function Page4ProgramSatisfactionForm({ onBack, onNext, progressBar }: Page4FormProps) {
 
   const { formData, setField, setFactorChange } = useFormStore();
 
@@ -102,6 +103,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext }: Page4Fo
 
   return (
     <div style={styles.content}>
+      {progressBar}
       {/* Page Header */}
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Program Satisfaction Form</h1>

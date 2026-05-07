@@ -36,10 +36,11 @@ interface Page5FormState {
 interface Page5FormProps {
   onBack?: () => void;
   onSubmit?: (data: Page5FormState) => void;
+  progressBar?: React.ReactNode;
 }
 
 // --- Main Component ---
-export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5FormProps) {
+export default function Page5ProgramSatisfactionForm({ onBack, onSubmit, progressBar }: Page5FormProps) {
   const { formData, setField, togglePage5Checkbox, setPage5Text } = useFormStore();
 
   useEffect(() => {
@@ -85,6 +86,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit }: Page5
 
   return (
     <div style={styles.content}>
+      {progressBar}
       {/* Page Header */}
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Program Satisfaction Form</h1>

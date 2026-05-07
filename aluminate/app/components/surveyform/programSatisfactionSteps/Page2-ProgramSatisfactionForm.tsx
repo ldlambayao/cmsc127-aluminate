@@ -18,6 +18,7 @@ interface Page2FormState {
 interface Page2FormProps {
   onBack?: () => void;
   onNext?: () => void;
+  progressBar?: React.ReactNode;
 }
 
 // --- Constants ---
@@ -102,7 +103,7 @@ function SatisfactionTable({ items, groupKey, values, onChange }: SatisfactionTa
 }
 
 // --- Main Page 2 Component ---
-export default function Page2ProgramSatisfactionForm({ onBack, onNext }: Page2FormProps) {
+export default function Page2ProgramSatisfactionForm({ onBack, onNext, progressBar }: Page2FormProps) {
 
   const { formData, setExperienceRating, setLearningRating } = useFormStore();
 
@@ -148,6 +149,8 @@ export default function Page2ProgramSatisfactionForm({ onBack, onNext }: Page2Fo
 
   return (
     <div style={styles.content}>
+
+      {progressBar}
 
       {/* Page Header */}
       <div style={styles.pageHeader}>
