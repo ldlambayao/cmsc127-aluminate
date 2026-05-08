@@ -8,7 +8,7 @@ import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 // --- Icons ---
 const UserAvatarIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#b82035" }}>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#652727" }}>
     <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
   </svg>
 );
@@ -173,9 +173,11 @@ export default function AlumniDashboard() {
                     <div style={styles.iconBoxWhite}>
                       <ClipboardIcon color="#d15a6b" />
                     </div>
-                    <p style={styles.cardTitleBold}>Program Satisfaction Form Status</p>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <p style={styles.cardTitleBold}>Program Satisfaction Form Status</p>
+                      <p style={styles.cardSubtitleDark}>Answered the Satisfaction Form?</p>
+                    </div>
                   </div>
-                  <p style={styles.cardSubtitleDark}>Answered the Satisfaction Form?</p>
                   <div style={styles.pillWrapper}>
                     <span style={styles.pillWhiteWide}>{user.satisfactionSurveyStatus}</span>
                   </div>
@@ -187,9 +189,11 @@ export default function AlumniDashboard() {
                     <div style={styles.iconBoxWhite}>
                       <ClipboardIcon color="#d15a6b" />
                     </div>
-                    <p style={styles.cardTitleBold}>Alumni Tracer Form Status</p>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <p style={styles.cardTitleBold}>Alumni Tracer Form Status</p>
+                      <p style={styles.cardSubtitleDark}>Answered the Alumni Tracer Form?</p>
+                    </div>
                   </div>
-                  <p style={styles.cardSubtitleLight}>Answered the Alumni Tracer Form?</p>
                   <div style={styles.pillWrapper}>
                     <span style={styles.pillPinkWide}>{user.tracerSurveyStatus}</span>
                   </div>
@@ -273,7 +277,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   topGradientOverlay: {
     position: "absolute",
     top: 0, left: 0, right: 0, height: "360px",
-    background: "linear-gradient(180deg, #E8C4C4 0%, rgba(244,245,247,0) 100%)",
+    background: "linear-gradient(180deg, #FAECEB 0%, rgba(244,245,247,0) 100%)",
     zIndex: 0,
     pointerEvents: "none",
   },
@@ -297,6 +301,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#1a1a2e",
     margin: 0,
     letterSpacing: "-0.5px",
+    textAlign: "left",
   },
   accent: { color: "#b82035" },
   subtitle: {
@@ -304,6 +309,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#666",
     margin: "8px 0 0",
     fontWeight: "400",
+    textAlign: "left",
   },
 
   topCardsContainer: { display: "flex", gap: "18px", width: "100%" },
@@ -311,7 +317,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   /* Card Layout Globals */
   cardLayoutRow: { display: "flex", alignItems: "flex-start", gap: "16px" },
   cardIconRow: { display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "8px" },
-  cardContent: { display: "flex", flexDirection: "column", flex: 1 },
+  cardContent: { display: "flex", flexDirection: "column", flex: 1, alignItems: "flex-start" },
 
   /* Card 1: User Profile — #E8C4C4 */
   profileCard: {
@@ -329,15 +335,18 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   cardSmallText: {
     fontSize: "13px", color: "#333", margin: "0 0 4px", fontWeight: "500",
+    textAlign: "left",
   },
   cardLargeText: {
     fontSize: "22px", color: "#111", margin: "0 0 12px",
     fontWeight: "800", letterSpacing: "-0.5px",
+    textAlign: "left",
   },
   pillWhite: {
     display: "inline-block", backgroundColor: "#ffffff", color: "#b82035",
     alignSelf: "flex-start", fontSize: "12px", fontWeight: "600",
     padding: "4px 14px", borderRadius: "20px",
+    textAlign: "center",
   },
 
   /* Card 2: Program Satisfaction — #D89A9A */
@@ -353,8 +362,9 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   cardTitleBold: {
     fontSize: "14px", color: "#111", margin: "0 0 6px", fontWeight: "700",
+    textAlign: "left",
   },
-  cardSubtitleDark: { fontSize: "12px", color: "#3a3a3a", margin: "0" },
+  cardSubtitleDark: { fontSize: "12px", color: "#3a3a3a", margin: "0", textAlign: "left" },
   pillWrapper: { display: "flex", width: "100%" },
   pillWhiteWide: {
     display: "inline-block", backgroundColor: "#ffffff", color: "#333",
@@ -374,9 +384,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     justifyContent: "space-between",
   },
-  cardSubtitleLight: { fontSize: "12px", color: "#777", margin: "0" },
+  cardSubtitleLight: { fontSize: "12px", color: "#777", margin: "0", textAlign: "left" },
   pillPinkWide: {
-    display: "inline-block", backgroundColor: "#E8C4C4", color: "#333",
+    display: "inline-block", backgroundColor: "#E8C4C4", color: "#555",
     width: "100%", textAlign: "center",
     fontSize: "13px", fontWeight: "600", padding: "6px 0", borderRadius: "20px",
   },
@@ -396,7 +406,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
 
   aboutFlexRow: { display: "flex", gap: "40px", alignItems: "center" },
-  aboutTextSection: { flex: 3 },
+  aboutTextSection: { flex: 3, textAlign: "left" },
   verticalDivider: {
     width: "1px", alignSelf: "stretch", backgroundColor: "#eaeaea", flexShrink: 0,
   },
@@ -411,8 +421,9 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   aboutTitle: {
     fontSize: "24px", fontWeight: "800", color: "#111", margin: "0 0 2px",
+    textAlign: "left",
   },
-  aboutSubLabel: { fontSize: "12px", color: "#aaa", fontStyle: "italic", margin: "0 0 14px" },
+  aboutSubLabel: { fontSize: "12px", color: "#aaa", fontStyle: "italic", margin: "0 0 14px", textAlign: "left" },
   aboutDescription: {
     fontSize: "14px", lineHeight: "1.75", color: "#555",
     margin: "0", textAlign: "justify",
@@ -422,5 +433,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: "12px 0 0 0", padding: "0 0 0 24px",
     display: "flex", flexDirection: "column", gap: "16px",
   },
-  stepItem: { fontSize: "14px", color: "#444", lineHeight: "1.65" },
+  stepItem: { fontSize: "14px", color: "#444", lineHeight: "1.65", textAlign: "left" },
 };
