@@ -169,33 +169,29 @@ export default function AlumniDashboard() {
 
                 {/* Card 2: Program Satisfaction */}
                 <div style={styles.programCard} className="dash-card-enter">
-                  <div style={styles.cardLayoutRow}>
+                  <div style={styles.cardIconRow}>
                     <div style={styles.iconBoxWhite}>
                       <ClipboardIcon color="#d15a6b" />
                     </div>
-                    <div style={styles.cardContent}>
-                      <p style={styles.cardTitleBold}>Program Satisfaction Form Status</p>
-                      <p style={styles.cardSubtitleDark}>Answered the Satisfaction Form?</p>
-                      <div style={styles.pillWrapper}>
-                        <span style={styles.pillWhiteWide}>{user.satisfactionSurveyStatus}</span>
-                      </div>
-                    </div>
+                    <p style={styles.cardTitleBold}>Program Satisfaction Form Status</p>
+                  </div>
+                  <p style={styles.cardSubtitleDark}>Answered the Satisfaction Form?</p>
+                  <div style={styles.pillWrapper}>
+                    <span style={styles.pillWhiteWide}>{user.satisfactionSurveyStatus}</span>
                   </div>
                 </div>
 
                 {/* Card 3: Alumni Tracer */}
                 <div style={styles.tracerCard} className="dash-card-enter">
-                  <div style={styles.cardLayoutRow}>
+                  <div style={styles.cardIconRow}>
                     <div style={styles.iconBoxWhite}>
                       <ClipboardIcon color="#d15a6b" />
                     </div>
-                    <div style={styles.cardContent}>
-                      <p style={styles.cardTitleBold}>Alumni Tracer Form Status</p>
-                      <p style={styles.cardSubtitleLight}>Answered the Alumni Tracer Form?</p>
-                      <div style={styles.pillWrapper}>
-                        <span style={styles.pillPinkWide}>{user.tracerSurveyStatus}</span>
-                      </div>
-                    </div>
+                    <p style={styles.cardTitleBold}>Alumni Tracer Form Status</p>
+                  </div>
+                  <p style={styles.cardSubtitleLight}>Answered the Alumni Tracer Form?</p>
+                  <div style={styles.pillWrapper}>
+                    <span style={styles.pillPinkWide}>{user.tracerSurveyStatus}</span>
                   </div>
                 </div>
 
@@ -314,6 +310,7 @@ const styles: { [key: string]: React.CSSProperties } = {
 
   /* Card Layout Globals */
   cardLayoutRow: { display: "flex", alignItems: "flex-start", gap: "16px" },
+  cardIconRow: { display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "8px" },
   cardContent: { display: "flex", flexDirection: "column", flex: 1 },
 
   /* Card 1: User Profile — #E8C4C4 */
@@ -350,11 +347,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "14px",
     padding: "24px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   cardTitleBold: {
     fontSize: "14px", color: "#111", margin: "0 0 6px", fontWeight: "700",
   },
-  cardSubtitleDark: { fontSize: "12px", color: "#3a3a3a", margin: "0 0 16px" },
+  cardSubtitleDark: { fontSize: "12px", color: "#3a3a3a", margin: "0" },
   pillWrapper: { display: "flex", width: "100%" },
   pillWhiteWide: {
     display: "inline-block", backgroundColor: "#ffffff", color: "#333",
@@ -370,8 +370,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "24px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
     border: "1px solid rgba(216, 154, 154, 0.25)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
-  cardSubtitleLight: { fontSize: "12px", color: "#777", margin: "0 0 16px" },
+  cardSubtitleLight: { fontSize: "12px", color: "#777", margin: "0" },
   pillPinkWide: {
     display: "inline-block", backgroundColor: "#E8C4C4", color: "#333",
     width: "100%", textAlign: "center",
