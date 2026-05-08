@@ -136,7 +136,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   dotNumber: {
     fontSize: "11px",
     fontWeight: 600,
-    color: "#9ca3af",
+    color: "#ffffff",
   },
   labelText: {
     fontSize: "11px",

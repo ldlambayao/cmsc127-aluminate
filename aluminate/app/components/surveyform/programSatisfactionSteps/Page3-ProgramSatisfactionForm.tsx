@@ -154,7 +154,6 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext, progressB
 
   return (
     <div style={styles.content}>
-      {progressBar}
       {/* Page Header */}
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Program Satisfaction Form</h1>
@@ -164,6 +163,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext, progressB
       </div>
 
       <div style={styles.formContainer}>
+
+        {progressBar}
 
         {/* --- Section 1: Intellectual & Cultural Environment --- */}
         <div style={styles.sectionBlock}>

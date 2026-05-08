@@ -86,7 +86,6 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit, progres
 
   return (
     <div style={styles.content}>
-      {progressBar}
       {/* Page Header */}
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Program Satisfaction Form</h1>
@@ -96,6 +95,8 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit, progres
       </div>
 
       <div style={styles.formContainer}>
+
+        {progressBar}
         <div style={styles.sectionBlock}>
           <h2 style={styles.sectionTitle}>Other questions for the improvement of the program</h2>
           <div style={styles.divider} />
