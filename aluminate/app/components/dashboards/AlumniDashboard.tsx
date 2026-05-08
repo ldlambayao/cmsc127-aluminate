@@ -55,6 +55,17 @@ export default function AlumniDashboard() {
           return;
         }
 
+        const roleCheck: any = await supabase
+          .from("users")
+          .select("fname, lname")
+          .eq("uuid", sessionUser.id)
+          .eq("role", 1)
+          .single()
+
+        if (!roleCheck.success) {
+          router.push("/login");
+        }
+
         const result: any = await supabase
           .from("users")
           .select(`fname, mname, lname, alumni!inner(student_number, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))`)

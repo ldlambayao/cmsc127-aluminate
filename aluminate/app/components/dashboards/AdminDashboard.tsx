@@ -34,17 +34,20 @@ export default function AdminDashboard() {
           return;
         }
 
-        const { data, error } = await (supabase as any)
+        const roleCheck: any = await supabase
           .from("users")
-          .select("fname, role")
+          .select("fname, lname")
           .eq("uuid", sessionUser.id)
-          .single();
+          .eq("role", 2)
+          .single()
 
-        if (error) throw error;
+        if (!roleCheck.success) {
+          router.push("/login");
+        }
 
         setUser({
-          name: (data as any)?.fname ?? "Admin",
-          role: (data as any)?.role ?? "Department Chair",
+          name: (roleCheck as any)?.fname ?? "Admin",
+          role: (roleCheck as any)?.role ?? "Department Chair",
         });
       } catch (err) {
         console.error(err);

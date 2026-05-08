@@ -66,13 +66,13 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
         const { data, error } = await supabase
           .from("alumni")
           .select("tracer_survey_status, satisfaction_survey_status")
-          .eq("uuid", user.id) // Assuming 'id' is the primary key/auth link
+          .eq("uuid", user.id)
           .single();
 
         if (!error && data) {
           const alumniData = data as AlumniRow;
           setStatus({
-            tracer: alumniData.tracer_survey_status === "Completed",
+            tracer: alumniData.tracer_survey_status === "Completed" || alumniData.tracer_survey_status === "Not Open",
             satisfaction: alumniData.satisfaction_survey_status === "Completed",
           });
         }
