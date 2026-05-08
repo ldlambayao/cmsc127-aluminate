@@ -14,8 +14,8 @@ export default function EmploymentStatus() {
     const fetchData = async () => {
       try {
         const { data: rows, error } = await supabase
-          .from("tracer_survey_answers")
-          .select("answer")
+          .from("tracer_survey_response")
+          .select("employment_status")
           .eq("question_id", "current_employment_status"); // adjust as needed
 
         if (error) throw error;

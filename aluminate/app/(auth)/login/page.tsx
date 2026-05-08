@@ -36,12 +36,36 @@ export default function LoginPage({ user }: LoginProps) {
       setStatus("Invalid username or password");
       console.error(error.message);
     } else {
+      console.log(data);
       console.log("Successfully logged in:", data.user);
       setStatus("Welcome, " + data.user.email);
 
       // Play exit animation, then navigate
       setExiting(true);
-      setTimeout(() => router.push("/alumni"), 420);
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const sessionUser = sessionData.session?.user ?? null;
+      if (!sessionUser) {
+        router.push("/login");
+        return;
+      }
+
+      const roleCheck: any = await supabase
+        .from("users")
+        .select("role")
+        .eq("uuid", sessionUser.id)
+        .single()
+
+      if(roleCheck.data.role === 1) {
+        setTimeout(() => router.push("/alumni"), 420);
+      } else {
+        setTimeout(() => router.push("/admin"), 420);
+      }
+
+
+      //setTimeout(() => router.push("/alumni"), 420);
     }
   }
 
