@@ -38,6 +38,7 @@ interface FormState {
 
 interface ProgramSatisfactionFormProps {
   onNext: () => void;
+  progressBar?: React.ReactNode;
 }
 
 // --- Constants ---
@@ -54,7 +55,7 @@ const enrollmentFactorItems = [
 ];
 
 // --- Component ---
-export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionFormProps) {
+export default function ProgramSatisfactionForm({ onNext, progressBar }: ProgramSatisfactionFormProps) {
   const supabase = getSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
   const { formData, setField, setFactorRating } = useFormStore()
@@ -176,6 +177,7 @@ export default function ProgramSatisfactionForm({ onNext }: ProgramSatisfactionF
       <div style={styles.formContainer}>
 
         {/* --- General Information --- */}
+        {progressBar}
         <div style={styles.sectionBlock}>
           <h2 style={styles.sectionTitle}>General Information</h2>
           <div style={styles.divider} />

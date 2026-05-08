@@ -18,6 +18,7 @@ interface Page3FormState {
 interface Page3FormProps {
   onBack?: () => void;
   onNext?: () => void;
+  progressBar?: React.ReactNode;
 }
 
 // --- Constants ---
@@ -107,7 +108,7 @@ function RatingTable({ items, groupKey, columns, values, onChange }: RatingTable
 }
 
 // --- Main Component ---
-export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3FormProps) {
+export default function Page3ProgramSatisfactionForm({ onBack, onNext, progressBar }: Page3FormProps) {
   const { formData, setField, setCultureChange, setServicesChange } = useFormStore();
 
   useEffect(() => {
@@ -162,6 +163,8 @@ export default function Page3ProgramSatisfactionForm({ onBack, onNext }: Page3Fo
       </div>
 
       <div style={styles.formContainer}>
+
+        {progressBar}
 
         {/* --- Section 1: Intellectual & Cultural Environment --- */}
         <div style={styles.sectionBlock}>
