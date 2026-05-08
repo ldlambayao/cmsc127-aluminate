@@ -24,7 +24,7 @@ export default function Home() {
         </div>
 
         <p className="page-enter-child-2" style={subtitleStyle}>
-          A DMPCS Alumni Tracking and Analytics System
+          A DMPCS Graduate and Alumni Tracking Analytics System
         </p>
 
         <div className="page-enter-child-3">

@@ -98,7 +98,7 @@ export default function LoginPage({ user }: LoginProps) {
             />
           </div>
           <p style={brandSubtitleStyle}>
-            A DMPCS Alumni Tracking and Analytics System
+            A DMPCS Graduate and Alumni Tracking Analytics System
           </p>
         </div>
 
