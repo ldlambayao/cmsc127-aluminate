@@ -26,6 +26,7 @@ export default function LoginPage({ user }: LoginProps) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("Verifying...");
+
     const email = `${username}@up.edu.ph`;
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -36,7 +37,6 @@ export default function LoginPage({ user }: LoginProps) {
       setStatus("Invalid username or password");
       console.error(error.message);
     } else {
-      console.log(data);
       console.log("Successfully logged in:", data.user);
       setStatus("Welcome, " + data.user.email);
 
@@ -63,9 +63,6 @@ export default function LoginPage({ user }: LoginProps) {
       } else {
         setTimeout(() => router.push("/admin"), 420);
       }
-
-
-      //setTimeout(() => router.push("/alumni"), 420);
     }
   }
 

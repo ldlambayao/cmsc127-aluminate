@@ -5,21 +5,33 @@ import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 import AddRecordModal from "@/admin/studentRecords/modals/addRecordModal";
 import EditRecordModal from "@/admin/studentRecords/modals/editRecordModal";
 import DeleteRecordModal from "@/admin/studentRecords/modals/deleteRecordModal";
+import StudentRecordsPage from "@/admin/studentRecords/page";
+
+export interface UserRecord {
+  id: string;
+  fname: string;
+  mname?: string;
+  lname: string;
+  alumni: AlumniRecord
+}
 
 export interface AlumniRecord {
   id: string;
   student_number: string;
-  fname: string;
-  mname?: string;
-  lname: string;
-  program_name: string;
-  graduation_year: string;
+  program: ProgramRecord;
+  graduation_year: number;
   satisfaction_survey_status: string;
   tracer_survey_status: string;
 }
 
+export interface ProgramRecord {
+  program_code: number;
+  program_name: string;
+}
+
 interface RecordTableProps {
   onDataChange?: () => void;
+  searchQuery: string;
 }
 
 const EditIcon = () => (
@@ -45,94 +57,8 @@ const PROGRAM_COLORS: Record<string, string> = {
 };
 const defaultProgramColor = "#cc7080";
 
-// ── Dummy data matching the screenshot ──────────────────────────────────────
-const DUMMY_RECORDS: AlumniRecord[] = [
-  {
-    id: "1",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "2",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Applied Mathematics",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "3",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Data Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "4",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "5",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "6",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "7",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "8",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-  {
-    id: "9",
-    student_number: "2024-04565",
-    fname: "Liarrah", mname: "Daniya", lname: "Lambayao",
-    program_name: "BS Computer Science",
-    graduation_year: "2028",
-    satisfaction_survey_status: "Completed",
-    tracer_survey_status: "Not Yet",
-  },
-];
-// ────────────────────────────────────────────────────────────────────────────
-
-export default function RecordTable({ onDataChange }: RecordTableProps) {
-  const [records, setRecords] = useState<AlumniRecord[]>([]);
+export default function RecordTable({ onDataChange, searchQuery }: RecordTableProps) {
+  const [records, setRecords] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterYear, setFilterYear] = useState("");
   const [filterProgram, setFilterProgram] = useState("");
@@ -142,29 +68,50 @@ export default function RecordTable({ onDataChange }: RecordTableProps) {
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<AlumniRecord | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<UserRecord | null>(null);
 
-  // Keep the Supabase client instantiated — swap dummy load for real query when ready
   const supabase = getSupabaseBrowserClient();
 
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      // ── Dummy data load (replace with Supabase query when ready) ────────
-      const mapped: AlumniRecord[] = DUMMY_RECORDS;
-      // ────────────────────────────────────────────────────────────────────
+      const { data, error } = await supabase
+        .from("users")
+        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(student_number, program_code, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
+        .eq("role", 1);
 
-      setRecords(mapped);
-      setPrograms([...new Set(mapped.map((r) => r.program_name))].filter(Boolean));
-      setYears([...new Set(mapped.map((r) => r.graduation_year))].filter(Boolean).sort());
+      if(error) throw error;
+
+      if(data) {
+        const formattedData = data.map(user => ({
+          ...user,
+          alumni: Array.isArray(user.alumni) ? user.alumni[0] : user.alumni
+        }))
+
+        setRecords(formattedData);
+        setPrograms([...new Set(formattedData.map((r) => r.alumni.program.program_name))].filter(Boolean).sort());
+        setYears([...new Set(formattedData.map((r) => r.alumni.graduation_year))].filter(Boolean).sort());
+      } else {
+        console.error("Error fetching data");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error: ", err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchRecords(); }, []);
+  useEffect(() => {
+    console.log(records);
+    fetchRecords();
+  }, []);
+
+  useEffect(() => {
+    if (records.length > 0) {
+      console.log("Current Records:", records);
+      console.log("years: ", years);
+    }
+  }, [records, years]);
 
   const handleRefresh = () => {
     fetchRecords();
@@ -172,13 +119,20 @@ export default function RecordTable({ onDataChange }: RecordTableProps) {
   };
 
   const filtered = records.filter((r) => {
-    const matchYear    = !filterYear    || r.graduation_year === filterYear;
-    const matchProgram = !filterProgram || r.program_name    === filterProgram;
-    return matchYear && matchProgram;
+    const search = searchQuery.toLowerCase();
+    const fullName = `${r.fname} ${r.mname} ${r.lname}`.trim().toLowerCase();
+    const studentNumber = r.alumni.student_number;
+    const matchSearch = fullName.includes(search) || studentNumber.includes(search) ;
+
+    const matchYear = !filterYear || r.alumni.graduation_year === parseInt(filterYear);
+    const matchProgram = !filterProgram || r.alumni.program.program_name === filterProgram;
+
+    return matchYear && matchProgram && matchSearch;
+
   });
 
   const isCompleted = (status: string) =>
-    status?.toLowerCase() === "answered" || status?.toLowerCase() === "completed";
+    status === "Completed";
 
   return (
     <>
@@ -240,15 +194,15 @@ export default function RecordTable({ onDataChange }: RecordTableProps) {
               <tr><td colSpan={7} style={styles.emptyCell}>No records found</td></tr>
             ) : (
               filtered.map((rec, i) => {
-                const fullName     = `${rec.fname}${rec.mname ? " " + rec.mname : ""} ${rec.lname}`.trim();
-                const programColor = PROGRAM_COLORS[rec.program_name] ?? defaultProgramColor;
-                const satDone      = isCompleted(rec.satisfaction_survey_status);
-                const tracerDone   = isCompleted(rec.tracer_survey_status);
+                const fullName     = `${rec.fname}${rec.mname ? " " + rec.mname.charAt(0) + ". " : ""} ${rec.lname}`.trim();
+                const programColor = PROGRAM_COLORS[rec.alumni.program.program_name] ?? defaultProgramColor;
+                const satDone      = isCompleted(rec.alumni.satisfaction_survey_status);
+                const tracerDone   = isCompleted(rec.alumni.tracer_survey_status);
 
                 return (
                   <tr key={rec.id} style={i % 2 === 0 ? styles.trEven : styles.trOdd}>
                     <td style={styles.td}>
-                      <span style={styles.studentId}>{rec.student_number}</span>
+                      <span style={styles.studentId}>{rec.alumni.student_number}</span>
                     </td>
 
                     <td style={styles.td}>
@@ -257,12 +211,12 @@ export default function RecordTable({ onDataChange }: RecordTableProps) {
 
                     <td style={styles.td}>
                       <span style={{ ...styles.programPill, backgroundColor: programColor }}>
-                        {rec.program_name}
+                        {rec.alumni.program.program_name}
                       </span>
                     </td>
 
                     <td style={styles.td}>
-                      <span style={styles.yearBadge}>{rec.graduation_year}</span>
+                      <span style={styles.yearBadge}>{rec.alumni.graduation_year}</span>
                     </td>
 
                     <td style={styles.tdCenter}>
