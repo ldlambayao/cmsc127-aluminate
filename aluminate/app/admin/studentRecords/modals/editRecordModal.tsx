@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
-import { AlumniRecord } from "@/admin/studentRecords/components/RecordTable";
+import { UserRecord } from "@/admin/studentRecords/components/RecordTable";
 
 interface EditRecordModalProps {
-  record: AlumniRecord;
+  record: UserRecord;
   onClose: () => void;
   onSuccess: () => void;
   programs: string[];
@@ -33,12 +33,12 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
-    student_id: record.student_number,
+    student_id: record.alumni.student_number,
     name: `${record.fname} ${record.mname ? record.mname + " " : ""}${record.lname}`.trim(),
-    program: record.program_name,
-    graduation_year: record.graduation_year,
-    satisfaction_status: record.satisfaction_survey_status,
-    tracer_status: record.tracer_survey_status,
+    program: record.alumni.program.program_name,
+    graduation_year: record.alumni.graduation_year,
+    satisfaction_status: record.alumni.satisfaction_survey_status,
+    tracer_status: record.alumni.tracer_survey_status,
   });
 
   const handleChange = (field: string, value: string) => {

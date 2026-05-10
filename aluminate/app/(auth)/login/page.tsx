@@ -37,7 +37,6 @@ export default function LoginPage({ user }: LoginProps) {
       setStatus("Invalid username or password");
       console.error(error.message);
     } else {
-      console.log(data);
       console.log("Successfully logged in:", data.user);
       setStatus("Welcome, " + data.user.email);
 

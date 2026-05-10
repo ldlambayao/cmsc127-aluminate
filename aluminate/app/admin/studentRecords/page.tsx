@@ -50,7 +50,7 @@ export default function StudentRecordsPage() {
         </div>
 
         {/* Record Table — toolbar and table are self-contained cards */}
-        <RecordTable onDataChange={handleDataChange} />
+        <RecordTable onDataChange={handleDataChange} searchQuery={search}/>
       </div>
     </div>
   );

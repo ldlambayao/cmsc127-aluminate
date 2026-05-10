@@ -43,7 +43,6 @@ export default function AdminDashboard() {
 
         if (!roleCheck.success) {
           router.push("/login");
-          return () => listener?.subscription.unsubscribe();
         }
 
         setUser({

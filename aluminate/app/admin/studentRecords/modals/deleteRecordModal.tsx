@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
-import { AlumniRecord } from "@/admin/studentRecords/components/RecordTable";
+import { UserRecord } from "@/admin/studentRecords/components/RecordTable";
 
 interface DeleteRecordModalProps {
-  record: AlumniRecord;
+  record: UserRecord;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -78,7 +78,7 @@ export default function DeleteRecordModal({ record, onClose, onSuccess }: Delete
           </div>
           <p style={styles.confirmText}>
             Are you sure you want to delete the record for{" "}
-            <strong>{fullName}</strong> ({record.student_number})?
+            <strong>{fullName}</strong> ({record.alumni.student_number})?
           </p>
           <p style={styles.warningText}>This action cannot be undone.</p>
         </div>
