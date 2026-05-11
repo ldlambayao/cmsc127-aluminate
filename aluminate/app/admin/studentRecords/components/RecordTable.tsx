@@ -5,10 +5,8 @@ import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 import AddRecordModal from "@/admin/studentRecords/modals/addRecordModal";
 import EditRecordModal from "@/admin/studentRecords/modals/editRecordModal";
 import DeleteRecordModal from "@/admin/studentRecords/modals/deleteRecordModal";
-import StudentRecordsPage from "@/admin/studentRecords/page";
 
 export interface UserRecord {
-  id: string;
   fname: string;
   mname?: string;
   lname: string;
@@ -16,7 +14,7 @@ export interface UserRecord {
 }
 
 export interface AlumniRecord {
-  id: string;
+  alumnus_id: string;
   student_number: string;
   program: ProgramRecord;
   graduation_year: number;
@@ -77,7 +75,7 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
     try {
       const { data, error } = await supabase
         .from("users")
-        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(student_number, program_code, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
+        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(alumnus_id, student_number, program_code, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
         .eq("role", 1);
 
       if(error) throw error;
@@ -102,16 +100,8 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
   };
 
   useEffect(() => {
-    console.log(records);
     fetchRecords();
   }, []);
-
-  useEffect(() => {
-    if (records.length > 0) {
-      console.log("Current Records:", records);
-      console.log("years: ", years);
-    }
-  }, [records, years]);
 
   const handleRefresh = () => {
     fetchRecords();
@@ -200,7 +190,7 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
                 const tracerDone   = isCompleted(rec.alumni.tracer_survey_status);
 
                 return (
-                  <tr key={rec.id} style={i % 2 === 0 ? styles.trEven : styles.trOdd}>
+                  <tr key={rec.alumni.alumnus_id} style={i % 2 === 0 ? styles.trEven : styles.trOdd}>
                     <td style={styles.td}>
                       <span style={styles.studentId}>{rec.alumni.student_number}</span>
                     </td>
