@@ -130,12 +130,9 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
           });
 
         if (alumniError) throw alumniError;
-
-        console.error(error);
-        console.log("data singup:", data)
       }
 
-      signUpUser();
+      await signUpUser();
       onSuccess();
       onClose();
     } catch (err: any) {
