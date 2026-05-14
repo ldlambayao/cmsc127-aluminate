@@ -9,6 +9,20 @@ interface AddRecordModalProps {
   programs: string[];
 }
 
+interface RecordData {
+  name: string;
+  fname: string;
+  mname?: string;
+  lname: string;
+  role: number;
+  alumni_id: string;
+  student_number: string;
+  program_name: string;
+  graduation_info: string;
+  satisfaction_survey_status: string;
+  tracer_survey_status: string;
+}
+
 const BackIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 14 4 9 9 4" />
@@ -30,13 +44,18 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    student_id: "",
+  const [form, setForm] = useState<RecordData>({
     name: "",
-    program: "",
-    graduation_year: "",
-    satisfaction_status: "Not Yet",
-    tracer_status: "Not Yet",
+    fname: "",
+    mname: "",
+    lname: "",
+    alumni_id: "",
+    student_number: "",
+    program_name: "",
+    graduation_info: "",
+    satisfaction_survey_status: "Not Completed",
+    tracer_survey_status: "Not Open",
+    role: 1,
   });
 
   const handleChange = (field: string, value: string) => {
@@ -44,43 +63,76 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
   };
 
   const handleAdd = async () => {
-    if (!form.student_id || !form.name || !form.program) {
+    if (!form.name || !form.program_name || !form.graduation_info) {
       setError("Please fill in all required fields.");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const nameParts = form.name.trim().split(" ");
-      const fname = nameParts[0] ?? "";
-      const lname = nameParts[nameParts.length - 1] ?? "";
-      const mname = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : null;
+      const nameParts = form.name.trim().split("/");
+      const fname = nameParts[0]
+      const mname = nameParts.length === 2 ? null : nameParts[1];
+      const lname = nameParts[nameParts.length - 1];
+      const generatedEmail = `${fname.charAt(0).toLowerCase()}${mname ? mname.charAt(0).toLowerCase() : ""}${lname.toLowerCase()}@up.edu.ph`
 
-      const { data: programData } = await supabase
-        .from("program")
-        .select("id")
-        .eq("program_name", form.program)
-        .single();
+      const graduationInfo = form.graduation_info.trim().split("/");
+      const graduation_month = graduationInfo[0];
+      const graduation_year = graduationInfo[1];
 
-      const { data: userData, error: userError } = await (supabase as any)
-        .from("users")
-        .insert({ fname, mname, lname })
-        .select("id")
-        .single();
+      async function signUpUser(){
+        const { data, error: authError } = await supabase.auth.signUp({
+          email: generatedEmail,
+          password: form.student_number,
+        });
 
-      if (userError) throw userError;
+        if(authError || !data.user){
+          console.error("Sign-up failed", authError?.message);
+          return;
+        }
 
-      const { error: alumniError } = await (supabase as any).from("alumni").insert({
-        student_number: form.student_id,
-        user_id: (userData as any)?.id,
-        program_id: (programData as any)?.id,
-        graduation_year: form.graduation_year || null,
-        satisfaction_survey_status: form.satisfaction_status,
-        tracer_survey_status: form.tracer_status,
-      });
+        const userId = data.user.id
+        console.log("data.user: ", data.user);
 
-      if (alumniError) throw alumniError;
+        const { data: userData, error: userError } = await (supabase as any)
+          .from("users")
+          .insert({
+            uuid: userId,
+            fname: fname,
+            mname: mname,
+            lname: lname,
+            role: 1,
+          })
 
+        if (userError) throw userError;
+        console.log("UserData: ", userData);
+
+        const { data: programData } = await (supabase as any)
+          .from("program")
+          .select("program_code")
+          .eq("program_name", form.program_name)
+          .single();
+
+        if(!programData) {
+          console.error("Invalid program chosen");
+        }
+
+        const { error: alumniError } = await (supabase as any)
+          .from("alumni")
+          .insert({
+            student_number: form.student_number,
+            program_code: programData.program_code,
+            graduation_year: parseInt(graduation_year),
+            graduation_month: graduation_month,
+            satisfaction_survey_status: form.satisfaction_survey_status,
+            tracer_survey_status: form.tracer_survey_status,
+            uuid: userId,
+          });
+
+        if (alumniError) throw alumniError;
+      }
+
+      await signUpUser();
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -107,16 +159,16 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
             <label style={styles.label}>Student ID</label>
             <input
               style={styles.input}
-              placeholder="e.g. 2024-04565"
-              value={form.student_id}
-              onChange={(e) => handleChange("student_id", e.target.value)}
+              placeholder="20xx-xxxxx"
+              value={form.student_number}
+              onChange={(e) => handleChange("student_number", e.target.value)}
             />
           </div>
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Name</label>
             <input
               style={styles.input}
-              placeholder="Full name"
+              placeholder="First Name/Middle Name/Last Name"
               value={form.name}
               onChange={(e) => handleChange("name", e.target.value)}
             />
@@ -126,8 +178,8 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
             <div style={styles.selectWrapper}>
               <select
                 style={styles.select}
-                value={form.program}
-                onChange={(e) => handleChange("program", e.target.value)}
+                value={form.program_name}
+                onChange={(e) => handleChange("program_name", e.target.value)}
               >
                 <option value="">Program</option>
                 {programs.map((p) => (
@@ -146,13 +198,13 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
         {/* Row 2: Graduation Year, Satisfaction Status, Tracer Status */}
         <div style={styles.row}>
           <div style={styles.fieldGroup}>
-            <label style={styles.label}>Graduation Year</label>
+            <label style={styles.label}>Graduation Month & Year</label>
             <div style={styles.inputWithIcon}>
               <input
                 style={{ ...styles.input, paddingRight: "36px" }}
-                placeholder="e.g. 2025"
-                value={form.graduation_year}
-                onChange={(e) => handleChange("graduation_year", e.target.value)}
+                placeholder="mm/yyyy"
+                value={form.graduation_info}
+                onChange={(e) => handleChange("graduation_info", e.target.value)}
               />
               <span style={styles.calIcon}><CalendarIcon /></span>
             </div>
@@ -161,7 +213,7 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
             <label style={styles.label}>Program Satisfaction Survey Status</label>
             <input
               style={{ ...styles.input, backgroundColor: "#f5f5f5", color: "#999", cursor: "not-allowed" }}
-              value={form.satisfaction_status}
+              value={form.satisfaction_survey_status}
               readOnly
             />
           </div>
@@ -169,7 +221,7 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
             <label style={styles.label}>Alumni Tracer Form Status</label>
             <input
               style={{ ...styles.input, backgroundColor: "#f5f5f5", color: "#999", cursor: "not-allowed" }}
-              value={form.tracer_status}
+              value={form.tracer_survey_status}
               readOnly
             />
           </div>
