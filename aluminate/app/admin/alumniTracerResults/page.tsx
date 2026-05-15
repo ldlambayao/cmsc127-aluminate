@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import EmploymentEducationCareer from "./components/summaryStatistics/EmploymentEducationCareer";
+import ProgramFeedback from "./components/summaryStatistics/ProgramFeedback";
 
 export const dynamic = "force-dynamic";
 
@@ -72,8 +74,8 @@ export default function AlumniTracerResults() {
         <div className="mt-8">
           {activeTab === "summary" && (
             <div>
-              {/* Summary Statistics content will go here */}
-              <p className="text-gray-600">Summary Statistics content</p>
+              <EmploymentEducationCareer />
+              <ProgramFeedback/>
             </div>
           )}
           {activeTab === "edit" && (
