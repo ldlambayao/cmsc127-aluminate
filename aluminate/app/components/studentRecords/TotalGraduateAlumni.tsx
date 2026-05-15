@@ -19,18 +19,18 @@ export default function TotalGraduateAlumni() {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
+        const currMonth = (new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString();
+        const currYear = new Date().getFullYear();
+
         const { count: gradCount } = await supabase
           .from("alumni")
-          .select("*", { count: "exact", head: true });
-
-        const currMonth = new Date().getMonth() + 1;
-        const currYear = new Date().getFullYear();
+          .select("*", { count: "exact", head: true })
+          .or(`graduation_year.gt.${currYear}, and(graduation_year.eq.${currYear}, graduation_month.gte.${currMonth})`);
 
         const { count: alumniCount } = await supabase
           .from("alumni")
           .select("*", { count: "exact", head: true })
-          .lte("graduation_month", currMonth)
-          .lte("graduation_year", currYear);
+          .or(`graduation_year.lt.${currYear}, and(graduation_year.eq.${currYear}, graduation_month.lte.${currMonth})`);
 
         setGraduates(gradCount ?? 0);
         setAlumni(alumniCount ?? 0);
@@ -51,7 +51,7 @@ export default function TotalGraduateAlumni() {
         </div>
         <div style={styles.stats}>
           <div style={styles.statGroup}>
-            <span style={styles.statLabel}>Graduates</span>
+            <span style={styles.statLabel}>Graduating</span>
             <span style={styles.statValue}>{graduates ?? "—"}</span>
           </div>
           <div style={styles.statGroup}>

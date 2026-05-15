@@ -6,12 +6,12 @@ import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 const CheckIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="12" fill="#6A222B" />
-    <path 
-      d="M8 12.5L10.8 15.5L16 9" 
-      stroke="#ffffff" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+    <path
+      d="M8 12.5L10.8 15.5L16 9"
+      stroke="#ffffff"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -30,7 +30,7 @@ export default function AlumniTracerParticipation() {
         const { count: answered } = await supabase
           .from("alumni")
           .select("*", { count: "exact", head: true })
-          .eq("tracer_survey_status", "Answered");
+          .eq("tracer_survey_status", "Completed");
 
         if (total && total > 0) {
           setRate(Math.round(((answered ?? 0) / total) * 100));
