@@ -18,6 +18,7 @@ export interface AlumniRecord {
   student_number: string;
   program: ProgramRecord;
   graduation_year: number;
+  graduation_month: number;
   satisfaction_survey_status: string;
   tracer_survey_status: string;
 }
@@ -75,7 +76,7 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
     try {
       const { data, error } = await supabase
         .from("users")
-        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(alumnus_id, student_number, program_code, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
+        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(alumnus_id, student_number, program_code, graduation_month, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
         .eq("role", 1);
 
       if(error) throw error;
@@ -168,7 +169,7 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
                 "Student Id",
                 "Name",
                 "Program",
-                "Graduation Year",
+                "Graduation Date",
                 "Program Satisfaction Form Status",
                 "Alumni Tracer Form Status",
                 "Actions",
@@ -206,7 +207,7 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
                     </td>
 
                     <td style={styles.td}>
-                      <span style={styles.yearBadge}>{rec.alumni.graduation_year}</span>
+                      <span style={styles.yearBadge}>{rec.alumni.graduation_month}/{rec.alumni.graduation_year}</span>
                     </td>
 
                     <td style={styles.tdCenter}>

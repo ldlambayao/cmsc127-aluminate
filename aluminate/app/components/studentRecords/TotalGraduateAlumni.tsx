@@ -23,10 +23,14 @@ export default function TotalGraduateAlumni() {
           .from("alumni")
           .select("*", { count: "exact", head: true });
 
+        const currMonth = new Date().getMonth() + 1;
+        const currYear = new Date().getFullYear();
+
         const { count: alumniCount } = await supabase
           .from("alumni")
           .select("*", { count: "exact", head: true })
-          .eq("tracer_survey_status", "Answered");
+          .lte("graduation_month", currMonth)
+          .lte("graduation_year", currYear);
 
         setGraduates(gradCount ?? 0);
         setAlumni(alumniCount ?? 0);

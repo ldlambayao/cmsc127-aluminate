@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+import { deleteUserAction } from '@/actions/deleteUser';
 import { UserRecord } from "@/admin/studentRecords/components/RecordTable";
 
 interface DeleteRecordModalProps {
@@ -39,21 +40,21 @@ export default function DeleteRecordModal({ record, onClose, onSuccess }: Delete
       // Get user_id before deleting alumni
       const { data: alumniRow } = await supabase
         .from("alumni")
-        .select("user_id")
-        .eq("id", record.id)
+        .select("uuid")
+        .eq("alumnus_id", record.alumni.alumnus_id)
         .single();
-
-      const { error: alumniError } = await supabase
-        .from("alumni")
-        .delete()
-        .eq("id", record.id);
-
-      if (alumniError) throw alumniError;
 
       // Delete user if exists
       if ((alumniRow as any)?.user_id) {
-        await supabase.from("users").delete().eq("id", (alumniRow as any).user_id);
+        await supabase
+          .from("users")
+          .delete()
+          .eq("uuid", (alumniRow as any).uuid);
       }
+
+      console.log((alumniRow as any).uuid);
+      await deleteUserAction((alumniRow as any).uuid);
+      alert("Record deleted successfully!");
 
       onSuccess();
       onClose();

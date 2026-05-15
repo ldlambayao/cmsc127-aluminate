@@ -34,9 +34,9 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
 
   const [form, setForm] = useState({
     student_id: record.alumni.student_number,
-    name: `${record.fname} ${record.mname ? record.mname + " " : ""}${record.lname}`.trim(),
+    name: `${record.fname}${record.mname ? "/" + record.mname : ""}/${record.lname}`.trim(),
     program: record.alumni.program.program_name,
-    graduation_year: record.alumni.graduation_year,
+    graduation_info: record.alumni.graduation_month + "/" + record.alumni.graduation_year,
     satisfaction_status: record.alumni.satisfaction_survey_status,
     tracer_status: record.alumni.tracer_survey_status,
   });
@@ -53,42 +53,57 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
     setLoading(true);
     setError(null);
     try {
-      const nameParts = form.name.trim().split(" ");
+      const nameParts = form.name.trim().split("/");
       const fname = nameParts[0] ?? "";
       const lname = nameParts[nameParts.length - 1] ?? "";
-      const mname = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : null;
+      const mname = nameParts.length > 2 ? nameParts[1] : null;
 
       const { data: programData } = await supabase
         .from("program")
-        .select("id")
+        .select("program_code")
         .eq("program_name", form.program)
         .single();
+
+      const graduation_info = form.graduation_info.trim().split("/");
+      const graduation_year = graduation_info[1];
+      const graduation_month = graduation_info[0];
 
       const { error: alumniError } = await (supabase as any)
         .from("alumni")
         .update({
           student_number: form.student_id,
-          program_id: (programData as any)?.id,
-          graduation_year: form.graduation_year || null,
+          program_code: (programData as any).program_code,
+          graduation_year: graduation_year || null,
+          graduation_month: graduation_month || null,
           satisfaction_survey_status: form.satisfaction_status,
           tracer_survey_status: form.tracer_status,
         })
-        .eq("id", record.id);
+        .eq("alumnus_id", record.alumni.alumnus_id);
 
       if (alumniError) throw alumniError;
 
       const { data: alumniRow } = await supabase
         .from("alumni")
-        .select("user_id")
-        .eq("id", record.id)
+        .select("uuid")
+        .eq("alumnus_id", record.alumni.alumnus_id)
         .single();
 
-      if ((alumniRow as any)?.user_id) {
+      if ((alumniRow as any)?.uuid) {
         await (supabase as any)
           .from("users")
-          .update({ fname, mname, lname })
-          .eq("id", (alumniRow as any).user_id);
+          .update({
+            fname: fname,
+            mname: mname,
+            lname: lname,
+          })
+          .eq("uuid", (alumniRow as any).uuid);
       }
+
+      console.log("form data:", form);
+      console.log("full name:", nameParts);
+      console.log("fname:", (alumniRow as any).fname);
+      console.log("program new:", form.program);
+      console.log("program code new:", programData);
 
       onSuccess();
       onClose();
@@ -157,8 +172,8 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
             <div style={styles.inputWithIcon}>
               <input
                 style={{ ...styles.input, paddingRight: "36px" }}
-                value={form.graduation_year}
-                onChange={(e) => handleChange("graduation_year", e.target.value)}
+                value={form.graduation_info}
+                onChange={(e) => handleChange("graduation_info", e.target.value)}
               />
               <span style={styles.calIcon}><CalendarIcon /></span>
             </div>
