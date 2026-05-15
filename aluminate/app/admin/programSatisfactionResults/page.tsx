@@ -56,35 +56,37 @@ export default function ProgramSatisfactionResultsPage() {
           <p style={styles.subtitle}>Illuminating Alumni Paths through Data, One at a Time</p>
         </div>
 
-        {/* Tabs + Filters Row */}
-        <div style={styles.tabsRow}>
-          {/* Tab Buttons */}
-          <div style={styles.tabs}>
-            <button
-              style={{
-                ...styles.tab,
-                ...(activeTab === "summary" ? styles.tabActive : styles.tabInactive),
-              }}
-              onClick={() => setActiveTab("summary")}
-            >
-              Summary Statistics
-              {activeTab === "summary" && <span style={styles.tabUnderline} />}
-            </button>
-            <button
-              style={{
-                ...styles.tab,
-                ...(activeTab === "edit" ? styles.tabActive : styles.tabInactive),
-              }}
-              onClick={() => setActiveTab("edit")}
-            >
-              Edit Questions
-              {activeTab === "edit" && <span style={styles.tabUnderline} />}
-            </button>
+        {/* Tabs + Filters */}
+        <div style={styles.tabsWrapper}>
+          <div style={styles.tabsRow}>
+            {/* Tab Buttons */}
+            <div style={styles.tabs}>
+              <button
+                style={{
+                  ...styles.tab,
+                  ...(activeTab === "summary" ? styles.tabActive : styles.tabInactive),
+                }}
+                onClick={() => setActiveTab("summary")}
+              >
+                Summary Statistics
+                {activeTab === "summary" && <span style={styles.tabUnderline} />}
+              </button>
+              <button
+                style={{
+                  ...styles.tab,
+                  ...(activeTab === "edit" ? styles.tabActive : styles.tabInactive),
+                }}
+                onClick={() => setActiveTab("edit")}
+              >
+                Edit Questions
+                {activeTab === "edit" && <span style={styles.tabUnderline} />}
+              </button>
+            </div>
           </div>
 
-          {/* Filters — only visible on Summary tab */}
+          {/* Filters — only visible on Summary tab, right-aligned below tabs */}
           {activeTab === "summary" && (
-            <div style={styles.filters}>
+            <div style={styles.filtersRow}>
               <select
                 style={styles.select}
                 value={selectedProgram}
@@ -183,12 +185,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#888",
     margin: 0,
   },
+  tabsWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
   tabsRow: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: "12px",
+    justifyContent: "center",
+  },
+  filtersRow: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "10px",
   },
   tabs: {
     display: "flex",
