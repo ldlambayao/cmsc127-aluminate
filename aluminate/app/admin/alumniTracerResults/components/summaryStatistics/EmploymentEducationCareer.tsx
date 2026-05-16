@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import {
+    Pie,
+    PieChart,
+    Cell,
     BarChart,
     Bar,
     LineChart,
@@ -13,10 +16,12 @@ import {
 } from "recharts";
 import CurrentWorkModal from "./modals/currentWork";
 import CurrentPositionModal from "./modals/currentPosition";
+import FieldOfStudyModal from "./modals/fieldofStudy";
 
 export default function EmploymentEducationCareer() {
     const [showCurrentWorkModal, setShowCurrentWorkModal] = useState(false);
     const [showCurrentPositionModal, setShowCurrentPositionModal] = useState(false);
+    const [showFieldOfStudyModal, setShowFieldOfStudyModal] = useState(false);
 
     // Sample data - replace with actual data from backend CC REX
     const timeToFindJobData = [
@@ -79,6 +84,28 @@ export default function EmploymentEducationCareer() {
         { category: "Project Manager", label: "Project Manager", count: 3 },
         { category: "Project Manager", label: "Project Manager", count: 3 },
         { category: "Project Manager", label: "Project Manager", count: 3 },
+    ]
+
+    const workNature = [
+        { category: "Education", label: "Education", count: 8 },
+        { category: "IT/ICT Position in the Organization/Company", label: "IT/ICT Position in the Organization/Company", count: 12 },
+        { category: "Business", label: "Business", count: 5 },
+        { category: "Research and Development", label: "Research and Development", count: 3 },
+    ]
+
+    const pieChart = [
+        { name: "Yes", label: "Yes", count: 15 },
+        { name: "No", label: "No", count: 10 },
+    ]
+
+    const fieldStudy = [
+        { category: "Computer Science", label: "Computer Science", count: 5 },
+        { category: "Information Technology", label: "Information Technology", count: 3 },
+        { category: "Business Administration", label: "Business Administration", count: 4 },
+        { category: "Education", label: "Education", count: 2 },
+        { category: "Education", label: "Education", count: 2 },
+        { category: "Education", label: "Education", count: 2 },
+        { category: "Education", label: "Education", count: 2 },
     ]
 
     return (
@@ -215,6 +242,17 @@ export default function EmploymentEducationCareer() {
                 <p className="text-red-900 text-sm font-medium mt-1">
                     What is the nature of your work? (Education, IT/ICT Position in the Organization/Company, Business, Research and Development, Others, etc.)
                 </p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={workNature} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                        <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
+                        <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
+                        <Tooltip
+                            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                            formatter={(value) => [value, 'Count']}
+                        />
+                        <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
+                    </BarChart>
+                </ResponsiveContainer>
 
             </div>
 
@@ -222,12 +260,59 @@ export default function EmploymentEducationCareer() {
                 <p className="text-red-900 text-sm font-medium mt-1">
                     Are you pursuing higher studies?
                 </p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <PieChart data={pieChart}>
+                        <Tooltip
+                            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                            formatter={(value, name, props) => [value, props.payload.name]}
+                        />
+                        <Pie
+                            dataKey="count"
+                            label={({ name, value }) => `${name} (${value})`}
+                            labelLine={false}
+                            nameKey="name"
+                        >
+                            {pieChart.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={entry.name === 'Yes' ? '#E29692' : '#FAECEB'}
+                                />
+                            ))}
+                        </Pie>
+                    </PieChart>
+                </ResponsiveContainer>
             </div>
 
             <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mt-1">
+                <p className="text-red-900 text-sm font-medium mt-1 mb-4">
                     If you answered yes above, please specify degree program, field of study, and university. Otherwise, type "N/A"
                 </p>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-gray-200">
+                                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Field of Study</th>
+                                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {fieldStudy.slice(0, 5).map((item, index) => (
+                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="py-2 px-4 text-gray-600">{item.category}</td>
+                                    <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                {fieldStudy.length > 5 && (
+                    <button
+                        onClick={() => setShowFieldOfStudyModal(true)}
+                        className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
+                    >
+                        View All ({fieldStudy.length})
+                    </button>
+                )}
             </div>
 
             {/* Modals */}
@@ -241,6 +326,12 @@ export default function EmploymentEducationCareer() {
                 isOpen={showCurrentPositionModal}
                 onClose={() => setShowCurrentPositionModal(false)}
                 data={currentPosition}
+            />
+
+            <FieldOfStudyModal
+                isOpen={showFieldOfStudyModal}
+                onClose={() => setShowFieldOfStudyModal(false)}
+                data={fieldStudy}
             />
 
         </div>
