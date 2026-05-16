@@ -3,7 +3,7 @@
 interface ReasonEntry {
     category: string;
     label: string;
-    count: number;
+    count?: number;
 }
 
 interface ReasonsForRatingModalProps {
