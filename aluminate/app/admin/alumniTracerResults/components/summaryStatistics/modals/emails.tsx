@@ -2,7 +2,7 @@
 
 interface EmailEntry {
     category: string;
-    label: string;
+    label?: string;
     count?: number;
 }
 
