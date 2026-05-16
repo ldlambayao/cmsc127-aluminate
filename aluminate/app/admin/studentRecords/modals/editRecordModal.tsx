@@ -73,14 +73,14 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
           satisfaction_survey_status: form.satisfaction_status,
           tracer_survey_status: form.tracer_status,
         })
-        .eq("id", record.id);
+        .eq("alumnus_id", record.alumni.alumnus_id);
 
       if (alumniError) throw alumniError;
 
       const { data: alumniRow } = await supabase
         .from("alumni")
         .select("user_id")
-        .eq("id", record.id)
+        .eq("alumnus_id", record.alumni.alumnus_id)
         .single();
 
       if ((alumniRow as any)?.user_id) {
