@@ -3,7 +3,7 @@
 interface SuggestionEntry {
     category: string;
     label: string;
-    count: number;
+    count?: number;
 }
 
 interface SuggestionsModalProps {

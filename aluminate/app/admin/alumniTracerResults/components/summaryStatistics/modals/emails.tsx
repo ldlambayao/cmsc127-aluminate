@@ -3,7 +3,7 @@
 interface EmailEntry {
     category: string;
     label: string;
-    count: number;
+    count?: number;
 }
 
 interface EmailsModalProps {
