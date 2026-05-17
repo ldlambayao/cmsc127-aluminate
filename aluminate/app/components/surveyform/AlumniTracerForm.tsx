@@ -286,9 +286,9 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               <select style={styles.textInput} value={form.timeToFindJob} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setTimeToFindJob(e.target.value); set("timeToFindJob")(e); }}>
                 <option value="">Select option</option>
                 <option>Less than 1 month</option>
-                <option>1–3 months</option>
-                <option>4–6 months</option>
-                <option>7–12 months</option>
+                <option>1-3 months</option>
+                <option>4-6 months</option>
+                <option>7-12 months</option>
                 <option>More than 1 year</option>
                 <option>Not applicable</option>
               </select>
