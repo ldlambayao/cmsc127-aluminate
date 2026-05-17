@@ -40,13 +40,13 @@ export default function DeleteRecordModal({ record, onClose, onSuccess }: Delete
       const { data: alumniRow } = await supabase
         .from("alumni")
         .select("user_id")
-        .eq("id", record.id)
+        .eq("alumnus_id", record.alumni.alumnus_id)
         .single();
 
       const { error: alumniError } = await supabase
         .from("alumni")
         .delete()
-        .eq("id", record.id);
+        .eq("alumnus_id", record.alumni.alumnus_id);
 
       if (alumniError) throw alumniError;
 
