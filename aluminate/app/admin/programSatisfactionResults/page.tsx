@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 // Summary Statistics Components
 import GeneralInformation from "./components/summaryStatistics/GeneralInformation";
@@ -49,78 +50,67 @@ export default function ProgramSatisfactionResultsPage() {
   const [selectedSection, setSelectedSection] = useState("");
 
   return (
-    <main className="flex-1 px-10 py-9 overflow-y-auto min-w-0">
+    <div className="bg-gray-100 min-h-screen p-4">
+      <div className=" p-8 max-w-7xl mx-auto">
         {/* Page Header */}
-        <div className="mb-7">
-          <h1 className="text-2xl font-bold text-gray-950 mb-1.5">Program Satisfaction Form</h1>
-          <p className="text-sm text-gray-500 m-0">Illuminating Alumni Paths through Data, One at a Time</p>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Program Satisfaction Form</h1>
+          <p className="text-xs text-gray-500 mt-1">
+            Illuminating Alumni and Graduate Paths through Data, One at a Time
+          </p>
         </div>
 
-        {/* Tabs + Filters */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-center">
-            {/* Tab Buttons */}
-            <div className="flex gap-0">
-              <button
-                className={`relative px-6 py-2.5 border-none bg-transparent text-sm font-semibold cursor-pointer transition-colors duration-200 ${
-                  activeTab === "summary" ? "text-red-900" : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("summary")}
-              >
-                Summary Statistics
-                {activeTab === "summary" && (
-                  <span className="absolute bottom-0 left-6 right-6 h-0.5 bg-red-900 rounded block" />
-                )}
-              </button>
-              <button
-                className={`relative px-6 py-2.5 border-none bg-transparent text-sm font-semibold cursor-pointer transition-colors duration-200 ${
-                  activeTab === "edit" ? "text-red-900" : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("edit")}
-              >
-                Edit Questions
-                {activeTab === "edit" && (
-                  <span className="absolute bottom-0 left-6 right-6 h-0.5 bg-red-900 rounded block" />
-                )}
-              </button>
-            </div>
+        {/* Tabs and Filters Section */}
+        {/* Tabs */}
+        <div className="flex gap-12 justify-center border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab("summary")}
+            className={`pb-3 px-2 font-medium text-md transition-colors ${activeTab === "summary"
+              ? "border-b-3"
+              : "text-gray-700 hover:text-gray-900"
+              }`}
+            style={activeTab === "summary" ? { color: "#8E3737", borderColor: "#8E3737" } : {}}
+          >
+            Summary Statistics
+          </button>
+          <button
+            onClick={() => setActiveTab("edit")}
+            className={`pb-3 px-2 font-medium text-md transition-colors ${activeTab === "edit"
+              ? "border-b-2"
+              : "text-gray-700 hover:text-gray-900"
+              }`}
+            style={activeTab === "edit" ? { color: "#8E3737", borderColor: "#8E3737" } : {}}
+          >
+            Edit Questions
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex gap-4 mt-6 justify-end">
+          <div className="relative">
+            <select className="appearance-none w-56 px-4 py-3 border border-gray-200 rounded-2xl text-gray-400 bg-white text-xs">
+              <option>Filter by Program</option>
+            </select>
+            <ChevronDown
+              className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black"
+              size={14}
+              strokeWidth={2.5}
+            />
           </div>
-
-          {/* Filters — only visible on Summary tab, right-aligned below tabs */}
-          {activeTab === "summary" && (
-            <div className="flex justify-end gap-2.5">
-              <select
-                className="px-3 py-2 pr-8 rounded-lg border border-gray-300 bg-white text-xs text-gray-700 cursor-pointer min-w-40"
-                value={selectedProgram}
-                onChange={(e) => setSelectedProgram(e.target.value)}
-              >
-                {PROGRAMS.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="px-3 py-2 pr-8 rounded-lg border border-gray-300 bg-white text-xs text-gray-700 cursor-pointer min-w-40"
-                value={selectedSection}
-                onChange={(e) => setSelectedSection(e.target.value)}
-              >
-                {SECTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="relative">
+            <select className="appearance-none w-56 px-4 py-3 border border-gray-200 rounded-2xl text-gray-400 bg-white text-xs">
+              <option>Filter by section</option>
+            </select>
+            <ChevronDown
+              className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black"
+              size={14}
+              strokeWidth={2.5}
+            />
+          </div>
         </div>
 
-        {/* Divider under tabs */}
-        <hr className="border-0 border-t border-gray-200 my-0 mb-7" />
-
-        {/* Tab Content */}
-        <div className="w-full">
+        {/* Content Section */}
+        <div className="mt-8">
           {activeTab === "summary" ? (
             <div className="flex flex-col gap-8">
               {/* Render only the filtered section, or all if none selected */}
@@ -162,6 +152,7 @@ export default function ProgramSatisfactionResultsPage() {
             </div>
           )}
         </div>
-      </main>
-  );
+      </div>
+    </div>
+  )
 }
