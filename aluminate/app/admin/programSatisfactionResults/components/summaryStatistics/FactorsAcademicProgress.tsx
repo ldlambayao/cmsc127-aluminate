@@ -19,7 +19,7 @@ interface Props {
   program?: string;
 }
 
-// ── Shared factor colors ───────────────────────────────────────────────────────
+// â”€â”€ Shared factor colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FACTORS = [
   { key: "Overall BSAM curriculum at UP Mindanao",                                       color: "#f5dede" },
   { key: "Overall experience at the Department of Math, Physics, and Computer Science",   color: "#ebb8b8" },
@@ -29,7 +29,7 @@ const FACTORS = [
   { key: "Alignment of the module learning outcomes with the program learning outcomes",  color: "#9b1d2a" },
 ];
 
-// ── Chart 1: Factors chart data ────────────────────────────────────────────────
+// â”€â”€ Chart 1: Factors chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FACTORS_DATA = [
   {
     level: "Very Satisfied",
@@ -69,14 +69,14 @@ const FACTORS_DATA = [
   },
 ];
 
-// ── Chart 2: Donut — did you consider leaving ──────────────────────────────────
+// â”€â”€ Chart 2: Donut â€” did you consider leaving â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const LEAVING_DATA = [
   { name: "Yes", value: 86.08 },
   { name: "No",  value: 13.92 },
 ];
 const LEAVING_COLORS = ["#D89A9A", "#f5dede"];
 
-// ── Chart 3: Favorite year/semester ───────────────────────────────────────────
+// â”€â”€ Chart 3: Favorite year/semester â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const YEAR_DATA = [
   { year: "0", count: 18 },
   { year: "1", count: 32 },
@@ -86,21 +86,21 @@ const YEAR_DATA = [
   { year: "5", count: 48 },
 ];
 
-// ── Open-ended response sets ───────────────────────────────────────────────────
+// â”€â”€ Open-ended response sets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SAMPLE_RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
-// ── Custom donut label ─────────────────────────────────────────────────────────
+// â”€â”€ Custom donut label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
   <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
     86.08
   </text>
 );
 
-// ── Reusable response card ─────────────────────────────────────────────────────
+// â”€â”€ Reusable response card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ResponseCard({
   question,
   isHighlighted = false,
@@ -114,22 +114,22 @@ function ResponseCard({
   const visible = expanded ? responses : responses.slice(0, 3);
 
   return (
-    <div style={styles.card}>
-      <p style={isHighlighted ? styles.questionHighlighted : styles.questionNormal}>
+    <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <p className={isHighlighted ? "text-xs font-semibold text-red-900 mb-4" : "text-xs font-semibold text-gray-800 mb-4"}>
         {question}
       </p>
-      <div style={styles.responseList}>
+      <div className="flex flex-col gap-5">
         {visible.map((r, i) => (
-          <div key={i} style={styles.responseItem}>
-            <p style={styles.responseName}>{r.name}</p>
-            <p style={styles.responseClass}>{r.classOf}</p>
-            <p style={styles.responseText}>{r.answer}</p>
-            <span style={styles.programBadge}>{r.program}</span>
+          <div key={i} className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+            <p className="text-xs text-gray-500">{r.classOf}</p>
+            <p className="text-sm text-gray-700">{r.answer}</p>
+            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
           </div>
         ))}
       </div>
-      <div style={styles.viewResponsesWrapper}>
-        <button style={styles.viewResponsesBtn} onClick={() => setExpanded(!expanded)}>
+      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
           {expanded ? "Show Less" : "View Responses"}
         </button>
       </div>
@@ -137,15 +137,15 @@ function ResponseCard({
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function FactorsAcademicProgress({ program }: Props) {
   return (
-    <section style={styles.section}>
-      <h2 style={styles.heading}>Factors that might have affected your academic progress</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Factors that might have affected your academic progress</h2>
 
-      {/* ── Card 1: Horizontal grouped bar chart ── */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>
+      {/* â”€â”€ Card 1: Horizontal grouped bar chart â”€â”€ */}
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">
           Please indicate how the following factors might have influenced your progress toward the BSAM degree.
         </p>
         <ResponsiveContainer width="100%" height={360}>
@@ -192,15 +192,15 @@ export default function FactorsAcademicProgress({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* ── Card 2: Others (please specify) ── */}
+      {/* â”€â”€ Card 2: Others (please specify) â”€â”€ */}
       <ResponseCard question="Others (please specify)" responses={SAMPLE_RESPONSES} />
 
-      {/* ── Card 3: Donut + favorite year side by side ── */}
-      <div style={styles.twoCol}>
+      {/* â”€â”€ Card 3: Donut + favorite year side by side â”€â”€ */}
+      <div className="flex gap-4">
         {/* Donut chart */}
-        <div style={{ ...styles.card, flex: 1, minWidth: 0 }}>
-          <p style={styles.chartTitle}>Did you consider leaving the program?</p>
-          <div style={styles.donutWrapper}>
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+          <p className="text-xs font-semibold text-gray-800 mb-4">Did you consider leaving the program?</p>
+          <div className="w-full h-40">
             <ResponsiveContainer width="100%" height={160}>
               <PieChart>
                 <Pie
@@ -237,8 +237,8 @@ export default function FactorsAcademicProgress({ program }: Props) {
         </div>
 
         {/* Favorite year/semester bar chart */}
-        <div style={{ ...styles.card, flex: 1, minWidth: 0 }}>
-          <p style={styles.chartTitle}>What is your favorite year and semester?</p>
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+          <p className="text-xs font-semibold text-gray-800 mb-4">What is your favorite year and semester?</p>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart
               data={YEAR_DATA}
@@ -267,28 +267,28 @@ export default function FactorsAcademicProgress({ program }: Props) {
         </div>
       </div>
 
-      {/* ── Card 4: Why did you consider leaving ── */}
+      {/* â”€â”€ Card 4: Why did you consider leaving â”€â”€ */}
       <ResponseCard question="Why?" responses={SAMPLE_RESPONSES} />
 
-      {/* ── Card 5: Most helpful courses ── */}
+      {/* â”€â”€ Card 5: Most helpful courses â”€â”€ */}
       <ResponseCard
         question="What course/subject/topic do you think will be most helpful in your future endeavors?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* ── Card 6: Should not be included ── */}
+      {/* â”€â”€ Card 6: Should not be included â”€â”€ */}
       <ResponseCard
         question="What course/subject/topic do you think should not be included to the program? Why?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* ── Card 7: Should be added ── */}
+      {/* â”€â”€ Card 7: Should be added â”€â”€ */}
       <ResponseCard
         question="What course/subject/topic do you think should be added to the program?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* ── Card 8: Specific challenges (highlighted in red) ── */}
+      {/* â”€â”€ Card 8: Specific challenges (highlighted in red) â”€â”€ */}
       <ResponseCard
         question="What other specific challenges did you encounter in finishing the program?"
         isHighlighted
@@ -298,107 +298,7 @@ export default function FactorsAcademicProgress({ program }: Props) {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  twoCol: {
-    display: "flex",
-    gap: "16px",
-    flexWrap: "wrap",
-  },
-  chartTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 16px 0",
-    lineHeight: "1.5",
-  },
-  donutWrapper: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  questionNormal: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 20px 0",
-    lineHeight: "1.5",
-  },
-  questionHighlighted: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#9b1d2a",
-    margin: "0 0 20px 0",
-    lineHeight: "1.5",
-  },
-  responseList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  responseItem: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "2px",
-  },
-  responseName: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    margin: 0,
-  },
-  responseClass: {
-    fontSize: "11px",
-    color: "#aaa",
-    margin: "0 0 4px 0",
-  },
-  responseText: {
-    fontSize: "13px",
-    color: "#444",
-    margin: "0 0 6px 0",
-  },
-  programBadge: {
-    display: "inline-block",
-    padding: "3px 10px",
-    backgroundColor: "#fce8e8",
-    color: "#9b1d2a",
-    borderRadius: "999px",
-    fontSize: "10px",
-    fontWeight: "700",
-    letterSpacing: "0.3px",
-    alignSelf: "flex-start",
-  },
-  viewResponsesWrapper: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "24px",
-    borderTop: "1px solid #f0f0f0",
-    paddingTop: "16px",
-  },
-  viewResponsesBtn: {
-    background: "transparent",
-    border: "none",
-    color: "#9b1d2a",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-};
+// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+
+

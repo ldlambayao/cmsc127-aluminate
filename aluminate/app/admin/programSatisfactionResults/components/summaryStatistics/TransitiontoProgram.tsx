@@ -16,7 +16,7 @@ interface Props {
   program?: string;
 }
 
-// ── Sample data ────────────────────────────────────────────────────────────────
+// â”€â”€ Sample data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DIFFICULTY_DATA = [
   { rating: "1", "Difficulty Level": 82 },
   { rating: "2", "Difficulty Level": 88 },
@@ -50,7 +50,7 @@ const SUGGEST_RESPONSES: Response[] = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
 ];
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ResponseCard({
   question,
   questionHighlight,
@@ -64,27 +64,27 @@ function ResponseCard({
   const visible = expanded ? responses : responses.slice(0, 3);
 
   return (
-    <div style={styles.card}>
-      <p style={styles.openEndedLabel}>
+    <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <p className="text-xs font-semibold text-gray-800 mb-4">
         {question}
         {questionHighlight && (
-          <span style={styles.openEndedHighlight}>{questionHighlight}</span>
+          <span className="font-bold text-red-900">{questionHighlight}</span>
         )}
       </p>
 
-      <div style={styles.responseList}>
+      <div className="flex flex-col gap-5">
         {visible.map((r, i) => (
-          <div key={i} style={styles.responseItem}>
-            <p style={styles.responseName}>{r.name}</p>
-            <p style={styles.responseClass}>{r.classOf}</p>
-            <p style={styles.responseText}>{r.answer}</p>
-            <span style={styles.programBadge}>{r.program}</span>
+          <div key={i} className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+            <p className="text-xs text-gray-500">{r.classOf}</p>
+            <p className="text-sm text-gray-700">{r.answer}</p>
+            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
           </div>
         ))}
       </div>
 
-      <div style={styles.viewResponsesWrapper}>
-        <button style={styles.viewResponsesBtn} onClick={() => setExpanded(!expanded)}>
+      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
           {expanded ? "Show Less" : "View Responses"}
         </button>
       </div>
@@ -92,17 +92,17 @@ function ResponseCard({
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function TransitiontoProgram({ program }: Props) {
   return (
-    <section style={styles.section}>
-      <h2 style={styles.heading}>Transition to the Program</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Transition to the Program</h2>
 
-      {/* ── Two charts side by side ── */}
-      <div style={styles.chartsRow}>
+      {/* â”€â”€ Two charts side by side â”€â”€ */}
+      <div className="flex gap-4">
         {/* Chart 1 */}
-        <div style={{ ...styles.card, flex: 1, minWidth: 0 }}>
-          <p style={styles.chartTitle}>
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+          <p className="text-xs font-semibold text-gray-800 mb-4">
             What is the level of difficulty of your adjustment to the BSAM program?
           </p>
           <ResponsiveContainer width="100%" height={220}>
@@ -140,8 +140,8 @@ export default function TransitiontoProgram({ program }: Props) {
         </div>
 
         {/* Chart 2 */}
-        <div style={{ ...styles.card, flex: 1, minWidth: 0 }}>
-          <p style={styles.chartTitle}>What will make the transition easier for you?</p>
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+          <p className="text-xs font-semibold text-gray-800 mb-4">What will make the transition easier for you?</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={TRANSITION_DATA}
@@ -183,7 +183,7 @@ export default function TransitiontoProgram({ program }: Props) {
         </div>
       </div>
 
-      {/* ── Open-ended response cards ── */}
+      {/* â”€â”€ Open-ended response cards â”€â”€ */}
       <ResponseCard
         question='Please explain the reason to your answer on the previous question '
         questionHighlight='"What is the level of difficulty of your adjustment to the BSAM program?"'
@@ -198,102 +198,7 @@ export default function TransitiontoProgram({ program }: Props) {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  chartsRow: {
-    display: "flex",
-    gap: "16px",
-    flexWrap: "wrap",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  chartTitle: {
-    fontSize: "12px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 12px 0",
-  },
+// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  /* Open-ended cards */
-  openEndedLabel: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 20px 0",
-    lineHeight: "1.5",
-  },
-  openEndedHighlight: {
-    color: "#9b1d2a",
-    display: "block",
-    fontWeight: "600",
-  },
-  responseList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  responseItem: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "2px",
-  },
-  responseName: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    margin: 0,
-  },
-  responseClass: {
-    fontSize: "11px",
-    color: "#aaa",
-    margin: "0 0 4px 0",
-  },
-  responseText: {
-    fontSize: "13px",
-    color: "#444",
-    margin: "0 0 6px 0",
-  },
-  programBadge: {
-    display: "inline-block",
-    padding: "3px 10px",
-    backgroundColor: "#fce8e8",
-    color: "#9b1d2a",
-    borderRadius: "999px",
-    fontSize: "10px",
-    fontWeight: "700",
-    letterSpacing: "0.3px",
-    alignSelf: "flex-start",
-  },
-  viewResponsesWrapper: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "24px",
-    borderTop: "1px solid #f0f0f0",
-    paddingTop: "16px",
-  },
-  viewResponsesBtn: {
-    background: "transparent",
-    border: "none",
-    color: "#9b1d2a",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-};
+
+

@@ -37,13 +37,13 @@ export default function GeneralInformation({ program }: Props) {
   const data = SAMPLE_DATA;
 
   return (
-    <section style={styles.section}>
+    <section className="flex flex-col gap-4">
       {/* Section heading */}
-      <h2 style={styles.heading}>General Information</h2>
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">General Information</h2>
 
       {/* Card */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">
           Overall service delivery or supervision of the BSAM program:
         </p>
 
@@ -93,32 +93,3 @@ export default function GeneralInformation({ program }: Props) {
     </section>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  chartTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "16px",
-    margin: "0 0 16px 0",
-  },
-};

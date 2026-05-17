@@ -163,12 +163,12 @@ function SatisfactionChart({ data }: { data: typeof DEPT_SATISFACTION_DATA }) {
 export default function OverallSatisfaction({ program }: Props) {
   // TODO: replace sample data with Supabase queries filtered by `program`
   return (
-    <section style={styles.section}>
-      <h2 style={styles.heading}>Overall Satisfaction</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Overall Satisfaction</h2>
 
       {/* Card 1 */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">
           How satisfied are you with each of the following items with regards to your experience
           at the Department of Math, Physics and Computer Science?
         </p>
@@ -176,8 +176,8 @@ export default function OverallSatisfaction({ program }: Props) {
       </div>
 
       {/* Card 2 */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">
           Rate your overall satisfaction based on the program learning outcomes:
         </p>
         <SatisfactionChart data={PLO_SATISFACTION_DATA} />
@@ -187,31 +187,4 @@ export default function OverallSatisfaction({ program }: Props) {
 }
 
 // ── Styles ─────────────────────────────────────────────────────────────────────
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  chartTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 16px 0",
-    lineHeight: "1.5",
-  },
-};
+

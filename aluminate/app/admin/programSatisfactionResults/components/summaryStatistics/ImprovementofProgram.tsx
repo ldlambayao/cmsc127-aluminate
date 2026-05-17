@@ -19,7 +19,7 @@ interface Props {
   program?: string;
 }
 
-// ── Chart data ─────────────────────────────────────────────────────────────────
+// â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STRENGTHS_DATA = [
   { x: "0", count: 18 },
   { x: "1", count: 32 },
@@ -44,21 +44,21 @@ const RECOMMEND_DATA = [
 ];
 const DONUT_COLORS = ["#D89A9A", "#f5dede"];
 
-// ── Sample responses ───────────────────────────────────────────────────────────
+// â”€â”€ Sample responses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SAMPLE_RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
-// ── Custom donut center label ──────────────────────────────────────────────────
+// â”€â”€ Custom donut center label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
   <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
     86.08
   </text>
 );
 
-// ── Reusable pill bar chart ────────────────────────────────────────────────────
+// â”€â”€ Reusable pill bar chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PillBarChart({ data, color }: { data: { x: string; count: number }[]; color: string }) {
   return (
     <ResponsiveContainer width="100%" height={180}>
@@ -76,7 +76,7 @@ function PillBarChart({ data, color }: { data: { x: string; count: number }[]; c
   );
 }
 
-// ── Reusable response card ─────────────────────────────────────────────────────
+// â”€â”€ Reusable response card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ResponseCard({
   question,
   isHighlighted = false,
@@ -90,22 +90,22 @@ function ResponseCard({
   const visible = expanded ? responses : responses.slice(0, 3);
 
   return (
-    <div style={styles.card}>
-      <p style={isHighlighted ? styles.questionHighlighted : styles.questionNormal}>
+    <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <p className={isHighlighted ? "text-xs font-semibold text-red-900 mb-4" : "text-xs font-semibold text-gray-800 mb-4"}>
         {question}
       </p>
-      <div style={styles.responseList}>
+      <div className="flex flex-col gap-5">
         {visible.map((r, i) => (
-          <div key={i} style={styles.responseItem}>
-            <p style={styles.responseName}>{r.name}</p>
-            <p style={styles.responseClass}>{r.classOf}</p>
-            <p style={styles.responseText}>{r.answer}</p>
-            <span style={styles.programBadge}>{r.program}</span>
+          <div key={i} className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+            <p className="text-xs text-gray-500">{r.classOf}</p>
+            <p className="text-sm text-gray-700">{r.answer}</p>
+            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
           </div>
         ))}
       </div>
-      <div style={styles.viewResponsesWrapper}>
-        <button style={styles.viewResponsesBtn} onClick={() => setExpanded(!expanded)}>
+      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
           {expanded ? "Show Less" : "View Responses"}
         </button>
       </div>
@@ -113,37 +113,37 @@ function ResponseCard({
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ImprovementofProgram({ program }: Props) {
   return (
-    <section style={styles.section}>
-      <h2 style={styles.heading}>Other questions for the improvement of the program</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Other questions for the improvement of the program</h2>
 
-      {/* ── Two bar charts side by side ── */}
-      <div style={styles.twoCol}>
-        <div style={{ ...styles.card, flex: 1, minWidth: 0 }}>
-          <p style={styles.chartTitle}>
+      {/* â”€â”€ Two bar charts side by side â”€â”€ */}
+      <div className="flex gap-4">
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+          <p className="text-xs font-semibold text-gray-800 mb-4">
             Based on your experience, what do you think are the strengths of the program? (Please check all that apply)
           </p>
           <PillBarChart data={STRENGTHS_DATA} color="#E8C4C4" />
         </div>
-        <div style={{ ...styles.card, flex: 1, minWidth: 0 }}>
-          <p style={styles.chartTitle}>
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+          <p className="text-xs font-semibold text-gray-800 mb-4">
             Based on your experience, what do you think are the weaknesses of the program? (Please check all that apply)
           </p>
           <PillBarChart data={WEAKNESSES_DATA} color="#D89A9A" />
         </div>
       </div>
 
-      {/* ── Response: improve student experience ── */}
+      {/* â”€â”€ Response: improve student experience â”€â”€ */}
       <ResponseCard
         question="What can you suggest to improve your overall BSAM student experience?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* ── Donut: Will you recommend ── */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>Will you recommend the BSAM program?</p>
+      {/* â”€â”€ Donut: Will you recommend â”€â”€ */}
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">Will you recommend the BSAM program?</p>
         <ResponsiveContainer width="100%" height={180}>
           <PieChart>
             <Pie
@@ -178,20 +178,20 @@ export default function ImprovementofProgram({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* ── Response: Why or why not (highlighted) ── */}
+      {/* â”€â”€ Response: Why or why not (highlighted) â”€â”€ */}
       <ResponseCard
         question="Why or why not?"
         isHighlighted
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* ── Response: overall improvement suggestion ── */}
+      {/* â”€â”€ Response: overall improvement suggestion â”€â”€ */}
       <ResponseCard
         question="What can you suggest for the overall improvement of the BSAM program?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* ── Response: additional comments (long question) ── */}
+      {/* â”€â”€ Response: additional comments (long question) â”€â”€ */}
       <ResponseCard
         question="Please write here any additional comment/s or suggestion/s you may have on how we might have improved your experience in taking the degree program or how we can improve the program for the future takers of the degree program."
         responses={SAMPLE_RESPONSES}
@@ -200,103 +200,7 @@ export default function ImprovementofProgram({ program }: Props) {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  twoCol: {
-    display: "flex",
-    gap: "16px",
-    flexWrap: "wrap",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  chartTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 16px 0",
-    lineHeight: "1.5",
-  },
-  questionNormal: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 20px 0",
-    lineHeight: "1.5",
-  },
-  questionHighlighted: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#9b1d2a",
-    margin: "0 0 20px 0",
-    lineHeight: "1.5",
-  },
-  responseList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  responseItem: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "2px",
-  },
-  responseName: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    margin: 0,
-  },
-  responseClass: {
-    fontSize: "11px",
-    color: "#aaa",
-    margin: "0 0 4px 0",
-  },
-  responseText: {
-    fontSize: "13px",
-    color: "#444",
-    margin: "0 0 6px 0",
-  },
-  programBadge: {
-    display: "inline-block",
-    padding: "3px 10px",
-    backgroundColor: "#fce8e8",
-    color: "#9b1d2a",
-    borderRadius: "999px",
-    fontSize: "10px",
-    fontWeight: "700",
-    letterSpacing: "0.3px",
-    alignSelf: "flex-start",
-  },
-  viewResponsesWrapper: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "24px",
-    borderTop: "1px solid #f0f0f0",
-    paddingTop: "16px",
-  },
-  viewResponsesBtn: {
-    background: "transparent",
-    border: "none",
-    color: "#9b1d2a",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-};
+// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+
+

@@ -16,7 +16,7 @@ interface Props {
   program?: string;
 }
 
-// ── Factors & colors (light → dark pink/red) ───────────────────────────────────
+// â”€â”€ Factors & colors (light â†’ dark pink/red) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const FACTORS = [
   { key: "Overall BSAM curriculum at UP Mindanao",                                       color: "#f5dede" },
   { key: "Overall experience at the Department of Math, Physics, and Computer Science",   color: "#ebb8b8" },
@@ -26,7 +26,7 @@ const FACTORS = [
   { key: "Alignment of the module learning outcomes with the program learning outcomes",  color: "#9b1d2a" },
 ];
 
-// ── Chart data ─────────────────────────────────────────────────────────────────
+// â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // TODO: replace with Supabase query filtered by `program`
 const CHART_DATA = [
   {
@@ -67,7 +67,7 @@ const CHART_DATA = [
   },
 ];
 
-// ── Sample open-ended responses ────────────────────────────────────────────────
+// â”€â”€ Sample open-ended responses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
@@ -79,12 +79,12 @@ export default function ServicesProvidedbyUP({ program }: Props) {
   const visible = expanded ? RESPONSES : RESPONSES.slice(0, 3);
 
   return (
-    <section style={styles.section}>
-      <h2 style={styles.heading}>Services provided by UP Mindanao</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Services provided by UP Mindanao</h2>
 
-      {/* ── Chart card ── */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>
+      {/* â”€â”€ Chart card â”€â”€ */}
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">
           Please indicate your level of satisfaction with the services provided by the following offices/personnel.
         </p>
 
@@ -144,27 +144,27 @@ export default function ServicesProvidedbyUP({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* ── Open-ended response card ── */}
-      <div style={styles.card}>
-        <p style={styles.openEndedLabel}>Please explain your answer above:</p>
-        <p style={styles.openEndedHighlight}>
+      {/* â”€â”€ Open-ended response card â”€â”€ */}
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">Please explain your answer above:</p>
+        <p className="font-bold text-red-900">
           "Please rate how the culture in your school environment captures the factors stated below."
         </p>
 
-        <div style={styles.responseList}>
+        <div className="flex flex-col gap-5">
           {visible.map((r, i) => (
-            <div key={i} style={styles.responseItem}>
-              <p style={styles.responseName}>{r.name}</p>
-              <p style={styles.responseClass}>{r.classOf}</p>
-              <p style={styles.responseText}>{r.answer}</p>
-              <span style={styles.programBadge}>{r.program}</span>
+            <div key={i} className="flex flex-col gap-0.5">
+              <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+              <p className="text-xs text-gray-500">{r.classOf}</p>
+              <p className="text-sm text-gray-700">{r.answer}</p>
+              <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
             </div>
           ))}
         </div>
 
-        <div style={styles.viewResponsesWrapper}>
+        <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
           <button
-            style={styles.viewResponsesBtn}
+            className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800"
             onClick={() => setExpanded(!expanded)}
           >
             {expanded ? "Show Less" : "View Responses"}
@@ -175,99 +175,7 @@ export default function ServicesProvidedbyUP({ program }: Props) {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  chartTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 16px 0",
-    lineHeight: "1.5",
-  },
+// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  /* Open-ended */
-  openEndedLabel: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 4px 0",
-  },
-  openEndedHighlight: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#9b1d2a",
-    fontStyle: "italic",
-    margin: "0 0 20px 0",
-  },
-  responseList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  responseItem: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "2px",
-  },
-  responseName: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    margin: 0,
-  },
-  responseClass: {
-    fontSize: "11px",
-    color: "#aaa",
-    margin: "0 0 4px 0",
-  },
-  responseText: {
-    fontSize: "13px",
-    color: "#444",
-    margin: "0 0 6px 0",
-  },
-  programBadge: {
-    display: "inline-block",
-    padding: "3px 10px",
-    backgroundColor: "#fce8e8",
-    color: "#9b1d2a",
-    borderRadius: "999px",
-    fontSize: "10px",
-    fontWeight: "700",
-    letterSpacing: "0.3px",
-    alignSelf: "flex-start",
-  },
-  viewResponsesWrapper: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "24px",
-    borderTop: "1px solid #f0f0f0",
-    paddingTop: "16px",
-  },
-  viewResponsesBtn: {
-    background: "transparent",
-    border: "none",
-    color: "#9b1d2a",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-};
+
+

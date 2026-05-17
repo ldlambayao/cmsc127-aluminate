@@ -49,46 +49,48 @@ export default function ProgramSatisfactionResultsPage() {
   const [selectedSection, setSelectedSection] = useState("");
 
   return (
-    <main style={styles.main}>
+    <main className="flex-1 px-10 py-9 overflow-y-auto min-w-0">
         {/* Page Header */}
-        <div style={styles.header}>
-          <h1 style={styles.title}>Program Satisfaction Form</h1>
-          <p style={styles.subtitle}>Illuminating Alumni Paths through Data, One at a Time</p>
+        <div className="mb-7">
+          <h1 className="text-2xl font-bold text-gray-950 mb-1.5">Program Satisfaction Form</h1>
+          <p className="text-sm text-gray-500 m-0">Illuminating Alumni Paths through Data, One at a Time</p>
         </div>
 
         {/* Tabs + Filters */}
-        <div style={styles.tabsWrapper}>
-          <div style={styles.tabsRow}>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-center">
             {/* Tab Buttons */}
-            <div style={styles.tabs}>
+            <div className="flex gap-0">
               <button
-                style={{
-                  ...styles.tab,
-                  ...(activeTab === "summary" ? styles.tabActive : styles.tabInactive),
-                }}
+                className={`relative px-6 py-2.5 border-none bg-transparent text-sm font-semibold cursor-pointer transition-colors duration-200 ${
+                  activeTab === "summary" ? "text-red-900" : "text-gray-500"
+                }`}
                 onClick={() => setActiveTab("summary")}
               >
                 Summary Statistics
-                {activeTab === "summary" && <span style={styles.tabUnderline} />}
+                {activeTab === "summary" && (
+                  <span className="absolute bottom-0 left-6 right-6 h-0.5 bg-red-900 rounded block" />
+                )}
               </button>
               <button
-                style={{
-                  ...styles.tab,
-                  ...(activeTab === "edit" ? styles.tabActive : styles.tabInactive),
-                }}
+                className={`relative px-6 py-2.5 border-none bg-transparent text-sm font-semibold cursor-pointer transition-colors duration-200 ${
+                  activeTab === "edit" ? "text-red-900" : "text-gray-500"
+                }`}
                 onClick={() => setActiveTab("edit")}
               >
                 Edit Questions
-                {activeTab === "edit" && <span style={styles.tabUnderline} />}
+                {activeTab === "edit" && (
+                  <span className="absolute bottom-0 left-6 right-6 h-0.5 bg-red-900 rounded block" />
+                )}
               </button>
             </div>
           </div>
 
           {/* Filters — only visible on Summary tab, right-aligned below tabs */}
           {activeTab === "summary" && (
-            <div style={styles.filtersRow}>
+            <div className="flex justify-end gap-2.5">
               <select
-                style={styles.select}
+                className="px-3 py-2 pr-8 rounded-lg border border-gray-300 bg-white text-xs text-gray-700 cursor-pointer min-w-40"
                 value={selectedProgram}
                 onChange={(e) => setSelectedProgram(e.target.value)}
               >
@@ -100,7 +102,7 @@ export default function ProgramSatisfactionResultsPage() {
               </select>
 
               <select
-                style={styles.select}
+                className="px-3 py-2 pr-8 rounded-lg border border-gray-300 bg-white text-xs text-gray-700 cursor-pointer min-w-40"
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
               >
@@ -115,12 +117,12 @@ export default function ProgramSatisfactionResultsPage() {
         </div>
 
         {/* Divider under tabs */}
-        <hr style={styles.divider} />
+        <hr className="border-0 border-t border-gray-200 my-0 mb-7" />
 
         {/* Tab Content */}
-        <div style={styles.content}>
+        <div className="w-full">
           {activeTab === "summary" ? (
-            <div style={styles.summaryGrid}>
+            <div className="flex flex-col gap-8">
               {/* Render only the filtered section, or all if none selected */}
               {(!selectedSection || selectedSection === "generalInfo") && (
                 <GeneralInformation program={selectedProgram} />
@@ -148,7 +150,7 @@ export default function ProgramSatisfactionResultsPage() {
               )}
             </div>
           ) : (
-            <div style={styles.summaryGrid}>
+            <div className="flex flex-col gap-8">
               <EQGeneralInformation />
               <EQDecisiontoEnroll />
               <EQFactorsAcademicProgress />
@@ -163,100 +165,3 @@ export default function ProgramSatisfactionResultsPage() {
       </main>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  main: {
-    flex: 1,
-    padding: "36px 40px",
-    overflowY: "auto",
-    minWidth: 0,
-  },
-  header: {
-    marginBottom: "28px",
-  },
-  title: {
-    fontSize: "28px",
-    fontWeight: "700",
-    color: "#1a1a1a",
-    margin: "0 0 6px 0",
-  },
-  subtitle: {
-    fontSize: "14px",
-    color: "#888",
-    margin: 0,
-  },
-  tabsWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  tabsRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  filtersRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-  },
-  tabs: {
-    display: "flex",
-    gap: "0px",
-  },
-  tab: {
-    position: "relative",
-    padding: "10px 24px",
-    border: "none",
-    background: "transparent",
-    fontSize: "15px",
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "color 0.2s",
-  },
-  tabActive: {
-    color: "#9b1d2a",
-  },
-  tabInactive: {
-    color: "#888",
-  },
-  tabUnderline: {
-    position: "absolute",
-    bottom: 0,
-    left: "24px",
-    right: "24px",
-    height: "2.5px",
-    backgroundColor: "#9b1d2a",
-    borderRadius: "2px",
-    display: "block",
-  },
-  filters: {
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-  },
-  select: {
-    padding: "8px 32px 8px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    backgroundColor: "#fff",
-    fontSize: "13px",
-    color: "#444",
-    cursor: "pointer",
-    appearance: "auto",
-    minWidth: "160px",
-  },
-  divider: {
-    border: "none",
-    borderTop: "1.5px solid #e5e5e5",
-    margin: "0 0 28px 0",
-  },
-  content: {
-    width: "100%",
-  },
-  summaryGrid: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "32px",
-  },
-};

@@ -85,12 +85,12 @@ const FACTOR_COLORS: Record<string, string> = {
 export default function DecisiontoEnroll({ program }: Props) {
   // TODO: replace sample data with Supabase queries filtered by `program`
   return (
-    <section style={styles.section}>
-      <h2 style={styles.heading}>Decision to Enroll</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Decision to Enroll</h2>
 
       {/* ── Card 1 ── */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>How did you learn about the BSAM program?</p>
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">How did you learn about the BSAM program?</p>
         <ResponsiveContainer width="100%" height={260}>
           <BarChart
             data={LEARN_DATA}
@@ -132,8 +132,8 @@ export default function DecisiontoEnroll({ program }: Props) {
       </div>
 
       {/* ── Card 2 ── */}
-      <div style={styles.card}>
-        <p style={styles.chartTitle}>
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">
           Rate the importance of each of the following factors in your decision to enroll in the BSAM Program
         </p>
         <ResponsiveContainer width="100%" height={340}>
@@ -185,31 +185,3 @@ export default function DecisiontoEnroll({ program }: Props) {
     </section>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  heading: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#9b1d2a",
-    margin: 0,
-    borderBottom: "2px solid #e5e5e5",
-    paddingBottom: "10px",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "24px 28px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
-  },
-  chartTitle: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#333",
-    margin: "0 0 16px 0",
-  },
-};
