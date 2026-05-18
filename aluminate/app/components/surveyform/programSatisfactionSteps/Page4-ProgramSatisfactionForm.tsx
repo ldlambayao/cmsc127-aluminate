@@ -182,7 +182,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext, progressB
               {(["Yes", "No"] as const).map((val) => (
                 <label key={val} style={styles.radioLabel}>
                   <input
-                    type="checkbox"
+                    type="radio"
                     name="consideredLeaving"
                     checked={formData.consideredLeaving === val}
                     onChange={() => setField("consideredLeaving", val)}

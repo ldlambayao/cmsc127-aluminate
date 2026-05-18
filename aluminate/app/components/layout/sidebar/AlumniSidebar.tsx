@@ -11,7 +11,6 @@ const HomeIcon = () => (
   </svg>
 );
 
-// Book icon for Program Satisfaction Form
 const ProgramIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -21,7 +20,6 @@ const ProgramIcon = () => (
   </svg>
 );
 
-// Briefcase icon for Alumni Tracer Form
 const TracerIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="7" width="20" height="14" rx="2" />
@@ -83,7 +81,7 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
   }, [supabase]);
   return (
     <aside style={styles.sidebar} className={className}>
-      {/* Logo — centered */}
+      {/* Logo */}
       <div style={styles.logo}>
         <Image
           src="/aluminate logo.png"
@@ -94,7 +92,6 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
         />
       </div>
 
-      {/* Divider under logo */}
       <hr style={styles.divider} />
 
       {/* Nav */}
@@ -135,7 +132,6 @@ export default function AlumniSidebar({ activePage, setActivePage, className }: 
         </button>
       </nav>
 
-      {/* Divider above logout */}
       <hr style={styles.divider} />
 
       {/* Logout */}
@@ -177,7 +173,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   logo: {
     display: "flex",
-    justifyContent: "center",  // Centers logo horizontally
+    justifyContent: "center",  
     alignItems: "center",
     padding: "0 20px 12px 20px",
   },
@@ -198,7 +194,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     gap: "10px",
     padding: "10px 14px",
-    borderRadius: "999px",     // Fully pill-shaped / more rounded
+    borderRadius: "999px",     
     border: "none",
     background: "transparent",
     color: "#555",

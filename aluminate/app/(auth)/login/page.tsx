@@ -40,7 +40,6 @@ export default function LoginPage({ user }: LoginProps) {
       console.log("Successfully logged in:", data.user);
       setStatus("Welcome, " + data.user.email);
 
-      // Play exit animation, then navigate
       setExiting(true);
 
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -67,22 +66,18 @@ export default function LoginPage({ user }: LoginProps) {
   }
 
   return (
-    /* Background fades in */
     <div
       ref={containerRef}
       className={`page-morph-bg${exiting ? " exiting" : ""}`}
       style={containerStyle}
     >
-      {/* Corner gradient blobs */}
       <div style={blobTopLeftStyle} />
       <div style={blobTopRightStyle} />
       <div style={blobBottomLeftStyle} />
       <div style={blobBottomRightStyle} />
 
-      {/* Two-column layout */}
       <div style={mainSplitLayout}>
 
-        {/* Left — brand fades up */}
         <div className="page-enter-child-1" style={brandColumnStyle}>
           <div style={brandLockupStyle}>
             <Image
@@ -99,7 +94,6 @@ export default function LoginPage({ user }: LoginProps) {
           </p>
         </div>
 
-        {/* Right — card morphs in */}
         <div style={cardColumnStyle}>
           <div
             ref={cardRef}

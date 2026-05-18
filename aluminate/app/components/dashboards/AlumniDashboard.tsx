@@ -130,7 +130,6 @@ export default function AlumniDashboard() {
 
       {/* Main Content */}
       <main style={styles.main}>
-        {/* Top gradient overlay */}
         <div style={styles.topGradientOverlay} />
 
         <div style={styles.contentWrapper} className="dash-content-enter">
@@ -150,7 +149,7 @@ export default function AlumniDashboard() {
                 </p>
               </header>
 
-              {/* Top Dynamic Info Cards */}
+              {/* Info Cards */}
               <div style={styles.topCardsContainer}>
 
                 {/* Card 1: User Profile */}
@@ -224,7 +223,6 @@ export default function AlumniDashboard() {
                 </p>
               </div>
 
-              {/* Vertical Divider */}
               <div style={styles.verticalDivider} />
 
               <div style={styles.aboutLogoSection}>

@@ -87,7 +87,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "46px",
     height: "46px",
     borderRadius: "12px",
-    backgroundColor: "#FCEAEF", // Light pink background
+    backgroundColor: "#FCEAEF", 
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

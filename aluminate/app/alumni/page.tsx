@@ -47,7 +47,5 @@ export default function AlumniPage() {
 
     return () => listener?.subscription.unsubscribe();
   }, [router]);
-  // No morph wrapper — AlumniDashboard handles its own
-  // dash-sidebar-enter and dash-content-enter animations internally.
   return <AlumniDashboard />;
 }

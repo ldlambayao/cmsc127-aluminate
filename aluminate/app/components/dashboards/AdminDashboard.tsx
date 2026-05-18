@@ -76,7 +76,6 @@ export default function AdminDashboard() {
 
   return (
     <main style={styles.main}>
-        {/* Top gradient overlay */}
         <div style={styles.topGradientOverlay} />
 
         <div style={styles.contentWrapper}>

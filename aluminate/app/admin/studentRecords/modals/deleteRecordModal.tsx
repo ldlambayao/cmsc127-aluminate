@@ -36,7 +36,6 @@ export default function DeleteRecordModal({ record, onClose, onSuccess }: Delete
     setLoading(true);
     setError(null);
     try {
-      // Get user_id before deleting alumni
       const { data: alumniRow } = await supabase
         .from("alumni")
         .select("user_id")

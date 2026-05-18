@@ -49,7 +49,7 @@ export default function StudentRecordsPage() {
           <AlumniTracerParticipation />
         </div>
 
-        {/* Record Table — toolbar and table are self-contained cards */}
+        {/* Record Table */}
         <RecordTable onDataChange={handleDataChange} searchQuery={search}/>
       </div>
     </div>

@@ -5,7 +5,6 @@ export default function AlumniLayout({
 }) {
   return (
     <div>
-      {/* Alumni Section Layout */}
       <main>{children}</main>
     </div>
   );

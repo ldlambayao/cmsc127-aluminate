@@ -10,14 +10,12 @@ const HomeIcon = () => (
   </svg>
 );
 
-// Graduation cap icon for Graduate and Alumni Records
 const RecordsIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
   </svg>
 );
 
-// Checkmark/clipboard icon for Program Satisfaction Results
 const SatisfactionIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -25,7 +23,6 @@ const SatisfactionIcon = () => (
   </svg>
 );
 
-// Globe/network icon for Alumni Tracer Results
 const TracerResultsIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10" />
@@ -54,7 +51,7 @@ export default function AdminSidebar({ activePage, setActivePage, className }: S
 
   return (
     <aside style={styles.sidebar} className={className}>
-      {/* Logo — centered */}
+      {/* Logo */}
       <div style={styles.logo}>
         <Image
           src="/aluminate logo.png"
@@ -65,7 +62,6 @@ export default function AdminSidebar({ activePage, setActivePage, className }: S
         />
       </div>
 
-      {/* Divider under logo */}
       <hr style={styles.divider} />
 
       {/* Nav */}
@@ -112,7 +108,6 @@ export default function AdminSidebar({ activePage, setActivePage, className }: S
         </button>
       </nav>
 
-      {/* Divider above logout */}
       <hr style={styles.divider} />
 
       {/* Logout */}

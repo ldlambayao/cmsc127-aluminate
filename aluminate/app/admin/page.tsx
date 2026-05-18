@@ -49,7 +49,5 @@ export default function AdminPage() {
   }, [router]);
 
 
-  // No morph wrapper — AdminDashboard handles its own
-  // dash-sidebar-enter and dash-content-enter animations internally.
   return <AdminDashboard />;
 }
