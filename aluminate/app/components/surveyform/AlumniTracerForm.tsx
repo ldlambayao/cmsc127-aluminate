@@ -138,7 +138,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!natureOfWork || !higherStudies || !listOfHigherStudies || !employmentStatus || !workRelation || !suggestions || !satisfactionLevel || !satisfactionReason || !waysDegprogHelped || !degprogSuggestions || !receiveUpdates || !interviewInterest || !timeToFindJob || !currentEmploymentStatus || !currentWorkplace || !currentPosition) {
+    if (!natureOfWork || !higherStudies || (higherStudies === "Yes" && !listOfHigherStudies) || !suggestions || !satisfactionLevel || !satisfactionReason || !waysDegprogHelped || !degprogSuggestions || !receiveUpdates || !interviewInterest || !timeToFindJob || !currentEmploymentStatus || !currentWorkplace || !currentPosition) {
       setFormError('Please fill out all  fields before submitting the form.');
       console.error("Form submission error: Missing required fields");
       return;
@@ -248,7 +248,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           <h2 style={styles.sectionTitle}>Personal Information</h2>
           <div style={styles.divider} />
 
-          <div style={styles.twoColumnRow}>
+          <div style={styles.threeColumnRow}>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Last Name</label>
               <input style={styles.textInput} value={form.lastName} onChange={set("lastName")} />
@@ -257,13 +257,13 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               <label style={styles.label}>First Name</label>
               <input style={styles.textInput} value={form.firstName} onChange={set("firstName")} />
             </div>
-            <div style={styles.inputGroup}>
+            <div style={styles.inputGroupNarrow}>
               <label style={styles.label}>Middle Initial</label>
               <input style={styles.textInput} value={form.middleInitial} onChange={set("middleInitial")} maxLength={3} />
             </div>
           </div>
 
-          <div style={{ ...styles.twoColumnRow, maxWidth: "500px" }}>
+          <div style={styles.threeColumnRow}>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Month and Year Graduated</label>
               <input style={styles.textInput} type="month" value={form.monthYearGraduated} onChange={set("monthYearGraduated")} />
@@ -272,6 +272,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               <label style={styles.label}>Student Number</label>
               <input style={styles.textInput} value={form.studentNumber} onChange={set("studentNumber")} />
             </div>
+            <div style={styles.inputGroupNarrow} />
           </div>
         </div>
 
@@ -280,31 +281,28 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           <h2 style={styles.sectionTitle}>Employment Details, Further Education, and Career Outcomes</h2>
           <div style={styles.divider} />
 
-          <div style={styles.twoColumnRow}>
+          <div style={{ ...styles.threeColumnRow, alignItems: "flex-end" }}>
             <div style={styles.inputGroup}>
               <label style={styles.questionLabel}>How long did it take you to find a job after graduation?</label>
               <select style={styles.textInput} value={form.timeToFindJob} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setTimeToFindJob(e.target.value); set("timeToFindJob")(e); }}>
                 <option value="">Select option</option>
-                <option>Less than 1 month</option>
+                <option>Less than a week</option>
+                <option>1–3 weeks</option>
                 <option>1–3 months</option>
-                <option>4–6 months</option>
-                <option>7–12 months</option>
-                <option>More than 1 year</option>
-                <option>Not applicable</option>
+                <option>4–11 months</option>
               </select>
             </div>
             <div style={styles.inputGroup}>
               <label style={styles.questionLabel}>Current status of employment</label>
               <select style={styles.textInput} value={form.currentEmploymentStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setCurrentEmploymentStatus(e.target.value); set("currentEmploymentStatus")(e); }}>
                 <option value="">Select option</option>
-                <option>Employed (Full-time)</option>
-                <option>Employed (Part-time)</option>
-                <option>Self-employed / Business owner</option>
-                <option>Unemployed (looking for work)</option>
-                <option>Unemployed (not looking for work)</option>
-                <option>Further studies / Not yet employed</option>
+                <option>Employed</option>
+                <option>Unemployed</option>
+                <option>Self-employed</option>
+                <option>Business</option>
               </select>
             </div>
+            <div style={styles.inputGroupNarrow} />
           </div>
 
           <div style={styles.inputGroup}>
@@ -317,7 +315,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
             <input style={{ ...styles.textInput, maxWidth: "260px" }} type="date" value={form.dateHired} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDateHired(e.target.value); set("dateHired")(e); }} />
           </div>
 
-          <div style={styles.twoColumnRow}>
+          <div style={{ ...styles.twoColumnRow, maxWidth: "100%" }}>
             <div style={styles.inputGroup}>
               <label style={styles.questionLabel}>Where do you work now? (Please specify company name and location.)</label>
               <input style={styles.textInput} value={form.currentWorkplace} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCurrentWorkplace(e.target.value); set("currentWorkplace")(e); }} placeholder="" />
@@ -332,14 +330,13 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
             <label style={styles.questionLabel}>
               What is the nature of your work? (Education, IT/ICT Position in the
               Organization/Company, Business, Research and Development, Others, etc.)
-              If currently employed, please provide the name of your employer.
             </label>
             <textarea style={styles.textarea} rows={4} value={form.workField} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setNatureOfWork(e.target.value); set("workField")(e)}}
-              placeholder="Share with us the nature of your work..." />
+              placeholder="Tell us about the nature of your work..." />
           </div>
 
-          <div style={styles.twoColumnRow}>
-            <div style={styles.inputGroup}>
+          <div style={styles.studiesRow}>
+            <div style={styles.narrowDropdownGroup}>
               <label style={styles.questionLabel}>Are you pursuing higher studies?</label>
               <select style={styles.textInput} value={form.pursuingHigherStudies} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {setHigherStudies(e.target.value); set("pursuingHigherStudies")(e)}}>
                 <option value="">Select option</option>
@@ -347,53 +344,18 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
                 <option>No</option>
               </select>
             </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>
-                Please specify degree program, field of study, and university.
-              </label>
-              <textarea style={styles.textarea} rows={3} value={form.degreesHeld} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setListOfHigherStudies(e.target.value); set("degreesHeld")(e)}}
-                placeholder="List each program if applicable..." />
-            </div>
+            {form.pursuingHigherStudies === "Yes" && (
+              <div style={styles.inputGroup}>
+                <label style={styles.questionLabel}>
+                  Please specify degree program, field of study, and university.
+                </label>
+                <textarea style={styles.textarea} rows={3} value={form.degreesHeld} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setListOfHigherStudies(e.target.value); set("degreesHeld")(e)}}
+                  placeholder="List each program if applicable..." />
+              </div>
+            )}
           </div>
 
-          <div style={styles.twoColumnRow}>
-            <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Are you currently employed?</label>
-              <div style={styles.checkboxList}>
-                {["Yes", "No"].map((opt) => (
-                  <label key={opt} style={styles.checkboxLabel}>
-                    <input
-                      type="radio"
-                      name="employed"
-                      value={opt}
-                      checked={form.employed === opt}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setEmploymentStatus(e.target.value); set("employed")(e)}}
-                      style={styles.checkboxInput}
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Is your work related to your degree program?</label>
-              <div style={styles.checkboxList}>
-                {["Yes", "No"].map((opt) => (
-                  <label key={opt} style={styles.checkboxLabel}>
-                    <input
-                      type="radio"
-                      name="workRelated"
-                      value={opt}
-                      checked={form.workRelated === opt}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setWorkRelation(e.target.value); set("workRelated")(e)}}
-                      style={styles.checkboxInput}
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
+
         </div>
 
         {/* ── PROGRAM FEEDBACK ── */}
@@ -414,19 +376,19 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
             <label style={styles.questionLabel}>
               What is your level of satisfaction for your undergraduate study under the BSCS degree program?
             </label>
-            <div style={styles.ratingCard}>
+            <div style={styles.radioRow}>
               {satisfactionLevels.map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  style={{
-                    ...styles.satisfactionBtn,
-                    ...(form.satisfaction === level ? styles.satisfactionBtnActive : {}),
-                  }}
-                  onClick={() => {setForm((prev) => ({ ...prev, satisfaction: level })); setSatisfactionLevel(level)}}
-                >
+                <label key={level} style={styles.radioLabel}>
+                  <input
+                    type="radio"
+                    name="satisfaction"
+                    value={level}
+                    checked={form.satisfaction === level}
+                    onChange={() => { setForm((prev) => ({ ...prev, satisfaction: level })); setSatisfactionLevel(level); }}
+                    style={styles.checkboxInput}
+                  />
                   {level}
-                </button>
+                </label>
               ))}
             </div>
           </div>
@@ -498,7 +460,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   );
 }
 
-// --- Styles --- (exact mirror of ProgramSatisfactionForm styles)
+// --- Styles --- 
 const styles: { [key: string]: React.CSSProperties } = {
   content: {
     width: "100%",
@@ -549,6 +511,45 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "100%",
     maxWidth: "700px",
   },
+  compactDropdownRow: {
+    display: "flex",
+    gap: "32px",
+    width: "100%",
+    maxWidth: "900px",
+    alignItems: "flex-end",
+  },
+  studiesRow: {
+    display: "flex",
+    gap: "24px",
+    width: "100%",
+    alignItems: "flex-start",
+  },
+  narrowDropdownGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    flex: "0 0 210px",
+    width: "210px",
+  },
+  dropdownGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    flex: 1,
+  },
+  threeColumnRow: {
+    display: "flex",
+    gap: "24px",
+    width: "100%",
+    maxWidth: "900px",
+  },
+  inputGroupNarrow: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    flex: "0 0 120px",
+    width: "120px",
+  },
   inputGroup: {
     display: "flex",
     flexDirection: "column",
@@ -597,6 +598,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     resize: "vertical" as const,
     fontFamily: "inherit",
   },
+  radioRow: {
+    display: "flex",
+    flexDirection: "row" as const,
+    justifyContent: "space-evenly",
+    marginTop: "4px",
+    flexWrap: "wrap" as const,
+  },
+  radioLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "13px",
+    color: "#333",
+    cursor: "pointer",
+    fontWeight: "400",
+  },
   ratingCard: {
     display: "flex",
     alignItems: "center",
@@ -641,8 +658,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: "pointer",
   },
   checkboxInput: {
-    width: "16px",
-    height: "16px",
+    width: "20px",
+    height: "20px",
     accentColor: "#9b1d2a",
     cursor: "pointer",
   },

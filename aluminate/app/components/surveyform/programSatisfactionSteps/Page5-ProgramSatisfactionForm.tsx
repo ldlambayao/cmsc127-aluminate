@@ -283,7 +283,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   otherGroup:    { display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" },
   radioList:     { display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" },
   radioLabel:    { display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", color: "#333", cursor: "pointer" },
-  radioInputNormal: { width: "16px", height: "16px", accentColor: "#9b1d2a", cursor: "pointer" },
+  radioInputNormal: { width: "20px", height: "20px", accentColor: "#9b1d2a", cursor: "pointer" },
+  
   // Buttons
   actionRow:   { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:     { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },

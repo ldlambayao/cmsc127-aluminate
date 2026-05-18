@@ -322,12 +322,15 @@ export default function ProgramSatisfactionForm({ onNext, progressBar }: Program
                   {/* ... label part ... */}
                   <div style={styles.factorRadiosCol}>
                     {[1, 2, 3, 4, 5].map((val) => (
-                      <input
-                        type="radio"
-                        name={`factor-${idx}`}
-                        checked={formData.enrollmentFactors[item] === val}
-                        onChange={() => setFactorRating(item, val)}
-                      />
+                      <div key={val} style={styles.radioWrapperCenter}>
+                        <input
+                          type="radio"
+                          name={`factor-${idx}`}
+                          checked={formData.enrollmentFactors[item] === val}
+                          onChange={() => setFactorRating(item, val)}
+                          style={styles.radioInputFactor}
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -587,16 +590,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#333",
   },
   radioInputLarge: {
-    width: "18px",
-    height: "18px",
+    width: "22px",
+    height: "22px",
     accentColor: "#9b1d2a",
     cursor: "pointer",
   },
   radioInputNormal: {
-    width: "16px",
-    height: "16px",
+    width: "20px",
+    height: "20px",
     accentColor: "#9b1d2a",
     cursor: "pointer",
+  },
+  radioInputFactor: {
+    width: "20px",
+    height: "20px",
+    accentColor: "#9b1d2a",
+    cursor: "pointer",
+    display: "block",
   },
   checkboxList: {
     display: "flex",

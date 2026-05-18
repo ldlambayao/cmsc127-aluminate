@@ -22,7 +22,6 @@ interface Page3FormProps {
 }
 
 // --- Constants ---
-// Column arrays use plain string (non-nullable) — the nullable types live only in form state
 const agreeColumns: { value: string; label: string }[] = [
   { value: "Strongly Agree",    label: "Strongly Agree"    },
   { value: "Agree",             label: "Agree"             },
@@ -59,7 +58,6 @@ const servicesItems = [
 ];
 
 // --- Reusable Rating Table ---
-// Uses plain `string` so it works with any nullable union type in the parent
 interface RatingTableProps {
   items: string[];
   groupKey: string;
@@ -255,6 +253,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   inputGroup:    { display: "flex", flexDirection: "column", gap: "10px", flex: 1, width: "100%" },
   questionLabel: { fontSize: "13px", color: "#333", fontWeight: "500", lineHeight: "1.5", marginBottom: "4px" },
   textarea:      { border: "1px solid #dcdcdc", borderRadius: "8px", padding: "16px", fontSize: "13px", color: "#333", outline: "none", width: "100%", backgroundColor: "#ffffff", resize: "vertical", fontFamily: "inherit" },
+  
   // Table
   tableWrapper:    { display: "flex", flexDirection: "column", gap: "4px", marginTop: "12px", width: "100%" },
   tableHeaderRow:  { display: "flex", padding: "0 24px", marginBottom: "6px" },
@@ -265,7 +264,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   tableRowOdd:     { display: "flex", backgroundColor: "#fafafa", borderRadius: "12px", padding: "16px 24px", boxShadow: "0 1px 4px rgba(0,0,0,0.02)", width: "100%", alignItems: "center" },
   tableItemText:   { fontSize: "12px", color: "#333", lineHeight: "1.5" },
   radioWrapperCenter: { flex: 1, display: "flex", justifyContent: "center", alignItems: "center" },
-  radioInputNormal:   { width: "16px", height: "16px", accentColor: "#9b1d2a", cursor: "pointer" },
+  radioInputNormal:   { width: "20px", height: "20px", accentColor: "#9b1d2a", cursor: "pointer" },
+  
   // Buttons
   actionRow: { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:   { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },

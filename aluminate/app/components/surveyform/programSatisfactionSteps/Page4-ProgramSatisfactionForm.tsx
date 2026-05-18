@@ -182,7 +182,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext, progressB
               {(["Yes", "No"] as const).map((val) => (
                 <label key={val} style={styles.radioLabel}>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name="consideredLeaving"
                     checked={formData.consideredLeaving === val}
                     onChange={() => setField("consideredLeaving", val)}
@@ -209,7 +209,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext, progressB
               {yearSemesterOptions.map((option) => (
                 <label key={option} style={styles.radioLabel}>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name="favoriteYearSemester"
                     checked={formData.favoriteYearSemester === option}
                     onChange={() => setField("favoriteYearSemester", option)}
@@ -290,9 +290,10 @@ const styles: { [key: string]: React.CSSProperties } = {
   inputGroup:    { display: "flex", flexDirection: "column", gap: "10px", flex: 1, width: "100%" },
   questionLabel: { fontSize: "13px", color: "#333", fontWeight: "500", lineHeight: "1.5", marginBottom: "4px" },
   textarea:      { border: "1px solid #dcdcdc", borderRadius: "8px", padding: "16px", fontSize: "13px", color: "#333", outline: "none", width: "100%", backgroundColor: "#ffffff", resize: "vertical", fontFamily: "inherit" },
-  radioList:     { display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" },
+  radioList:     { display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" },
   radioLabel:    { display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", color: "#333", cursor: "pointer" },
-  checkboxList:  { display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" },
+  checkboxList:  { display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" },
+  
   // Table
   tableWrapper:    { display: "flex", flexDirection: "column", gap: "4px", marginTop: "12px", width: "100%" },
   tableHeaderRow:  { display: "flex", padding: "0 24px", marginBottom: "6px" },
@@ -303,7 +304,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   tableRowOdd:     { display: "flex", backgroundColor: "#fafafa", borderRadius: "12px", padding: "16px 24px", boxShadow: "0 1px 4px rgba(0,0,0,0.02)", width: "100%", alignItems: "center" },
   tableItemText:   { fontSize: "12px", color: "#333", lineHeight: "1.5" },
   radioWrapperCenter: { flex: 1, display: "flex", justifyContent: "center", alignItems: "center" },
-  radioInputNormal:   { width: "16px", height: "16px", accentColor: "#9b1d2a", cursor: "pointer" },
+  radioInputNormal:   { width: "20px", height: "20px", accentColor: "#9b1d2a", cursor: "pointer" },
+  
   // Buttons
   actionRow: { display: "flex", justifyContent: "center", gap: "16px", marginTop: "20px" },
   backBtn:   { backgroundColor: "#ffffff", color: "#9b1d2a", border: "2px solid #9b1d2a", borderRadius: "24px", padding: "12px 64px", fontSize: "14px", fontWeight: "600", cursor: "pointer" },

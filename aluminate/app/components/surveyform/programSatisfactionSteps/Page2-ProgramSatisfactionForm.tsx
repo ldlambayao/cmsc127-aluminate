@@ -54,7 +54,7 @@ const learningOutcomeItems = [
   "Readiness in confidence to pursue a master's degree in computer science",
 ];
 
-// --- Reusable Satisfaction Table ---
+// --- Satisfaction Table ---
 interface SatisfactionTableProps {
   items: string[];
   groupKey: string;
@@ -333,8 +333,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
   },
   radioInputNormal: {
-    width: "16px",
-    height: "16px",
+    width: "20px",
+    height: "20px",
     accentColor: "#9b1d2a",
     cursor: "pointer",
   },
