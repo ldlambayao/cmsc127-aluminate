@@ -16,58 +16,61 @@ interface Props {
   program?: string;
 }
 
-// â”€â”€ Factors & colors (light â†’ dark pink/red) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Factors & colors (light â†’ dark pink/red) 
 const FACTORS = [
-  { key: "Overall BSAM curriculum at UP Mindanao",                                       color: "#f5dede" },
-  { key: "Overall experience at the Department of Math, Physics, and Computer Science",   color: "#ebb8b8" },
-  { key: "Your academic experience at UP Mindanao",                                       color: "#e09898" },
-  { key: "The atmosphere of the faculty",                                                 color: "#d07878" },
-  { key: "In meeting/fulfilling the expected program outcomes",                           color: "#b85050" },
-  { key: "Alignment of the module learning outcomes with the program learning outcomes",  color: "#9b1d2a" },
+  { key: "DMPCS Staff",                                       color: "#f5dede" },
+  { key: "Faculty members, in general",   color: "#ebb8b8" },
+  { key: "Faculty members who handles the courses",                                       color: "#e09898" },
+  { key: "Office of the University Registrar",                                                 color: "#d07878" },
+  { key: "Cashier's Office",                           color: "#b85050" },
+  { key: "University Library",  color: "#9b1d2a" },
+  { key: "IT Office",  color: "#9b1d2a" },
+  { key: "Office of Student Affairs",  color: "#9b1d2a" },
+  { key: "Janitors",  color: "#9b1d2a" },
+  { key: "Guards",  color: "#9b1d2a" },
 ];
 
-// â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // TODO: replace with Supabase query filtered by `program`
 const CHART_DATA = [
   {
     level: "Very Satisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       42,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  32,
-    "Your academic experience at UP Mindanao":                                      22,
-    "The atmosphere of the faculty":                                                16,
-    "In meeting/fulfilling the expected program outcomes":                          10,
-    "Alignment of the module learning outcomes with the program learning outcomes": 5,
+    "DMPCS Staff": 42,
+    "Faculty members, in general":  32,
+    "Faculty members who handles the courses": 22,
+    "Office of the University Registrar":  16,
+    "Cashier's Office":  10,
+    "University Library": 5,
   },
   {
     level: "Satisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       72,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  66,
-    "Your academic experience at UP Mindanao":                                      60,
-    "The atmosphere of the faculty":                                                54,
-    "In meeting/fulfilling the expected program outcomes":                          48,
-    "Alignment of the module learning outcomes with the program learning outcomes": 42,
+    "DMPCS Staff": 42,
+    "Faculty members, in general":  32,
+    "Faculty members who handles the courses": 22,
+    "Office of the University Registrar":  16,
+    "Cashier's Office":  10,
+    "University Library": 5,
   },
   {
     level: "Dissatisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       52,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  48,
-    "Your academic experience at UP Mindanao":                                      62,
-    "The atmosphere of the faculty":                                                56,
-    "In meeting/fulfilling the expected program outcomes":                          36,
-    "Alignment of the module learning outcomes with the program learning outcomes": 30,
+     "DMPCS Staff": 42,
+    "Faculty members, in general":  32,
+    "Faculty members who handles the courses": 22,
+    "Office of the University Registrar":  16,
+    "Cashier's Office":  10,
+    "University Library": 5,
   },
   {
     level: "Very Dissatisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       36,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  30,
-    "Your academic experience at UP Mindanao":                                      24,
-    "The atmosphere of the faculty":                                                18,
-    "In meeting/fulfilling the expected program outcomes":                          14,
-    "Alignment of the module learning outcomes with the program learning outcomes": 8,
+     "DMPCS Staff": 42,
+    "Faculty members, in general":  32,
+    "Faculty members who handles the courses": 22,
+    "Office of the University Registrar":  16,
+    "Cashier's Office":  10,
+    "University Library": 5,
   },
 ];
 
-// â”€â”€ Sample open-ended responses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Sample open-ended responses 
 const RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
@@ -144,12 +147,9 @@ export default function ServicesProvidedbyUP({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* â”€â”€ Open-ended response card â”€â”€ */}
+      {/* Open-ended response card â”€â”€ */}
       <div className="bg-white rounded-2xl p-7 shadow-sm">
-        <p className="text-xs font-semibold text-gray-800 mb-4">Please explain your answer above:</p>
-        <p className="font-bold text-red-900">
-          "Please rate how the culture in your school environment captures the factors stated below."
-        </p>
+        <p className="text-sm font-semibold text-gray-800 mb-4">Others</p>
 
         <div className="flex flex-col gap-5">
           {visible.map((r, i) => (

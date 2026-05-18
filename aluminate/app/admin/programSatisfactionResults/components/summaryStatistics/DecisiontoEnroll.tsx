@@ -28,59 +28,78 @@ const LEARN_DATA = [
 const FACTORS_DATA = [
   {
     rating: "1",
-    "Love of Science": 90,
-    "Reputation of the BSAM program": 10,
-    "Reputation/Expertise of the Faculty members": 70,
-    "The program matches my interests": 5,
-    "Financial consideration": 15,
-    "Recommended by someone": 30,
+    "Reputation of UP Mindanao": 20,
+    "Reputation of UP Mindanao Department of Math, Physics and Computer Science": 10,
+    "Reputation of the BSAM program": 15,
+    "Reputation/Expertise of the Faculty members": 5,
+    "The program matches my interests": 10,
+    "Financial consideration": 25,
+    "Recommendion of a friend" : 5,
+    "Encouragement of parent/s or relatives": 15,
+    "Encouragement of a faculty member" : 10,
   },
   {
     rating: "2",
-    "Love of Science": 15,
-    "Reputation of the BSAM program": 80,
-    "Reputation/Expertise of the Faculty members": 10,
-    "The program matches my interests": 90,
-    "Financial consideration": 10,
-    "Recommended by someone": 20,
+    "Reputation of UP Mindanao": 20,
+    "Reputation of UP Mindanao Department of Math, Physics and Computer Science": 10,
+    "Reputation of the BSAM program": 15,
+    "Reputation/Expertise of the Faculty members": 5,
+    "The program matches my interests": 10,
+    "Financial consideration": 25,
+    "Recommendion of a friend" : 5,
+    "Encouragement of parent/s or relatives": 15,
+    "Encouragement of a faculty member" : 10,
   },
   {
     rating: "3",
-    "Love of Science": 20,
-    "Reputation of the BSAM program": 60,
-    "Reputation/Expertise of the Faculty members": 20,
-    "The program matches my interests": 75,
+    "Reputation of UP Mindanao": 20,
+    "Reputation of UP Mindanao Department of Math, Physics and Computer Science": 10,
+    "Reputation of the BSAM program": 15,
+    "Reputation/Expertise of the Faculty members": 5,
+    "The program matches my interests": 10,
     "Financial consideration": 25,
-    "Recommended by someone": 10,
+    "Recommendion of a friend" : 5,
+    "Encouragement of parent/s or relatives": 15,
+    "Encouragement of a faculty member" : 10,
   },
   {
     rating: "4",
-    "Love of Science": 15,
-    "Reputation of the BSAM program": 10,
-    "Reputation/Expertise of the Faculty members": 20,
-    "The program matches my interests": 85,
-    "Financial consideration": 30,
-    "Recommended by someone": 5,
+    "Reputation of UP Mindanao": 20,
+    "Reputation of UP Mindanao Department of Math, Physics and Computer Science": 10,
+    "Reputation of the BSAM program": 15,
+    "Reputation/Expertise of the Faculty members": 5,
+    "The program matches my interests": 10,
+    "Financial consideration": 25,
+    "Recommendion of a friend" : 5,
+    "Encouragement of parent/s or relatives": 15,
+    "Encouragement of a faculty member" : 10,
   },
   {
     rating: "5",
-    "Love of Science": 10,
-    "Reputation of the BSAM program": 20,
-    "Reputation/Expertise of the Faculty members": 15,
-    "The program matches my interests": 40,
-    "Financial consideration": 20,
-    "Recommended by someone": 10,
+    "Reputation of UP Mindanao": 20,
+    "Reputation of UP Mindanao Department of Math, Physics and Computer Science": 10,
+    "Reputation of the BSAM program": 15,
+    "Reputation/Expertise of the Faculty members": 5,
+    "The program matches my interests": 10,
+    "Financial consideration": 25,
+    "Recommendion of a friend" : 5,
+    "Encouragement of parent/s or relatives": 15,
+    "Encouragement of a faculty member" : 10,
   },
 ];
 
 const FACTOR_COLORS: Record<string, string> = {
-  "Love of Science":                             "#4DC8C8",
-  "Reputation of the BSAM program":              "#4D7EC8",
-  "Reputation/Expertise of the Faculty members": "#F4A261",
-  "The program matches my interests":            "#E76F51",
-  "Financial consideration":                     "#E8C4C4",
-  "Recommended by someone":                      "#9b1d2a",
+  "Reputation of UP Mindanao":                     "#E8C4C4",
+  "Reputation of UP Mindanao Department of Math, Physics and Computer Science": "#E76F51",
+  "Reputation of the BSAM program":                "#F4A261",
+  "Reputation/Expertise of the Faculty members": "#9b1d2a",
+  "The program matches my interests":            "#D89A9A",
+  "Financial consideration":                     "#E09898",
+  "Recommendion of a friend" :                   "#E8C4C4",
+  "Encouragement of parent/s or relatives":      "#E76F51",
+  "Encouragement of a faculty member" :          "#F4A261",
 };
+
 
 export default function DecisiontoEnroll({ program }: Props) {
   // TODO: replace sample data with Supabase queries filtered by `program`
@@ -136,7 +155,7 @@ export default function DecisiontoEnroll({ program }: Props) {
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Rate the importance of each of the following factors in your decision to enroll in the BSAM Program
         </p>
-        <ResponsiveContainer width="100%" height={340}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={FACTORS_DATA}
             layout="vertical"

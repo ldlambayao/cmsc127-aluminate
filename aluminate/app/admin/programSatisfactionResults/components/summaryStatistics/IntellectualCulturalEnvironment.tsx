@@ -17,54 +17,54 @@ interface Props {
   program?: string;
 }
 
-// â”€â”€ Factors & colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Factors & colors 
 const FACTORS = [
-  { key: "Immersion to the values of a liberal arts background",  color: "#f5dede" },
-  { key: "Faculty members are exemplary of 'honor and excellence'", color: "#e8b4b4" },
-  { key: "Students are encouraged to participate",                color: "#d07878" },
+  { key: "Inclusivity (individuals with diverse backgrounds)",  color: "#f5dede" },
+  { key: "Faculty members serve as examples of honor and excellence", color: "#e8b4b4" },
+  { key: "Students are encouraged to practice ",                color: "#d07878" },
   { key: "The expertise of the faculty",                          color: "#9b1d2a" },
 ];
 
-// â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Chart data 
 const CHART_DATA = [
   {
     level: "Strongly agree",
-    "Immersion to the values of a liberal arts background":  69.03,
-    "Faculty members are exemplary of 'honor and excellence'": 51.75,
+    "Inclusivity (individuals with diverse backgrounds)":  69.03,
+    "Faculty members serve as examples of honor and excellence": 51.75,
     "Students are encouraged to participate":                83.27,
-    "The expertise of the faculty":                          0,
+    "The expertise of the faculty":                          90,
   },
   {
     level: "Agree",
-    "Immersion to the values of a liberal arts background":  47.89,
-    "Faculty members are exemplary of 'honor and excellence'": 87.03,
-    "Students are encouraged to participate":                55.79,
-    "The expertise of the faculty":                          0,
+    "Inclusivity (individuals with diverse backgrounds)":  47.89,
+    "Faculty members serve as examples of honor and excellence": 87.03,
+    "Students are encouraged to practice ":                55.79,
+    "The expertise of the faculty":                          50,
   },
   {
     level: "Disagree",
-    "Immersion to the values of a liberal arts background":  17.23,
-    "Faculty members are exemplary of 'honor and excellence'": 77.17,
-    "Students are encouraged to participate":                70.97,
-    "The expertise of the faculty":                          0,
+    "Inclusivity (individuals with diverse backgrounds)":  17.23,
+    "Faculty members serve as examples of honor and excellence": 77.17,
+    "Students are encouraged to practice ":                70.97,
+    "The expertise of the faculty":                          20,
   },
   {
     level: "Strongly disagree",
-    "Immersion to the values of a liberal arts background":  31.68,
-    "Faculty members are exemplary of 'honor and excellence'": 34.99,
-    "Students are encouraged to participate":                48.09,
-    "The expertise of the faculty":                          0,
+    "Inclusivity (individuals with diverse backgrounds)":  31.68,
+    "Faculty members serve as examples of honor and excellence": 34.99,
+    "Students are encouraged to practice ":                48.09,
+    "The expertise of the faculty":                          11,
   },
 ];
 
-// â”€â”€ Sample open-ended responses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Sample open-ended responses 
 const RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
-// â”€â”€ Custom label: only show non-zero values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Custom label: only show non-zero values 
 const renderLabel = (props: any) => {
   const { x, y, width, height, value } = props;
   if (!value || value === 0) return null;
@@ -125,7 +125,7 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
             <Tooltip
               cursor={{ fill: "rgba(0,0,0,0.03)" }}
               contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
-              formatter={(value: number) => (value === 0 ? "No data" : value)}
+              formatter={(value: any) => (value === 0 ? "No data" : value)}
             />
             <Legend
               layout="vertical"
@@ -180,7 +180,6 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
   );
 }
 
-// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 

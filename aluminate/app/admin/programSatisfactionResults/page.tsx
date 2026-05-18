@@ -119,6 +119,18 @@ export default function ProgramSatisfactionResultsPage() {
               )}
               {(!selectedSection || selectedSection === "decisionToEnroll") && (
                 <DecisiontoEnroll program={selectedProgram} />
+              )}  
+              {(!selectedSection || selectedSection === "transitionToProgram") && (
+                <TransitiontoProgram program={selectedProgram} />
+              )}
+              {(!selectedSection || selectedSection === "overallSatisfaction") && (
+                <OverallSatisfaction program={selectedProgram} />
+              )}
+              {(!selectedSection || selectedSection === "intellectualCulturalEnvironment") && (
+                <IntellectualCulturalEnvironment program={selectedProgram} />
+              )}
+              {(!selectedSection || selectedSection === "servicesProvidedByUP") && (
+                <ServicesProvidedbyUP program={selectedProgram} />
               )}
               {(!selectedSection || selectedSection === "factorsAcademicProgress") && (
                 <FactorsAcademicProgress program={selectedProgram} />
@@ -126,18 +138,8 @@ export default function ProgramSatisfactionResultsPage() {
               {(!selectedSection || selectedSection === "improvementOfProgram") && (
                 <ImprovementofProgram program={selectedProgram} />
               )}
-              {(!selectedSection || selectedSection === "intellectualCulturalEnvironment") && (
-                <IntellectualCulturalEnvironment program={selectedProgram} />
-              )}
-              {(!selectedSection || selectedSection === "overallSatisfaction") && (
-                <OverallSatisfaction program={selectedProgram} />
-              )}
-              {(!selectedSection || selectedSection === "servicesProvidedByUP") && (
-                <ServicesProvidedbyUP program={selectedProgram} />
-              )}
-              {(!selectedSection || selectedSection === "transitionToProgram") && (
-                <TransitiontoProgram program={selectedProgram} />
-              )}
+              
+              
             </div>
           ) : (
             <div className="flex flex-col gap-8">

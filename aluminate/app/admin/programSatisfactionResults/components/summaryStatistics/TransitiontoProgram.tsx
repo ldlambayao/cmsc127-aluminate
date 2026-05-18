@@ -16,7 +16,6 @@ interface Props {
   program?: string;
 }
 
-// â”€â”€ Sample data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DIFFICULTY_DATA = [
   { rating: "1", "Difficulty Level": 82 },
   { rating: "2", "Difficulty Level": 88 },
@@ -50,7 +49,7 @@ const SUGGEST_RESPONSES: Response[] = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
 ];
 
-// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Sub-components 
 function ResponseCard({
   question,
   questionHighlight,
@@ -92,13 +91,13 @@ function ResponseCard({
   );
 }
 
-// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Main component 
 export default function TransitiontoProgram({ program }: Props) {
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Transition to the Program</h2>
 
-      {/* â”€â”€ Two charts side by side â”€â”€ */}
+      {/*  Two charts side by side  */}
       <div className="flex gap-4">
         {/* Chart 1 */}
         <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
@@ -142,7 +141,7 @@ export default function TransitiontoProgram({ program }: Props) {
         {/* Chart 2 */}
         <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
           <p className="text-xs font-semibold text-gray-800 mb-4">What will make the transition easier for you?</p>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart
               data={TRANSITION_DATA}
               margin={{ top: 10, right: 10, left: -10, bottom: 40 }}

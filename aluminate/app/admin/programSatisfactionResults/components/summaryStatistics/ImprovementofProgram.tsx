@@ -19,23 +19,23 @@ interface Props {
   program?: string;
 }
 
-// â”€â”€ Chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Chart data 
 const STRENGTHS_DATA = [
-  { x: "0", count: 18 },
-  { x: "1", count: 32 },
-  { x: "2", count: 55 },
-  { x: "3", count: 40 },
-  { x: "4", count: 28 },
-  { x: "5", count: 45 },
+  { x: "Courses are relevant", count: 18 },
+  { x: "Facilities and equipment are adequate (classrooms, library, projectors)", count: 32 },
+  { x: "Resources are sufficient (wifi, reading materials, books)", count: 55 },
+  { x: "Expertise of the faculty members", count: 40 },
+  { x: "Supportive faculty members", count: 28 },
+  { x: "Supportive non-teaching staff", count: 45 },
 ];
 
 const WEAKNESSES_DATA = [
-  { x: "0", count: 22 },
-  { x: "1", count: 38 },
-  { x: "2", count: 60 },
-  { x: "3", count: 50 },
-  { x: "4", count: 30 },
-  { x: "5", count: 52 },
+  { x: "Some courses are irrelevant", count: 22 },
+  { x: "Facilities and equipment are not adequate (classrooms, library, projectors)", count: 38 },
+  { x: "Resources are not sufficient (wifi, reading materials, books)", count: 60 },
+  { x: "Lack of expertise of some faculty members", count: 50 },
+  { x: "Lack of support from some faculty members", count: 30 },
+  { x: "Lack of support from non-teaching staff", count: 52 },
 ];
 
 const RECOMMEND_DATA = [
@@ -44,27 +44,35 @@ const RECOMMEND_DATA = [
 ];
 const DONUT_COLORS = ["#D89A9A", "#f5dede"];
 
-// â”€â”€ Sample responses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Sample responses 
 const SAMPLE_RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
-// â”€â”€ Custom donut center label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Custom donut center label 
 const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
   <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
     86.08
   </text>
 );
 
-// â”€â”€ Reusable pill bar chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Reusable pill bar chart 
 function PillBarChart({ data, color }: { data: { x: string; count: number }[]; color: string }) {
   return (
-    <ResponsiveContainer width="100%" height={180}>
-      <BarChart data={data} margin={{ top: 10, right: 8, left: -20, bottom: 5 }} barCategoryGap="25%">
+    <ResponsiveContainer width="100%" height={520}>
+      <BarChart data={data} margin={{ top: 10, right: 8, left: 8, bottom: 100 }} barCategoryGap="25%">
         <CartesianGrid vertical={false} stroke="#f0f0f0" />
-        <XAxis dataKey="x" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#888" }} />
+        <XAxis 
+          dataKey="x" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fontSize: 10, fill: "#888" }}
+          angle={-45}
+          textAnchor="end"
+          height={100}
+        />
         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#888" }} />
         <Tooltip
           cursor={{ fill: "rgba(216,154,154,0.10)" }}
@@ -76,7 +84,7 @@ function PillBarChart({ data, color }: { data: { x: string; count: number }[]; c
   );
 }
 
-// â”€â”€ Reusable response card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Reusable response card 
 function ResponseCard({
   question,
   isHighlighted = false,
@@ -113,13 +121,11 @@ function ResponseCard({
   );
 }
 
-// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function ImprovementofProgram({ program }: Props) {
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Other questions for the improvement of the program</h2>
 
-      {/* â”€â”€ Two bar charts side by side â”€â”€ */}
       <div className="flex gap-4">
         <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
           <p className="text-xs font-semibold text-gray-800 mb-4">
@@ -135,13 +141,11 @@ export default function ImprovementofProgram({ program }: Props) {
         </div>
       </div>
 
-      {/* â”€â”€ Response: improve student experience â”€â”€ */}
       <ResponseCard
         question="What can you suggest to improve your overall BSAM student experience?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* â”€â”€ Donut: Will you recommend â”€â”€ */}
       <div className="bg-white rounded-2xl p-7 shadow-sm">
         <p className="text-xs font-semibold text-gray-800 mb-4">Will you recommend the BSAM program?</p>
         <ResponsiveContainer width="100%" height={180}>
@@ -178,20 +182,17 @@ export default function ImprovementofProgram({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* â”€â”€ Response: Why or why not (highlighted) â”€â”€ */}
       <ResponseCard
         question="Why or why not?"
         isHighlighted
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* â”€â”€ Response: overall improvement suggestion â”€â”€ */}
       <ResponseCard
         question="What can you suggest for the overall improvement of the BSAM program?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* â”€â”€ Response: additional comments (long question) â”€â”€ */}
       <ResponseCard
         question="Please write here any additional comment/s or suggestion/s you may have on how we might have improved your experience in taking the degree program or how we can improve the program for the future takers of the degree program."
         responses={SAMPLE_RESPONSES}
@@ -200,7 +201,6 @@ export default function ImprovementofProgram({ program }: Props) {
   );
 }
 
-// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 

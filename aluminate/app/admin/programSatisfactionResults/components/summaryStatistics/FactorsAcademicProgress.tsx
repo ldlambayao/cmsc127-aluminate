@@ -19,88 +19,134 @@ interface Props {
   program?: string;
 }
 
-// â”€â”€ Shared factor colors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Shared factor colors 
 const FACTORS = [
-  { key: "Overall BSAM curriculum at UP Mindanao",                                       color: "#f5dede" },
-  { key: "Overall experience at the Department of Math, Physics, and Computer Science",   color: "#ebb8b8" },
-  { key: "Your academic experience at UP Mindanao",                                       color: "#e09898" },
-  { key: "The atmosphere of the faculty",                                                 color: "#d07878" },
-  { key: "In meeting/fulfilling the expected program outcomes",                           color: "#b85050" },
-  { key: "Alignment of the module learning outcomes with the program learning outcomes",  color: "#9b1d2a" },
+  { key: "Family obligations",                                       color: "#f5dede" },
+  { key: "Challenges of requirements for each course",   color: "#ebb8b8" },
+  { key: "Volume of requirements for each course",                                       color: "#e09898" },
+  { key: "Lack of access to the concerned faculty",                                                 color: "#d07878" },
+  { key: "Work obligations/demands",                           color: "#b85050" },
+  { key: "Financial concerns",  color: "#9b1d2a" },
+  { key: "Lack of motivation",  color: "#9b1d2a" },
+  { key: "Health reasons",  color: "#9b1d2a" },
+  { key: "Challenges about the program, in general",  color: "#9b1d2a" },
+  { key: "Challenges about the faculty in general",  color: "#9b1d2a" },
 ];
 
-// â”€â”€ Chart 1: Factors chart data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Chart 1: Factors chart data 
 const FACTORS_DATA = [
   {
-    level: "Very Satisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       38,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  28,
-    "Your academic experience at UP Mindanao":                                      18,
-    "The atmosphere of the faculty":                                                12,
-    "In meeting/fulfilling the expected program outcomes":                          8,
-    "Alignment of the module learning outcomes with the program learning outcomes": 4,
+    level: "Very positive influence",
+    "Family obligations": 38,
+    "Challenges of requirements for each course": 28,
+    "Volume of requirements for each course": 18,
+    "Lack of access to the concerned faculty": 12,
+    "Work obligations/demands": 8,
+    "Financial concerns": 4,
+    "Lack of motivation": 4,
+    "Health reasons": 4,
+    "Challenges about the program, in general": 4,
+    "Challenges about the faculty, in general": 4,
   },
   {
-    level: "Satisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       70,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  62,
-    "Your academic experience at UP Mindanao":                                      55,
-    "The atmosphere of the faculty":                                                48,
-    "In meeting/fulfilling the expected program outcomes":                          42,
-    "Alignment of the module learning outcomes with the program learning outcomes": 35,
+    level: "Positive influence",
+    "Family obligations": 38,
+    "Challenges of requirements for each course": 28,
+    "Volume of requirements for each course": 18,
+    "Lack of access to the concerned faculty": 12,
+    "Work obligations/demands": 8,
+    "Financial concerns": 4,
+    "Lack of motivation": 4,
+    "Health reasons": 4,
+    "Challenges about the program, in general": 4,
+    "Challenges about the faculty, in general": 4,
   },
   {
-    level: "Dissatisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       55,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  48,
-    "Your academic experience at UP Mindanao":                                      60,
-    "The atmosphere of the faculty":                                                52,
-    "In meeting/fulfilling the expected program outcomes":                          38,
-    "Alignment of the module learning outcomes with the program learning outcomes": 30,
+    level: "No influence",
+    "Family obligations": 38,
+    "Challenges of requirements for each course": 28,
+    "Volume of requirements for each course": 18,
+    "Lack of access to the concerned faculty": 12,
+    "Work obligations/demands": 8,
+    "Financial concerns": 4,
+    "Lack of motivation": 4,
+    "Health reasons": 4,
+    "Challenges about the program, in general": 4,
+    "Challenges about the faculty, in general": 4,
   },
   {
-    level: "Very Dissatisfied",
-    "Overall BSAM curriculum at UP Mindanao":                                       32,
-    "Overall experience at the Department of Math, Physics, and Computer Science":  26,
-    "Your academic experience at UP Mindanao":                                      20,
-    "The atmosphere of the faculty":                                                14,
-    "In meeting/fulfilling the expected program outcomes":                          10,
-    "Alignment of the module learning outcomes with the program learning outcomes": 6,
+    level: "Negative influence",
+    "Family obligations": 38,
+    "Challenges of requirements for each course": 28,
+    "Volume of requirements for each course": 18,
+    "Lack of access to the concerned faculty": 12,
+    "Work obligations/demands": 8,
+    "Financial concerns": 4,
+    "Lack of motivation": 4,
+    "Health reasons": 4,
+    "Challenges about the program, in general": 4,
+    "Challenges about the faculty, in general": 4,
+  },
+  {
+    level: "Very negative influence",
+    "Family obligations": 38,
+    "Challenges of requirements for each course": 28,
+    "Volume of requirements for each course": 18,
+    "Lack of access to the concerned faculty": 12,
+    "Work obligations/demands": 8,
+    "Financial concerns": 4,
+    "Lack of motivation": 4,
+    "Health reasons": 4,
+    "Challenges about the program, in general": 4,
+    "Challenges about the faculty, in general": 4,
+  },
+  {
+    level: "Not applicable",
+    "Family obligations": 38,
+    "Challenges of requirements for each course": 28,
+    "Volume of requirements for each course": 18,
+    "Lack of access to the concerned faculty": 12,
+    "Work obligations/demands": 8,
+    "Financial concerns": 4,
+    "Lack of motivation": 4,
+    "Health reasons": 4,
+    "Challenges about the program, in general": 4,
+    "Challenges about the faculty, in general": 4,
   },
 ];
 
-// â”€â”€ Chart 2: Donut â€” did you consider leaving â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Chart 2: 
 const LEAVING_DATA = [
   { name: "Yes", value: 86.08 },
   { name: "No",  value: 13.92 },
 ];
 const LEAVING_COLORS = ["#D89A9A", "#f5dede"];
 
-// â”€â”€ Chart 3: Favorite year/semester â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Chart 3: Favorite year/semester 
 const YEAR_DATA = [
-  { year: "0", count: 18 },
-  { year: "1", count: 32 },
-  { year: "2", count: 55 },
-  { year: "3", count: 42 },
-  { year: "4", count: 28 },
-  { year: "5", count: 48 },
+  { year: "First Year and First Semester", count: 18 },
+  { year: "First Year and Second Semester", count: 32 },
+  { year: "Second Year and First Semester", count: 55 },
+  { year: "Second Year and Second Semester", count: 42 },
+  { year: "Third Year and First Semester", count: 28 },
+  { year: "Third Year and Mid Year", count: 48 },
 ];
 
-// â”€â”€ Open-ended response sets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Open-ended response sets 
 const SAMPLE_RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
-// â”€â”€ Custom donut label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Custom donut label 
 const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
   <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
     86.08
   </text>
 );
 
-// â”€â”€ Reusable response card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Reusable response card 
 function ResponseCard({
   question,
   isHighlighted = false,
@@ -137,7 +183,7 @@ function ResponseCard({
   );
 }
 
-// â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Main component 
 export default function FactorsAcademicProgress({ program }: Props) {
   return (
     <section className="flex flex-col gap-4">
@@ -239,10 +285,10 @@ export default function FactorsAcademicProgress({ program }: Props) {
         {/* Favorite year/semester bar chart */}
         <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
           <p className="text-xs font-semibold text-gray-800 mb-4">What is your favorite year and semester?</p>
-          <ResponsiveContainer width="100%" height={160}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart
               data={YEAR_DATA}
-              margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
+              margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
               barCategoryGap="25%"
             >
               <CartesianGrid vertical={false} stroke="#f0f0f0" />
@@ -250,7 +296,10 @@ export default function FactorsAcademicProgress({ program }: Props) {
                 dataKey="year"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 11, fill: "#888" }}
+                tick={{ fontSize: 10, fill: "#888" }}
+                angle={-45}
+                textAnchor="end"
+                height={100}
               />
               <YAxis
                 axisLine={false}
@@ -267,28 +316,33 @@ export default function FactorsAcademicProgress({ program }: Props) {
         </div>
       </div>
 
-      {/* â”€â”€ Card 4: Why did you consider leaving â”€â”€ */}
+      {/*  Card 4: Why did you consider leaving  */}
       <ResponseCard question="Why?" responses={SAMPLE_RESPONSES} />
 
-      {/* â”€â”€ Card 5: Most helpful courses â”€â”€ */}
+      {/*  Card 5: Most helpful courses  */}
       <ResponseCard
         question="What course/subject/topic do you think will be most helpful in your future endeavors?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* â”€â”€ Card 6: Should not be included â”€â”€ */}
+      <ResponseCard
+        question="What course/subject/topic do you think will be least helpful in your future endeavors?"
+        responses={SAMPLE_RESPONSES}
+      />
+
+      {/*  Card 6: Should not be included  */}
       <ResponseCard
         question="What course/subject/topic do you think should not be included to the program? Why?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* â”€â”€ Card 7: Should be added â”€â”€ */}
+      {/*  Card 7: Should be added  */}
       <ResponseCard
         question="What course/subject/topic do you think should be added to the program?"
         responses={SAMPLE_RESPONSES}
       />
 
-      {/* â”€â”€ Card 8: Specific challenges (highlighted in red) â”€â”€ */}
+      {/*  Card 8: Specific challenges (highlighted in red)  */}
       <ResponseCard
         question="What other specific challenges did you encounter in finishing the program?"
         isHighlighted
@@ -297,8 +351,6 @@ export default function FactorsAcademicProgress({ program }: Props) {
     </section>
   );
 }
-
-// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 
