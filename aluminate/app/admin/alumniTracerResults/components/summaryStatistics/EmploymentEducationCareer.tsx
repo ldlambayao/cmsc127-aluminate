@@ -25,9 +25,21 @@ interface ChartDataPoint {
   count: number;
 }
 
+interface PieChartDataPoint {
+  name: string;
+  label: string;
+  count: number;
+}
+
 interface SurveyResponseRow {
   time_to_find_job: string;
   current_employment_status: string;
+  date_hired: string;
+  current_workplace: string;
+  current_position: string;
+  nature_of_work: string;
+  higher_studies: string;
+  list_for_higher_studies: string;
 }
 
 export default function EmploymentEducationCareer() {
@@ -37,6 +49,12 @@ export default function EmploymentEducationCareer() {
   const [showFieldOfStudyModal, setShowFieldOfStudyModal] = useState(false);
   const [timeToFindJobData, setTimeToFindJobData] = useState<ChartDataPoint[]>([]);
   const [currentEmploymentStatusData, setCurrentEmploymentStatusData] = useState<ChartDataPoint[]>([]);
+  const [dateHiredData, setDateHiredData] = useState<ChartDataPoint[]>([]);
+  const [currentWorkplaceData, setCurrentWorkplaceData] = useState<ChartDataPoint[]>([]);
+  const [currentPositionData, setCurrentPositionData] = useState<ChartDataPoint[]>([]);
+  const [natureOfWorkData, setNatureOfWorkData] = useState<ChartDataPoint[]>([]);
+  const [higherStudiesData, setHigherStudiesData] = useState<PieChartDataPoint[]>([]);
+  const [listForHigherStudiesData, setListForHigherStudiesData] = useState<ChartDataPoint[]>([]);
 
   const timeToFindJobOptions = [
     "Less than 1 month",
@@ -56,11 +74,12 @@ export default function EmploymentEducationCareer() {
     "Further studies / Not yet employed"
   ]
 
-  // Sample data - replace with actual data from backend CC REX
   useEffect(() => {
     const fetchData = async () => {
       try{
+        // --------------
         // time to find job data acquisition
+        // --------------
         const { data: timeToFindJobQuery, error: timetofindJobError } = await supabase
           .from("tracer_survey_response")
           .select("time_to_find_job");
@@ -90,7 +109,9 @@ export default function EmploymentEducationCareer() {
 
         setTimeToFindJobData(timeToFindJobFormatted);
 
+        // --------------
         // current employment status data acquisition
+        // --------------
         const { data: currentEmploymentStatusQuery, error: currentEmploymentStatusError} = await supabase
           .from("tracer_survey_response")
           .select("current_employment_status")
@@ -120,6 +141,197 @@ export default function EmploymentEducationCareer() {
 
         setCurrentEmploymentStatusData(currentEmploymentStatusFormatted);
 
+        // --------------
+        // date hired data acquisition
+        // --------------
+        const { data: dateHiredQuery, error: dateHiredError} = await supabase
+          .from("tracer_survey_response")
+          .select("date_hired")
+
+        if (dateHiredError) throw dateHiredError;
+
+        const dateHiredCounts: Record<string, number> = {};
+
+        if (dateHiredQuery) {
+          (dateHiredQuery as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.date_hired || "N/A";
+
+            if(rawValue) {
+              const value = rawValue.substring(0, 4);
+              dateHiredCounts[value] = (dateHiredCounts[value] || 0) + 1;
+            } else {
+
+            }
+          })
+        };
+
+        const dateHiredFormatted = Object.keys(dateHiredCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: dateHiredCounts[key],
+        }));
+
+        setDateHiredData(dateHiredFormatted);
+
+        // --------------
+        // current workplace data acquisition
+        // --------------
+        const { data: currentWorkplaceData, error: currentWorkplaceError } = await supabase
+          .from("tracer_survey_response")
+          .select("current_workplace");
+
+        if (currentWorkplaceError) throw currentWorkplaceError;
+
+        const currentWorkplaceCounts: Record<string, number> = {};
+
+        if (currentWorkplaceData) {
+          (currentWorkplaceData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.current_workplace;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if (!(value in currentWorkplaceCounts)) {
+              currentWorkplaceCounts[value] = 0;
+            }
+            currentWorkplaceCounts[value]++;
+          });
+        }
+
+        const currentWorkplaceFormatted = Object.keys(currentWorkplaceCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: currentWorkplaceCounts[key],
+        }));
+
+        setCurrentWorkplaceData(currentWorkplaceFormatted)
+
+        // --------------
+        // current position data acquisition
+        // --------------
+        const { data: currentPositionData, error: currentPositionError } = await supabase
+          .from("tracer_survey_response")
+          .select("current_position");
+
+        if (currentPositionError) throw currentPositionError;
+
+        const currentPositionCounts: Record<string, number> = {};
+
+        if (currentPositionData) {
+          (currentPositionData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.current_position;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if (!(value in currentPositionCounts)) {
+              currentPositionCounts[value] = 0;
+            }
+            currentPositionCounts[value]++;
+          });
+        }
+
+        const currentPositionFormatted = Object.keys(currentPositionCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: currentPositionCounts[key],
+        }));
+
+        setCurrentPositionData(currentPositionFormatted)
+
+        // -----------
+        // nature of work data acquisition
+        // -----------
+        const { data: natureOfWorkData, error: natureOfWorkError } = await supabase
+          .from("tracer_survey_response")
+          .select("nature_of_work");
+
+        if (natureOfWorkError) throw natureOfWorkError;
+
+        const natureOfWorkCounts: Record<string, number> = {};
+
+        if (natureOfWorkData) {
+          (natureOfWorkData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.nature_of_work;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if (!(value in natureOfWorkCounts)) {
+              natureOfWorkCounts[value] = 0;
+            }
+            natureOfWorkCounts[value]++;
+          });
+        }
+
+        const natureOfWorkFormatted = Object.keys(natureOfWorkCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: natureOfWorkCounts[key],
+        }));
+
+        setNatureOfWorkData(natureOfWorkFormatted)
+
+        // ------------
+        // higher studies data acquisition
+        // ------------
+        const { data: higherStudiesData, error: higherStudiesError} = await supabase
+          .from("tracer_survey_response")
+          .select("higher_studies");
+
+        if (higherStudiesError) throw higherStudiesError;
+
+        const higherStudiesCounts: Record<string, number> = {};
+
+        if (higherStudiesData) {
+          (higherStudiesData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.higher_studies;
+
+            const value = rawValue ? "Yes" : "No";
+            if(!(value in higherStudiesCounts)) {
+              higherStudiesCounts[value] = 0;
+            }
+            higherStudiesCounts[value]++;
+          });
+        }
+
+        const higherStudiesFormatted = Object.keys(higherStudiesCounts).map((key) => ({
+          name: key,
+          label: key,
+          count: higherStudiesCounts[key]
+        }));
+
+        setHigherStudiesData(higherStudiesFormatted);
+
+
+        // -----------
+        // list for higher studies data acquisition
+        // -----------
+        const { data: listForHigherStudiesData, error: listForHigherStudiesError } = await supabase
+          .from("tracer_survey_response")
+          .select("list_for_higher_studies")
+
+        if (listForHigherStudiesError) throw listForHigherStudiesError;
+
+        const listForHigherStudiesCounts: Record<string, number> = {}
+
+        if (listForHigherStudiesData) {
+          (listForHigherStudiesData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.list_for_higher_studies;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if(!(value in listForHigherStudiesCounts)) {
+              listForHigherStudiesCounts[value] = 0;
+            }
+            listForHigherStudiesCounts[value]++;
+          });
+        }
+
+        const listForHigherStudiesFormatted = Object.keys(listForHigherStudiesCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: listForHigherStudiesCounts[key]
+        }))
+
+        setListForHigherStudiesData(listForHigherStudiesFormatted);
 
       } catch (err) {
         console.error("Error fetching survey metrics:", err);
@@ -128,72 +340,6 @@ export default function EmploymentEducationCareer() {
 
     fetchData();
   }, []);
-
-  const dateHired = [
-    { category: "June 1, 2021", label: "2021", count: 2 },
-    { category: "June 1, 2022", label: "2022", count: 4 },
-    { category: "June 1, 2021", label: "2021", count: 7 },
-    { category: "June 1, 2021", label: "2021", count: 20 },
-    { category: "June 1, 2021", label: "2021", count: 11 },
-    { category: "June 1, 2021", label: "2021", count: 7 },
-    { category: "June 1, 2021", label: "2021", count: 9 },
-    { category: "June 1, 2021", label: "2021", count: 7 },
-    { category: "June 1, 2021", label: "2021", count: 26 },
-    { category: "June 1, 2021", label: "2021", count: 2 },
-  ]
-
-  const currentWork = [
-    { category: "Company A, Manila", label: "Company A, Manila", count: 5 },
-    { category: "Company B, Cebu", label: "Company B, Cebu", count: 3 },
-    { category: "Company C, Davao", label: "Company C, Davao", count: 2 },
-    { category: "Company D, Manila", label: "Company D, Manila", count: 4 },
-    { category: "Company E, Cebu", label: "Company E, Cebu", count: 1 },
-    { category: "Company F, Quezon City", label: "Company F, Quezon City", count: 6 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-  ]
-
-  const currentPosition = [
-    { category: "Software Engineer", label: "Software Engineer", count: 10 },
-    { category: "Data Analyst", label: "Data Analyst", count: 5 },
-    { category: "Project Manager", label: "Project Manager", count: 3 },
-    { category: "Project Manager", label: "Project Manager", count: 3 },
-    { category: "Project Manager", label: "Project Manager", count: 3 },
-    { category: "Project Manager", label: "Project Manager", count: 3 },
-    { category: "Project Manager", label: "Project Manager", count: 3 },
-    { category: "Project Manager", label: "Project Manager", count: 3 },
-  ]
-
-  const workNature = [
-    { category: "Education", label: "Education", count: 8 },
-    { category: "IT/ICT Position in the Organization/Company", label: "IT/ICT Position in the Organization/Company", count: 12 },
-    { category: "Business", label: "Business", count: 5 },
-    { category: "Research and Development", label: "Research and Development", count: 3 },
-  ]
-
-  const pieChart = [
-    { name: "Yes", label: "Yes", count: 15 },
-    { name: "No", label: "No", count: 10 },
-  ]
-
-  const fieldStudy = [
-    { category: "Computer Science", label: "Computer Science", count: 5 },
-    { category: "Information Technology", label: "Information Technology", count: 3 },
-    { category: "Business Administration", label: "Business Administration", count: 4 },
-    { category: "Education", label: "Education", count: 2 },
-    { category: "Education", label: "Education", count: 2 },
-    { category: "Education", label: "Education", count: 2 },
-    { category: "Education", label: "Education", count: 2 },
-  ]
 
   return (
     <div className="mb-16">
@@ -246,7 +392,7 @@ export default function EmploymentEducationCareer() {
           Date hired in present employment if employed, self-employed or with business:
           (If you cannot recall the exact date, just provide the month and year, and input the day as 1. For example, if you were hired sometime in June 2019, input June 1, 2019.)
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dateHired} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+            <LineChart data={dateHiredData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
               <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
               <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
               <Tooltip
@@ -272,7 +418,7 @@ export default function EmploymentEducationCareer() {
               </tr>
             </thead>
             <tbody>
-              {currentWork.slice(0, 5).map((item, index) => (
+              {currentWorkplaceData.slice(0, 5).map((item, index) => (
                 <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-2 px-4 text-gray-600">{item.category}</td>
                   <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
@@ -281,12 +427,12 @@ export default function EmploymentEducationCareer() {
             </tbody>
           </table>
         </div>
-        {currentWork.length > 5 && (
+        {currentWorkplaceData.length > 5 && (
           <button
             onClick={() => setShowCurrentWorkModal(true)}
             className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
           >
-            View All ({currentWork.length})
+            View All ({currentWorkplaceData.length})
           </button>
         )}
       </div>
@@ -304,7 +450,7 @@ export default function EmploymentEducationCareer() {
               </tr>
             </thead>
             <tbody>
-              {currentPosition.slice(0, 5).map((item, index) => (
+              {currentPositionData.slice(0, 5).map((item, index) => (
                 <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-2 px-4 text-gray-600">{item.category}</td>
                   <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
@@ -313,12 +459,12 @@ export default function EmploymentEducationCareer() {
             </tbody>
           </table>
         </div>
-        {currentPosition.length > 5 && (
+        {currentPositionData.length > 5 && (
           <button
             onClick={() => setShowCurrentPositionModal(true)}
             className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
           >
-            View All ({currentPosition.length})
+            View All ({currentPositionData.length})
           </button>
         )}
 
@@ -330,7 +476,7 @@ export default function EmploymentEducationCareer() {
           What is the nature of your work? (Education, IT/ICT Position in the Organization/Company, Business, Research and Development, Others, etc.)
         </p>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={workNature} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+          <BarChart data={natureOfWorkData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
             <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
             <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
             <Tooltip
@@ -348,7 +494,7 @@ export default function EmploymentEducationCareer() {
           Are you pursuing higher studies?
         </p>
         <ResponsiveContainer width="100%" height={300}>
-          <PieChart data={pieChart}>
+          <PieChart data={higherStudiesData}>
             <Tooltip
               contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
               formatter={(value, name, props) => [value, props.payload.name]}
@@ -359,7 +505,7 @@ export default function EmploymentEducationCareer() {
               labelLine={false}
               nameKey="name"
             >
-              {pieChart.map((entry, index) => (
+              {higherStudiesData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={entry.name === 'Yes' ? '#E29692' : '#FAECEB'}
@@ -383,7 +529,7 @@ export default function EmploymentEducationCareer() {
               </tr>
             </thead>
             <tbody>
-              {fieldStudy.slice(0, 5).map((item, index) => (
+              {listForHigherStudiesData.slice(0, 5).map((item, index) => (
                 <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-2 px-4 text-gray-600">{item.category}</td>
                   <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
@@ -392,12 +538,12 @@ export default function EmploymentEducationCareer() {
             </tbody>
           </table>
         </div>
-        {fieldStudy.length > 5 && (
+        {listForHigherStudiesData.length > 5 && (
           <button
             onClick={() => setShowFieldOfStudyModal(true)}
             className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
           >
-            View All ({fieldStudy.length})
+            View All ({listForHigherStudiesData.length})
           </button>
         )}
       </div>
@@ -406,19 +552,19 @@ export default function EmploymentEducationCareer() {
       <CurrentWorkModal
         isOpen={showCurrentWorkModal}
         onClose={() => setShowCurrentWorkModal(false)}
-        data={currentWork}
+        data={currentWorkplaceData}
       />
 
       <CurrentPositionModal
         isOpen={showCurrentPositionModal}
         onClose={() => setShowCurrentPositionModal(false)}
-        data={currentPosition}
+        data={currentPositionData}
       />
 
       <FieldOfStudyModal
         isOpen={showFieldOfStudyModal}
         onClose={() => setShowFieldOfStudyModal(false)}
-        data={fieldStudy}
+        data={listForHigherStudiesData}
       />
 
     </div>
