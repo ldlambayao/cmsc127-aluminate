@@ -11,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import ReasonsForRatingModal from "../modals/levelOfDifficulty";
 
 interface Props {
   program?: string;
@@ -37,9 +38,20 @@ interface Response {
   program: string;
 }
 
+interface ReasonEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
 const DIFFICULTY_RESPONSES: Response[] = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",   program: "BS COMPUTER SCIENCE" },
 ];
 
@@ -54,13 +66,14 @@ function ResponseCard({
   question,
   questionHighlight,
   responses,
+  onViewAll,
 }: {
   question: string;
   questionHighlight?: string;
   responses: Response[];
+  onViewAll: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? responses : responses.slice(0, 3);
+  const visible = responses.slice(0, 3);
 
   return (
     <div className="bg-white rounded-2xl p-7 shadow-sm">
@@ -83,8 +96,8 @@ function ResponseCard({
       </div>
 
       <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
-          {expanded ? "Show Less" : "View Responses"}
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
+          View Responses
         </button>
       </div>
     </div>
@@ -93,6 +106,27 @@ function ResponseCard({
 
 //  Main component 
 export default function TransitiontoProgram({ program }: Props) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<ReasonEntry[]>([]);
+
+  const openDifficultyModal = () => {
+    const reasonData: ReasonEntry[] = DIFFICULTY_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setModalData(reasonData);
+    setIsModalOpen(true);
+  };
+
+  const openSuggestModal = () => {
+    const reasonData: ReasonEntry[] = SUGGEST_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setModalData(reasonData);
+    setIsModalOpen(true);
+  };
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Transition to the Program</h2>
@@ -182,22 +216,29 @@ export default function TransitiontoProgram({ program }: Props) {
         </div>
       </div>
 
-      {/* â”€â”€ Open-ended response cards â”€â”€ */}
+      {/*  Open-ended response cards  */}
       <ResponseCard
         question='Please explain the reason to your answer on the previous question '
         questionHighlight='"What is the level of difficulty of your adjustment to the BSAM program?"'
         responses={DIFFICULTY_RESPONSES}
+        onViewAll={openDifficultyModal}
       />
 
       <ResponseCard
         question="What can you suggest to prepare you for the course requirements of the whole BSAM program?"
         responses={SUGGEST_RESPONSES}
+        onViewAll={openSuggestModal}
+      />
+
+      {/* Modal */}
+      <ReasonsForRatingModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={modalData}
       />
     </section>
   );
-}
-
-// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+} 
 
 
 
