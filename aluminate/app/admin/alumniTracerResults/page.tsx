@@ -17,7 +17,7 @@ export default function AlumniTracerResults() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Alumni Tracer Form</h1>
           <p className="text-gray-500 text-xs mt-1">
-            Illuminating Alumni Paths through Data, One at a Time
+            Illuminating Alumni and Paths through Data, One at a Time
           </p>
         </div>
 
