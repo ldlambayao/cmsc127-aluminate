@@ -33,10 +33,6 @@ const initialQuestions: Question[] = [
     id: 6,
     text: "What can you suggest for the overall improvement of the BSAM program?",
   },
-  {
-    id: 7,
-    text: "Please write here any additional comment/s or suggestion/s you may have on how we might have improved your experience in taking the degree program or how we can improve the program for the future takers of the degree program.",
-  },
 ];
 
 export default function ImprovementofProgram() {
