@@ -1,22 +1,22 @@
 "use client";
 
-interface ReasonEntry {
+interface SuggestionEntry {
     category: string;
     label: string;
     count?: number;
 }
 
-interface ReasonsForRatingModalProps {
+interface SuggestionEntryProps {
     isOpen: boolean;
     onClose: () => void;
-    data: ReasonEntry[];
+    data: SuggestionEntry[];
 }
 
-export default function ReasonsForRatingModal({
+export default function SuggestionEntryModal({
     isOpen,
     onClose,
     data,
-}: ReasonsForRatingModalProps) {
+}: SuggestionEntryProps) {
     if (!isOpen) return null;
 
     return (
@@ -24,7 +24,7 @@ export default function ReasonsForRatingModal({
             <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:rounded-lg">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-x font-medium text-red-900">
-                        All Reasons for Rating
+                        All Suggestions
                     </h3>
                     <button
                         onClick={onClose}
