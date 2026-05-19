@@ -11,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import OthersEntryModal from "../modals/others";
 
 interface Props {
   program?: string;
@@ -52,7 +53,7 @@ const CHART_DATA = [
   },
   {
     level: "Dissatisfied",
-     "DMPCS Staff": 42,
+    "DMPCS Staff": 42,
     "Faculty members, in general":  32,
     "Faculty members who handles the courses": 22,
     "Office of the University Registrar":  16,
@@ -61,7 +62,7 @@ const CHART_DATA = [
   },
   {
     level: "Very Dissatisfied",
-     "DMPCS Staff": 42,
+    "DMPCS Staff": 42,
     "Faculty members, in general":  32,
     "Faculty members who handles the courses": 22,
     "Office of the University Registrar":  16,
@@ -70,22 +71,86 @@ const CHART_DATA = [
   },
 ];
 
-// â”€â”€ Sample open-ended responses 
+interface Response {
+  name: string;
+  classOf: string;
+  answer: string;
+  program: string;
+}
+
+interface OthersEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+//  Sample open-ended responses 
 const RESPONSES = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
+//  Sub-components 
+function ResponseCard({
+  question,
+  questionHighlight,
+  responses,
+  onViewAll,
+}: {
+  question: string;
+  questionHighlight?: string;
+  responses: Response[];
+  onViewAll: () => void;
+}) {
+  const visible = responses.slice(0, 3);
+
+  return (
+    <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <p className="text-xs font-semibold text-gray-800 mb-4">
+        {question}
+        {questionHighlight && (
+          <p className="font-bold text-red-900">{questionHighlight}</p>
+        )}
+      </p>
+
+      <div className="flex flex-col gap-5">
+        {visible.map((r, i) => (
+          <div key={i} className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+            <p className="text-xs text-gray-500">{r.classOf}</p>
+            <p className="text-sm text-gray-700">{r.answer}</p>
+            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
+          View Responses
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function ServicesProvidedbyUP({ program }: Props) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? RESPONSES : RESPONSES.slice(0, 3);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<OthersEntry[]>([]);
+  const openExplainModal = () => {
+    const reasonData: OthersEntry[] = RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setModalData(reasonData);
+    setIsModalOpen(true);
+  };
 
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Services provided by UP Mindanao</h2>
 
-      {/* â”€â”€ Chart card â”€â”€ */}
+      {/*  Chart card  */}
       <div className="bg-white rounded-2xl p-7 shadow-sm">
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Please indicate your level of satisfaction with the services provided by the following offices/personnel.
@@ -147,35 +212,24 @@ export default function ServicesProvidedbyUP({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* Open-ended response card â”€â”€ */}
-      <div className="bg-white rounded-2xl p-7 shadow-sm">
-        <p className="text-sm font-semibold text-gray-800 mb-4">Others</p>
-
-        <div className="flex flex-col gap-5">
-          {visible.map((r, i) => (
-            <div key={i} className="flex flex-col gap-0.5">
-              <p className="font-bold text-gray-900 text-sm">{r.name}</p>
-              <p className="text-xs text-gray-500">{r.classOf}</p>
-              <p className="text-sm text-gray-700">{r.answer}</p>
-              <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-          <button
-            className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800"
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded ? "Show Less" : "View Responses"}
-          </button>
-        </div>
-      </div>
+      {/*  Open-ended response card  */}
+            <ResponseCard
+              question="Please explain your answer above:"
+              questionHighlight="&ldquo;Please rate how the culture in your school environment captures the factors stated below.&rdquo;"
+              responses={RESPONSES}
+              onViewAll={openExplainModal}
+            />
+      
+            {/* Modal */}
+            <OthersEntryModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              data={modalData}
+            />
     </section>
   );
 }
 
-// â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 
