@@ -182,13 +182,13 @@ function SatisfactionChart({
   data, 
   factors 
 }: { 
-  data: typeof DEPT_SATISFACTION_DATA | typeof PLO_SATISFACTION_DATA;
+  data: any;
   factors: typeof DEPT_FACTORS | typeof PLO_FACTORS;
 }) {
   return (
     <ResponsiveContainer width="100%" height={560}>
       <BarChart
-        data={data}
+        data={data as any}
         layout="vertical"
         margin={{ top: 10, right: 20, left: 90, bottom: 10 }}
         barCategoryGap="18%"
@@ -263,6 +263,3 @@ export default function OverallSatisfaction({ program }: Props) {
     </section>
   );
 }
-
-// ── Styles ─────────────────────────────────────────────────────────────────────
-
