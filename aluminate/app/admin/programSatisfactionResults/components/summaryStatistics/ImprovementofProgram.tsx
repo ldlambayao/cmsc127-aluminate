@@ -14,12 +14,48 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import SuggestionEntryModal from "../modals/suggestToPrep";
+import SuggestImprovement from "../modals/suggestImprovement";
+import WhyWhyNotModal from "../modals/whyWhyNot";
+import SuggestOverallModal from "../modals/suggestOverall";
+import AdditionalCommentsModal from "../modals/additionalComments";
 
 interface Props {
   program?: string;
 }
 
-// â”€â”€ Chart data 
+interface Response {
+  name: string;
+  classOf: string;
+  answer: string;
+  program: string;
+}
+
+interface suggestionEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface WhyWhyNotEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface SuggestOverallEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface AdditionalCommentsEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+//  Chart data 
 const STRENGTHS_DATA = [
   { x: "Courses are relevant", count: 18 },
   { x: "Facilities and equipment are adequate (classrooms, library, projectors)", count: 32 },
@@ -44,21 +80,46 @@ const RECOMMEND_DATA = [
 ];
 const DONUT_COLORS = ["#D89A9A", "#f5dede"];
 
-// â”€â”€ Sample responses 
-const SAMPLE_RESPONSES = [
+// Sample responses 
+const SAMPLE_RESPONSES: Response[] = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
 ];
 
-// â”€â”€ Custom donut center label 
+const SUGGESTION_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const WHYWHYNOT_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const SUGGESTOVERALL_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const ADDITIONALCOMMENTS_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+
+//  Custom donut center label 
 const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
   <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
     86.08
   </text>
 );
 
-// â”€â”€ Reusable pill bar chart 
+//  Reusable pill bar chart 
 function PillBarChart({ data, color }: { data: { x: string; count: number }[]; color: string }) {
   return (
     <ResponsiveContainer width="100%" height={520}>
@@ -84,18 +145,19 @@ function PillBarChart({ data, color }: { data: { x: string; count: number }[]; c
   );
 }
 
-// â”€â”€ Reusable response card 
+//  Reusable response card 
 function ResponseCard({
   question,
   isHighlighted = false,
   responses,
+  onViewAll,
 }: {
   question: string;
   isHighlighted?: boolean;
-  responses: typeof SAMPLE_RESPONSES;
+  responses: Response[];
+  onViewAll?: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? responses : responses.slice(0, 3);
+  const visible = responses.slice(0, 3);
 
   return (
     <div className="bg-white rounded-2xl p-7 shadow-sm">
@@ -112,16 +174,65 @@ function ResponseCard({
           </div>
         ))}
       </div>
-      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
-          {expanded ? "Show Less" : "View Responses"}
-        </button>
-      </div>
+      {onViewAll && (
+        <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+          <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
+            View Responses
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function ImprovementofProgram({ program }: Props) {
+    const [isSuggestionsEntryModalOpen, setIsSuggestionsEntryModalOpen] = useState(false);
+    const [suggestionsEntryModalData, setSuggestionsEntryModalData] = useState<suggestionEntry[]>([]);
+    const [isSuggestImprovementModalOpen, setIsSuggestImprovementModalOpen] = useState(false);
+    const [suggestImprovementModalData, setSuggestImprovementModalData] = useState<suggestionEntry[]>([]);
+    const [isWhyWhyNotModalOpen, setIsWhyWhyNotModalOpen] = useState(false);
+    const [whyWhyNotModalData, setWhyWhyNotModalData] = useState<WhyWhyNotEntry[]>([]);
+    const [isSuggestOverallModalOpen, setIsSuggestOverallModalOpen] = useState(false);
+    const [suggestOverallModalData, setSuggestOverallModalData] = useState<SuggestOverallEntry[]>([]);
+    const [isAdditionalCommentsModalOpen, setIsAdditionalCommentsModalOpen] = useState(false);
+    const [additionalCommentsModalData, setAdditionalCommentsModalData] = useState<AdditionalCommentsEntry[]>([]);
+
+  const openSuggestImprovementModal = () => {
+    const reasonData: suggestionEntry[] = SUGGESTION_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setSuggestImprovementModalData(reasonData);
+    setIsSuggestImprovementModalOpen(true);
+  };
+
+  const openWhyWhyNotModal = () => {
+    const reasonData: WhyWhyNotEntry[] = WHYWHYNOT_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setWhyWhyNotModalData(reasonData);
+    setIsWhyWhyNotModalOpen(true);
+  };
+
+  const openSuggestOverallModal = () => {
+    const reasonData: SuggestOverallEntry[] = SUGGESTOVERALL_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setSuggestOverallModalData(reasonData);
+    setIsSuggestOverallModalOpen(true);
+  };
+
+  const openAdditionalCommentsModal = () => {
+    const reasonData: AdditionalCommentsEntry[] = ADDITIONALCOMMENTS_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setAdditionalCommentsModalData(reasonData);
+    setIsAdditionalCommentsModalOpen(true);
+  };
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Other questions for the improvement of the program</h2>
@@ -143,7 +254,8 @@ export default function ImprovementofProgram({ program }: Props) {
 
       <ResponseCard
         question="What can you suggest to improve your overall BSAM student experience?"
-        responses={SAMPLE_RESPONSES}
+        responses={SUGGESTION_RESPONSES}
+        onViewAll={openSuggestImprovementModal}
       />
 
       <div className="bg-white rounded-2xl p-7 shadow-sm">
@@ -167,7 +279,7 @@ export default function ImprovementofProgram({ program }: Props) {
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => `${value}%`}
+              formatter={(value: any) => `${value}%`}
               contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
             />
             <Legend
@@ -185,18 +297,49 @@ export default function ImprovementofProgram({ program }: Props) {
       <ResponseCard
         question="Why or why not?"
         isHighlighted
-        responses={SAMPLE_RESPONSES}
+        responses={WHYWHYNOT_RESPONSES}
+        onViewAll={openWhyWhyNotModal}
       />
 
       <ResponseCard
         question="What can you suggest for the overall improvement of the BSAM program?"
         responses={SAMPLE_RESPONSES}
+        onViewAll={openSuggestOverallModal}
       />
 
       <ResponseCard
         question="Please write here any additional comment/s or suggestion/s you may have on how we might have improved your experience in taking the degree program or how we can improve the program for the future takers of the degree program."
         responses={SAMPLE_RESPONSES}
+        onViewAll={openAdditionalCommentsModal}
       />
+
+      {/* Modal */}
+      <SuggestionEntryModal
+        isOpen={isSuggestionsEntryModalOpen}
+        onClose={() => setIsSuggestionsEntryModalOpen(false)}
+        data={suggestionsEntryModalData}
+      />
+      <SuggestImprovement
+        isOpen={isSuggestImprovementModalOpen}
+        onClose={() => setIsSuggestImprovementModalOpen(false)}
+        data={suggestImprovementModalData}
+      />
+      <WhyWhyNotModal
+        isOpen={isWhyWhyNotModalOpen}
+        onClose={() => setIsWhyWhyNotModalOpen(false)}
+        data={whyWhyNotModalData}
+      />
+      <SuggestOverallModal
+        isOpen={isSuggestOverallModalOpen}
+        onClose={() => setIsSuggestOverallModalOpen(false)}
+        data={suggestOverallModalData}
+      />
+      <AdditionalCommentsModal
+        isOpen={isAdditionalCommentsModalOpen}
+        onClose={() => setIsAdditionalCommentsModalOpen(false)}
+        data={additionalCommentsModalData}
+      />
+
     </section>
   );
 }
