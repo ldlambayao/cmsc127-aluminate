@@ -13,21 +13,25 @@ const initialQuestions: Question[] = [
     id: 1,
     text: "Please indicate your level of satisfaction with the services provided by the following offices/personnel.",
   },
-  { id: 2, text: "Overall BSAM curriculum at UP Mindanao", indented: true },
+  { id: 2, text: "DMPCS Staff", indented: true },
   {
     id: 3,
-    text: "Overall experience at the Department of Math, Physics, and Computer Science",
+    text: "Faculty members, in general",
     indented: true,
   },
-  { id: 4, text: "Your academic experience at UP Mindanao", indented: true },
-  { id: 5, text: "The atmosphere of the faculty", indented: true },
-  { id: 6, text: "In meeting/fulfilling the expected program outcomes", indented: true },
+  { id: 4, text: "Faculty members who handles the courses", indented: true },
+  { id: 5, text: "Office of the University Registrar", indented: true },
+  { id: 6, text: "Cashier's Office", indented: true },
   {
     id: 7,
-    text: "Alignment of the module learning outcomes with the program learning outcomes",
+    text: "University Library",
     indented: true,
   },
-  { id: 8, text: "Please explain your answer above." },
+  { id: 8, text: "IT Office", indented: true },
+  { id: 9, text: "Office of Student Affairs", indented: true },
+  { id: 10, text: "Janitors", indented: true },
+  { id: 11, text: "Guards", indented: true },
+  { id: 12, text: "Others (please specify)" },
 ];
 
 export default function ServicesProvidedbyUP() {
