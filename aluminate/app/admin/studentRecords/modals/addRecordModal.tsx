@@ -73,7 +73,7 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
       const nameParts = form.name.trim().split("/");
       const fname = nameParts[0]
       const mname = nameParts.length === 2 ? null : nameParts[1];
-      const lname = nameParts[nameParts.length - 1];
+      const lname = nameParts[nameParts.length - 1].length > 1 ? nameParts[nameParts.length - 1].replace(/\s+/g, '') : nameParts[nameParts.length - 1];
       const generatedEmail = `${fname.charAt(0).toLowerCase()}${mname ? mname.charAt(0).toLowerCase() : ""}${lname.toLowerCase()}@up.edu.ph`
 
       const graduationInfo = form.graduation_info.trim().split("/");

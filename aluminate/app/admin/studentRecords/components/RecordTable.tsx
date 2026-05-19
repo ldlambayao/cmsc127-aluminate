@@ -18,6 +18,7 @@ export interface AlumniRecord {
   student_number: string;
   program: ProgramRecord;
   graduation_year: number;
+  graduation_month: number;
   satisfaction_survey_status: string;
   tracer_survey_status: string;
 }
@@ -75,8 +76,9 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
     try {
       const { data, error } = await supabase
         .from("users")
-        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(alumnus_id, student_number, program_code, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
-        .eq("role", 1);
+        .select<string, UserRecord>("fname, mname, lname, role, alumni!inner(alumnus_id, student_number, program_code, graduation_month, graduation_year, satisfaction_survey_status, tracer_survey_status, program!inner(program_name))")
+        .eq("role", 1)
+        .order('alumni(student_number)', { ascending: true });
 
       if(error) throw error;
 
@@ -168,7 +170,7 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
                 "Student Id",
                 "Name",
                 "Program",
-                "Graduation Year",
+                "Graduation Date",
                 "Program Satisfaction Form Status",
                 "Alumni Tracer Form Status",
                 "Actions",
@@ -186,8 +188,8 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
               filtered.map((rec, i) => {
                 const fullName     = `${rec.fname}${rec.mname ? " " + rec.mname.charAt(0) + ". " : ""} ${rec.lname}`.trim();
                 const programColor = PROGRAM_COLORS[rec.alumni.program.program_name] ?? defaultProgramColor;
-                const satDone      = isCompleted(rec.alumni.satisfaction_survey_status);
-                const tracerDone   = isCompleted(rec.alumni.tracer_survey_status);
+                const satDone      = rec.alumni.satisfaction_survey_status;
+                const tracerDone   = rec.alumni.tracer_survey_status;
 
                 return (
                   <tr key={rec.alumni.alumnus_id} style={i % 2 === 0 ? styles.trEven : styles.trOdd}>
@@ -206,18 +208,18 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
                     </td>
 
                     <td style={styles.td}>
-                      <span style={styles.yearBadge}>{rec.alumni.graduation_year}</span>
+                      <span style={styles.yearBadge}>{rec.alumni.graduation_month}/{rec.alumni.graduation_year}</span>
                     </td>
 
                     <td style={styles.tdCenter}>
-                      <span style={{ ...styles.statusPill, backgroundColor: satDone ? "#2e7d4f" : "#c0392b" }}>
-                        {satDone ? "Completed" : "Not Yet"}
+                      <span style={{ ...styles.statusPill, backgroundColor: (satDone === "Completed") ? "#2e7d4f" : "#c0392b" }}>
+                        {satDone}
                       </span>
                     </td>
 
                     <td style={styles.tdCenter}>
-                      <span style={{ ...styles.statusPill, backgroundColor: tracerDone ? "#2e7d4f" : "#c0392b" }}>
-                        {tracerDone ? "Completed" : "Not Yet"}
+                      <span style={{ ...styles.statusPill, backgroundColor: (tracerDone === "Completed") ? "#2e7d4f" : (tracerDone === "Not Completed") ? "#c0392b" : "#74231F" }}>
+                        {tracerDone}
                       </span>
                     </td>
 

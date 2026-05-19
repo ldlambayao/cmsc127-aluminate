@@ -288,7 +288,7 @@ export default function ProgramSatisfactionForm({ onNext, progressBar }: Program
               your decision to enroll in the BSAM Program:
               <br />
               <span style={styles.subText}>
-                * 1 = Not important &nbsp; 4 = Very important &nbsp; 5 = Not applicable
+                * 1 = Not important &nbsp; 4 = Very important &nbsp; N/A = Not applicable
               </span>
             </label>
 
@@ -302,7 +302,7 @@ export default function ProgramSatisfactionForm({ onNext, progressBar }: Program
                     ["2", "Somewhat Important"],
                     ["3", "Important"],
                     ["4", "Very Important"],
-                    ["5", "Not Applicable"],
+                    ["N/A", "Not Applicable"],
                   ].map(([num, label]) => (
                     <div key={num} style={styles.colHeader}>
                       <span>{num}</span>

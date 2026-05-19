@@ -1,339 +1,572 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-    Pie,
-    PieChart,
-    Cell,
-    BarChart,
-    Bar,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
+  Pie,
+  PieChart,
+  Cell,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import CurrentWorkModal from "./modals/currentWork";
 import CurrentPositionModal from "./modals/currentPosition";
 import FieldOfStudyModal from "./modals/fieldofStudy";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+
+interface ChartDataPoint {
+  category: string;
+  label: string;
+  count: number;
+}
+
+interface PieChartDataPoint {
+  name: string;
+  label: string;
+  count: number;
+}
+
+interface SurveyResponseRow {
+  time_to_find_job: string;
+  current_employment_status: string;
+  date_hired: string;
+  current_workplace: string;
+  current_position: string;
+  nature_of_work: string;
+  higher_studies: string;
+  list_for_higher_studies: string;
+}
 
 export default function EmploymentEducationCareer() {
-    const [showCurrentWorkModal, setShowCurrentWorkModal] = useState(false);
-    const [showCurrentPositionModal, setShowCurrentPositionModal] = useState(false);
-    const [showFieldOfStudyModal, setShowFieldOfStudyModal] = useState(false);
+  const supabase = getSupabaseBrowserClient();
+  const [showCurrentWorkModal, setShowCurrentWorkModal] = useState(false);
+  const [showCurrentPositionModal, setShowCurrentPositionModal] = useState(false);
+  const [showFieldOfStudyModal, setShowFieldOfStudyModal] = useState(false);
+  const [timeToFindJobData, setTimeToFindJobData] = useState<ChartDataPoint[]>([]);
+  const [currentEmploymentStatusData, setCurrentEmploymentStatusData] = useState<ChartDataPoint[]>([]);
+  const [dateHiredData, setDateHiredData] = useState<ChartDataPoint[]>([]);
+  const [currentWorkplaceData, setCurrentWorkplaceData] = useState<ChartDataPoint[]>([]);
+  const [currentPositionData, setCurrentPositionData] = useState<ChartDataPoint[]>([]);
+  const [natureOfWorkData, setNatureOfWorkData] = useState<ChartDataPoint[]>([]);
+  const [higherStudiesData, setHigherStudiesData] = useState<PieChartDataPoint[]>([]);
+  const [listForHigherStudiesData, setListForHigherStudiesData] = useState<ChartDataPoint[]>([]);
 
-    // Sample data - replace with actual data from backend CC REX
-    const timeToFindJobData = [
-        { category: "Less than 1 month", label: "Less than 1 month", count: 3 },
-        { category: "1-3 months", label: "1-3 months", count: 5 },
-        { category: "4-6 months", label: "4-6 months", count: 7 },
-        { category: "7-12 months", label: "7-12 months", count: 4 },
-        { category: "More than 1 year", label: "More than 1 year", count: 2 },
-        { category: "Not applicable", label: "Not applicable", count: 1 },
-    ];
+  const timeToFindJobOptions = [
+    "Less than 1 month",
+    "1-3 months",
+    "4-6 months",
+    "7-12 months",
+    "More than 1 year",
+    "Not applicable"
+  ];
 
-    const currentStatusofEmploymentData = [
-        { category: "Employed (Full-time)", label: "Employed (Full-time)", count: 10 },
-        { category: "Employed (Part-time)", label: "Employed (Part-time)", count: 2 },
-        { category: "Self-employed / Business Owner", label: "Self-employed / Business Owner", count: 3 },
-        { category: "Unemployed (Looking for work)", label: "Unemployed (Looking for work)", count: 5 },
-        { category: "Unemployed (Not looking for work)", label: "Unemployed (Not looking for work)", count: 5 },
-        { category: "Further Studies / Not yet employed", label: "Further Studies / Not yet employed", count: 4 },
-    ];
+  const currentEmploymentStatusOptions = [
+    "Employed (Full-time)",
+    "Employed (Part-time)",
+    "Self-employed / Business owner",
+    "Unemployed (looking for work)",
+    "Unemployed (not looking for work)",
+    "Further studies / Not yet employed"
+  ]
 
-    const dateHired = [
-        { category: "June 1, 2021", label: "2021", count: 2 },
-        { category: "June 1, 2022", label: "2022", count: 4 },
-        { category: "June 1, 2021", label: "2021", count: 7 },
-        { category: "June 1, 2021", label: "2021", count: 20 },
-        { category: "June 1, 2021", label: "2021", count: 11 },
-        { category: "June 1, 2021", label: "2021", count: 7 },
-        { category: "June 1, 2021", label: "2021", count: 9 },
-        { category: "June 1, 2021", label: "2021", count: 7 },
-        { category: "June 1, 2021", label: "2021", count: 26 },
-        { category: "June 1, 2021", label: "2021", count: 2 },
-    ]
+  useEffect(() => {
+    const fetchData = async () => {
+      try{
+        // --------------
+        // time to find job data acquisition
+        // --------------
+        const { data: timeToFindJobQuery, error: timetofindJobError } = await supabase
+          .from("tracer_survey_response")
+          .select("time_to_find_job");
 
-    const currentWork = [
-        { category: "Company A, Manila", label: "Company A, Manila", count: 5 },
-        { category: "Company B, Cebu", label: "Company B, Cebu", count: 3 },
-        { category: "Company C, Davao", label: "Company C, Davao", count: 2 },
-        { category: "Company D, Manila", label: "Company D, Manila", count: 4 },
-        { category: "Company E, Cebu", label: "Company E, Cebu", count: 1 },
-        { category: "Company F, Quezon City", label: "Company F, Quezon City", count: 6 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-        { category: "Company G, Makati", label: "Company G, Makati", count: 3 },
-    ]
+        if (timetofindJobError) throw timetofindJobError;
 
-    const currentPosition = [
-        { category: "Software Engineer", label: "Software Engineer", count: 10 },
-        { category: "Data Analyst", label: "Data Analyst", count: 5 },
-        { category: "Project Manager", label: "Project Manager", count: 3 },
-        { category: "Project Manager", label: "Project Manager", count: 3 },
-        { category: "Project Manager", label: "Project Manager", count: 3 },
-        { category: "Project Manager", label: "Project Manager", count: 3 },
-        { category: "Project Manager", label: "Project Manager", count: 3 },
-        { category: "Project Manager", label: "Project Manager", count: 3 },
-    ]
+        const timeToFindJobCounts: Record<string, number> = {};
+        timeToFindJobOptions.forEach(option => {
+          timeToFindJobCounts[option] = 0;
+        });
 
-    const workNature = [
-        { category: "Education", label: "Education", count: 8 },
-        { category: "IT/ICT Position in the Organization/Company", label: "IT/ICT Position in the Organization/Company", count: 12 },
-        { category: "Business", label: "Business", count: 5 },
-        { category: "Research and Development", label: "Research and Development", count: 3 },
-    ]
+        if (timeToFindJobQuery) {
+          (timeToFindJobQuery as SurveyResponseRow[]).forEach((row) => {
+            const value = row.time_to_find_job;
 
-    const pieChart = [
-        { name: "Yes", label: "Yes", count: 15 },
-        { name: "No", label: "No", count: 10 },
-    ]
+            if (value && value in timeToFindJobCounts) {
+              timeToFindJobCounts[value]++;
+            }
+          })
+        };
 
-    const fieldStudy = [
-        { category: "Computer Science", label: "Computer Science", count: 5 },
-        { category: "Information Technology", label: "Information Technology", count: 3 },
-        { category: "Business Administration", label: "Business Administration", count: 4 },
-        { category: "Education", label: "Education", count: 2 },
-        { category: "Education", label: "Education", count: 2 },
-        { category: "Education", label: "Education", count: 2 },
-        { category: "Education", label: "Education", count: 2 },
-    ]
+        const timeToFindJobFormatted = Object.keys(timeToFindJobCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: timeToFindJobCounts[key],
+        }));
 
-    return (
-        <div className="mb-16">
-            {/* Title - Outside Container */}
-            <h2 className="text-lg font-semibold text-red-900 mb-4">
-                Employment Details, Further Education, and Career Outcomes
-            </h2>
-            <div className="flex gap-12 justify-center border-b border-gray-200">
-            </div>
+        setTimeToFindJobData(timeToFindJobFormatted);
+
+        // --------------
+        // current employment status data acquisition
+        // --------------
+        const { data: currentEmploymentStatusQuery, error: currentEmploymentStatusError} = await supabase
+          .from("tracer_survey_response")
+          .select("current_employment_status")
+
+        if (currentEmploymentStatusError) throw currentEmploymentStatusError;
+
+        const currentEmploymentStatusCounts: Record<string, number> = {};
+        currentEmploymentStatusOptions.forEach((option) => {
+          currentEmploymentStatusCounts[option] = 0;
+        })
+
+        if (currentEmploymentStatusQuery) {
+          (currentEmploymentStatusQuery as SurveyResponseRow[]).forEach((row) => {
+            const value = row.current_employment_status;
+
+            if (value && value in currentEmploymentStatusCounts) {
+              currentEmploymentStatusCounts[value]++;
+            }
+          })
+        };
+
+        const currentEmploymentStatusFormatted = Object.keys(currentEmploymentStatusCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: currentEmploymentStatusCounts[key],
+        }));
+
+        setCurrentEmploymentStatusData(currentEmploymentStatusFormatted);
+
+        // --------------
+        // date hired data acquisition
+        // --------------
+        const { data: dateHiredQuery, error: dateHiredError} = await supabase
+          .from("tracer_survey_response")
+          .select("date_hired")
+
+        if (dateHiredError) throw dateHiredError;
+
+        const dateHiredCounts: Record<string, number> = {};
+
+        if (dateHiredQuery) {
+          (dateHiredQuery as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.date_hired || "N/A";
+
+            if(rawValue) {
+              const value = rawValue.substring(0, 4);
+              dateHiredCounts[value] = (dateHiredCounts[value] || 0) + 1;
+            } else {
+
+            }
+          })
+        };
+
+        const dateHiredFormatted = Object.keys(dateHiredCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: dateHiredCounts[key],
+        }));
+
+        setDateHiredData(dateHiredFormatted);
+
+        // --------------
+        // current workplace data acquisition
+        // --------------
+        const { data: currentWorkplaceData, error: currentWorkplaceError } = await supabase
+          .from("tracer_survey_response")
+          .select("current_workplace");
+
+        if (currentWorkplaceError) throw currentWorkplaceError;
+
+        const currentWorkplaceCounts: Record<string, number> = {};
+
+        if (currentWorkplaceData) {
+          (currentWorkplaceData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.current_workplace;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if (!(value in currentWorkplaceCounts)) {
+              currentWorkplaceCounts[value] = 0;
+            }
+            currentWorkplaceCounts[value]++;
+          });
+        }
+
+        const currentWorkplaceFormatted = Object.keys(currentWorkplaceCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: currentWorkplaceCounts[key],
+        }));
+
+        setCurrentWorkplaceData(currentWorkplaceFormatted)
+
+        // --------------
+        // current position data acquisition
+        // --------------
+        const { data: currentPositionData, error: currentPositionError } = await supabase
+          .from("tracer_survey_response")
+          .select("current_position");
+
+        if (currentPositionError) throw currentPositionError;
+
+        const currentPositionCounts: Record<string, number> = {};
+
+        if (currentPositionData) {
+          (currentPositionData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.current_position;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if (!(value in currentPositionCounts)) {
+              currentPositionCounts[value] = 0;
+            }
+            currentPositionCounts[value]++;
+          });
+        }
+
+        const currentPositionFormatted = Object.keys(currentPositionCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: currentPositionCounts[key],
+        }));
+
+        setCurrentPositionData(currentPositionFormatted)
+
+        // -----------
+        // nature of work data acquisition
+        // -----------
+        const { data: natureOfWorkData, error: natureOfWorkError } = await supabase
+          .from("tracer_survey_response")
+          .select("nature_of_work");
+
+        if (natureOfWorkError) throw natureOfWorkError;
+
+        const natureOfWorkCounts: Record<string, number> = {};
+
+        if (natureOfWorkData) {
+          (natureOfWorkData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.nature_of_work;
+
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
+
+            if (!(value in natureOfWorkCounts)) {
+              natureOfWorkCounts[value] = 0;
+            }
+            natureOfWorkCounts[value]++;
+          });
+        }
+
+        const natureOfWorkFormatted = Object.keys(natureOfWorkCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: natureOfWorkCounts[key],
+        }));
+
+        setNatureOfWorkData(natureOfWorkFormatted)
+
+        // ------------
+        // higher studies data acquisition
+        // ------------
+        const { data: higherStudiesData, error: higherStudiesError} = await supabase
+          .from("tracer_survey_response")
+          .select("higher_studies");
+
+        if (higherStudiesError) throw higherStudiesError;
+
+        const higherStudiesCounts: Record<string, number> = {};
+
+        if (higherStudiesData) {
+          (higherStudiesData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.higher_studies;
+
+            const value = rawValue ? "Yes" : "No";
+            if(!(value in higherStudiesCounts)) {
+              higherStudiesCounts[value] = 0;
+            }
+            higherStudiesCounts[value]++;
+          });
+        }
+
+        const higherStudiesFormatted = Object.keys(higherStudiesCounts).map((key) => ({
+          name: key,
+          label: key,
+          count: higherStudiesCounts[key]
+        }));
+
+        setHigherStudiesData(higherStudiesFormatted);
 
 
-            {/* Containers*/}
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mb-4">
-                    How long did it take you to find a job after graduation?
-                </p>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={timeToFindJobData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-                        <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 12 }} />
-                        <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                            formatter={(value) => [value, 'Count']}
-                        />
-                        <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+        // -----------
+        // list for higher studies data acquisition
+        // -----------
+        const { data: listForHigherStudiesData, error: listForHigherStudiesError } = await supabase
+          .from("tracer_survey_response")
+          .select("list_for_higher_studies")
 
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mt-1">
-                    Current status of employment
-                </p>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={currentStatusofEmploymentData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-                        <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
-                        <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                            formatter={(value) => [value, 'Count']}
-                        />
-                        <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
-                    </BarChart>
-                </ResponsiveContainer>
+        if (listForHigherStudiesError) throw listForHigherStudiesError;
 
-            </div>
+        const listForHigherStudiesCounts: Record<string, number> = {}
 
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mt-1">
-                    Date hired in present employment if employed, self-employed or with business:
-                    (If you cannot recall the exact date, just provide the month and year, and input the day as 1. For example, if you were hired sometime in June 2019, input June 1, 2019.)
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={dateHired} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-                            <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
-                            <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                                formatter={(value) => [value, 'Count']}
-                            />
-                            <Line dataKey="count" stroke="#E8C4C4" strokeWidth={2} dot={{ r: 4 }} />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </p>
-            </div>
+        if (listForHigherStudiesData) {
+          (listForHigherStudiesData as SurveyResponseRow[]).forEach((row) => {
+            const rawValue = row.list_for_higher_studies;
 
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mb-4">
-                    Where do you work now? (Please specify company name and location.)
-                </p>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Company & Location</th>
-                                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentWork.slice(0, 5).map((item, index) => (
-                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-2 px-4 text-gray-600">{item.category}</td>
-                                    <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {currentWork.length > 5 && (
-                    <button
-                        onClick={() => setShowCurrentWorkModal(true)}
-                        className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
-                    >
-                        View All ({currentWork.length})
-                    </button>
-                )}
-            </div>
+            const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
 
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mb-4">
-                    What is your current position for your job?
-                </p>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Position</th>
-                                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentPosition.slice(0, 5).map((item, index) => (
-                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-2 px-4 text-gray-600">{item.category}</td>
-                                    <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {currentPosition.length > 5 && (
-                    <button
-                        onClick={() => setShowCurrentPositionModal(true)}
-                        className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
-                    >
-                        View All ({currentPosition.length})
-                    </button>
-                )}
+            if(!(value in listForHigherStudiesCounts)) {
+              listForHigherStudiesCounts[value] = 0;
+            }
+            listForHigherStudiesCounts[value]++;
+          });
+        }
+
+        const listForHigherStudiesFormatted = Object.keys(listForHigherStudiesCounts).map((key) => ({
+          category: key,
+          label: key,
+          count: listForHigherStudiesCounts[key]
+        }))
+
+        setListForHigherStudiesData(listForHigherStudiesFormatted);
+
+      } catch (err) {
+        console.error("Error fetching survey metrics:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div className="mb-16">
+      {/* Title - Outside Container */}
+      <h2 className="text-lg font-semibold text-red-900 mb-4">
+        Employment Details, Further Education, and Career Outcomes
+      </h2>
+      <div className="flex gap-12 justify-center border-b border-gray-200">
+      </div>
 
 
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mt-1">
-                    What is the nature of your work? (Education, IT/ICT Position in the Organization/Company, Business, Research and Development, Others, etc.)
-                </p>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={workNature} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-                        <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
-                        <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                            formatter={(value) => [value, 'Count']}
-                        />
-                        <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
-                    </BarChart>
-                </ResponsiveContainer>
-
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mt-1">
-                    Are you pursuing higher studies?
-                </p>
-                <ResponsiveContainer width="100%" height={300}>
-                    <PieChart data={pieChart}>
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                            formatter={(value, name, props) => [value, props.payload.name]}
-                        />
-                        <Pie
-                            dataKey="count"
-                            label={({ name, value }) => `${name} (${value})`}
-                            labelLine={false}
-                            nameKey="name"
-                        >
-                            {pieChart.map((entry, index) => (
-                                <Cell
-                                    key={`cell-${index}`}
-                                    fill={entry.name === 'Yes' ? '#E29692' : '#FAECEB'}
-                                />
-                            ))}
-                        </Pie>
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
-                <p className="text-red-900 text-sm font-medium mt-1 mb-4">
-                    If you answered yes above, please specify degree program, field of study, and university. Otherwise, type "N/A"
-                </p>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Field of Study</th>
-                                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {fieldStudy.slice(0, 5).map((item, index) => (
-                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-2 px-4 text-gray-600">{item.category}</td>
-                                    <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {fieldStudy.length > 5 && (
-                    <button
-                        onClick={() => setShowFieldOfStudyModal(true)}
-                        className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
-                    >
-                        View All ({fieldStudy.length})
-                    </button>
-                )}
-            </div>
-
-            {/* Modals */}
-            <CurrentWorkModal
-                isOpen={showCurrentWorkModal}
-                onClose={() => setShowCurrentWorkModal(false)}
-                data={currentWork}
+      {/* Containers*/}
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mb-4">
+          How long did it take you to find a job after graduation?
+        </p>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={timeToFindJobData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+            <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 12 }} />
+            <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              formatter={(value) => [value, 'Count']}
             />
+            <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
-            <CurrentPositionModal
-                isOpen={showCurrentPositionModal}
-                onClose={() => setShowCurrentPositionModal(false)}
-                data={currentPosition}
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mt-1">
+          Current status of employment
+        </p>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={currentEmploymentStatusData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+            <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
+            <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              formatter={(value) => [value, 'Count']}
             />
+            <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
+          </BarChart>
+        </ResponsiveContainer>
 
-            <FieldOfStudyModal
-                isOpen={showFieldOfStudyModal}
-                onClose={() => setShowFieldOfStudyModal(false)}
-                data={fieldStudy}
-            />
+      </div>
 
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mt-1">
+          Date hired in present employment if employed, self-employed or with business:
+          (If you cannot recall the exact date, just provide the month and year, and input the day as 1. For example, if you were hired sometime in June 2019, input June 1, 2019.)
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={dateHiredData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+              <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
+              <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                formatter={(value) => [value, 'Count']}
+              />
+              <Line dataKey="count" stroke="#E8C4C4" strokeWidth={2} dot={{ r: 4 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </p>
+      </div>
+
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mb-4">
+          Where do you work now? (Please specify company name and location.)
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Company & Location</th>
+                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentWorkplaceData.slice(0, 5).map((item, index) => (
+                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-2 px-4 text-gray-600">{item.category}</td>
+                  <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-    );
+        {currentWorkplaceData.length > 5 && (
+          <button
+            onClick={() => setShowCurrentWorkModal(true)}
+            className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
+          >
+            View All ({currentWorkplaceData.length})
+          </button>
+        )}
+      </div>
+
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mb-4">
+          What is your current position for your job?
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Position</th>
+                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPositionData.slice(0, 5).map((item, index) => (
+                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-2 px-4 text-gray-600">{item.category}</td>
+                  <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {currentPositionData.length > 5 && (
+          <button
+            onClick={() => setShowCurrentPositionModal(true)}
+            className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
+          >
+            View All ({currentPositionData.length})
+          </button>
+        )}
+
+
+      </div>
+
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mt-1">
+          What is the nature of your work? (Education, IT/ICT Position in the Organization/Company, Business, Research and Development, Others, etc.)
+        </p>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={natureOfWorkData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+            <XAxis dataKey="category" tick={{ fill: '#a3a3a3', fontSize: 10 }} interval={0} />
+            <YAxis tick={{ fill: '#a3a3a3', fontSize: 12 }} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              formatter={(value) => [value, 'Count']}
+            />
+            <Bar dataKey="count" fill="#E8C4C4" radius={[8, 8, 0, 0]} barSize={40} />
+          </BarChart>
+        </ResponsiveContainer>
+
+      </div>
+
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mt-1">
+          Are you pursuing higher studies?
+        </p>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart data={higherStudiesData}>
+            <Tooltip
+              contentStyle={{ backgroundColor: '#fff', border: 'none', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              formatter={(value, name, props) => [value, props.payload.name]}
+            />
+            <Pie
+              dataKey="count"
+              label={({ name, value }) => `${name} (${value})`}
+              labelLine={false}
+              nameKey="name"
+            >
+              {higherStudiesData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.name === 'Yes' ? '#E29692' : '#FAECEB'}
+                />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white rounded-lg p-6 shadow-sm mt-6">
+        <p className="text-red-900 text-sm font-medium mt-1 mb-4">
+          If you answered yes above, please specify degree program, field of study, and university. Otherwise, type "N/A"
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-4 text-gray-700 font-semibold">Field of Study</th>
+                <th className="text-center py-2 px-4 text-gray-700 font-semibold">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {listForHigherStudiesData.slice(0, 5).map((item, index) => (
+                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="py-2 px-4 text-gray-600">{item.category}</td>
+                  <td className="py-2 px-4 text-center text-gray-600">{item.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {listForHigherStudiesData.length > 5 && (
+          <button
+            onClick={() => setShowFieldOfStudyModal(true)}
+            className="mt-4 px-4 py-2 text-red-800 rounded text-xs font-medium hover:underline transition"
+          >
+            View All ({listForHigherStudiesData.length})
+          </button>
+        )}
+      </div>
+
+      {/* Modals */}
+      <CurrentWorkModal
+        isOpen={showCurrentWorkModal}
+        onClose={() => setShowCurrentWorkModal(false)}
+        data={currentWorkplaceData}
+      />
+
+      <CurrentPositionModal
+        isOpen={showCurrentPositionModal}
+        onClose={() => setShowCurrentPositionModal(false)}
+        data={currentPositionData}
+      />
+
+      <FieldOfStudyModal
+        isOpen={showFieldOfStudyModal}
+        onClose={() => setShowFieldOfStudyModal(false)}
+        data={listForHigherStudiesData}
+      />
+
+    </div>
+  );
 }
