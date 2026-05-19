@@ -9,44 +9,27 @@ type Question = {
 };
 
 const initialQuestions: Question[] = [
-  {
-    id: 1,
-    text: "Please indicate how the following factors might have influenced your progress toward the BSAM degree.",
-  },
-  { id: 2, text: "Overall BSAM curriculum at UP Mindanao", indented: true },
-  {
-    id: 3,
-    text: "Overall experience at the Department of Math, Physics, and Computer Science",
-    indented: true,
-  },
-  { id: 4, text: "Your academic experience at UP Mindanao", indented: true },
-  { id: 5, text: "The atmosphere of the faculty", indented: true },
-  { id: 6, text: "In meeting/fulfilling the expected program outcomes", indented: true },
-  {
-    id: 7,
-    text: "Alignment of the module learning outcomes with the program learning outcomes",
-    indented: true,
-  },
-  { id: 8, text: "Others (please specify)" },
-  { id: 9, text: "Did you consider leaving the program?" },
-  { id: 10, text: "What is your favorite year and semester?" },
-  { id: 11, text: "Why?" },
-  {
-    id: 12,
-    text: "What course/subject/topic do you think will be most helpful in your future endeavors?",
-  },
-  {
-    id: 13,
-    text: "What course/subject/topic do you think should not be included to the program? Why?",
-  },
-  {
-    id: 14,
-    text: "What course/subject/topic do you think should be added to the program?",
-  },
-  {
-    id: 15,
-    text: "What other specific challenges did you encounter in finishing the program?",
-  },
+  { id: 1, text: "Please indicate how the following factors might have influenced your progress toward the BSAM degree.",},
+  { id: 2, text: "Family Obligations", indented: true },
+  { id: 3, text: "Challenges of requirements for each course", indented: true},
+  { id: 4, text: "Volume of requirements for each course", indented: true },
+  { id: 5, text: "Lack of access to the concerned faculty", indented: true },
+  { id: 6, text: "Work obligations/demands", indented: true },
+  { id: 7, text: "Financial concerns", indented: true },
+  { id: 8, text: "Lack of motivation", indented: true },
+  { id: 9, text: "Health reasons", indented: true },
+  { id: 10, text: "Challenges about the program, in general", indented: true },
+  { id: 11, text: "Challenges about the faculty in general", indented: true },
+  { id: 12, text: "Others factors (please specify)" },
+  { id: 13, text: "Did you consider leaving the program" }, 
+  { id: 14, text: "Why?" },
+  { id: 15, text: "What is your favorite year and semester?" },
+  { id: 16, text: "Why" },
+  { id: 17, text: "What course/subject/topic do you think will be most helpful in your future endeavors?" },
+  { id: 18, text: "What course/subject/topic do you think will be least helpful in your future endeavors?" },
+  { id: 19, text: "What course/subject/topic do you think should not be included to the program? Why?" },
+  { id: 20, text: "What course/subject/topic do you think should be added to the program?" },
+  { id: 21, text: "What other specific challenges did you encounter in finishing the program?" },
 ];
 
 export default function FactorsAcademicProgress() {
