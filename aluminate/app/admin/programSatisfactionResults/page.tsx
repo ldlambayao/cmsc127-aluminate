@@ -145,12 +145,12 @@ export default function ProgramSatisfactionResultsPage() {
             <div className="flex flex-col gap-8">
               <EQGeneralInformation />
               <EQDecisiontoEnroll />
+              <EQTransitiontoProgram />
+              <EQOverallSatisfaction />
+              <EQIntellectualCulturalEnvironment />
+              <EQServicesProvidedbyUP />
               <EQFactorsAcademicProgress />
               <EQImprovementofProgram />
-              <EQIntellectualCulturalEnvironment />
-              <EQOverallSatisfaction />
-              <EQServicesProvidedbyUP />
-              <EQTransitiontoProgram />
             </div>
           )}
         </div>
