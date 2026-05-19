@@ -74,8 +74,7 @@ export default function EmploymentEducationCareer() {
     <div style={styles.card}>
       {/* Card Header */}
       <div style={styles.cardHeader}>
-        <h2 style={styles.cardTitle}>Employment Details, Further Education, and Career Outcomes
-</h2>
+        <h2 style={styles.cardTitle}>Employment Details, Further Education, and Career Outcomes</h2>
         <button style={styles.iconBtn} title="Edit section">
           <PencilIcon />
         </button>
