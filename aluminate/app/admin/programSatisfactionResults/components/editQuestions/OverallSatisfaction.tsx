@@ -19,14 +19,31 @@ const initialQuestions: Question[] = [
     text: "Overall experience at the Department of Math, Physics, and Computer Science",
     indented: true,
   },
-  { id: 4, text: "Your academic experience at UP Mindanao", indented: true },
-  { id: 5, text: "The atmosphere of the faculty", indented: true },
+  { id: 4, text: "Non-academic experience at UP Mindanao", indented: true },
+  { id: 5, text: "The expertise of the faculty", indented: true },
   { id: 6, text: "In meeting/fulfilling the expected program outcomes", indented: true },
   {
     id: 7,
     text: "Alignment of the module learning outcomes with the program learning outcomes",
     indented: true,
   },
+  {
+    id: 8,
+    text: "Rate your overall satisfaction based on the program learning outcomes",
+  },
+  { id: 9, text: "Development of a holistic understanding of the new general education (GE) courses", indented: true },
+  { id: 10, text: "Mastery of fundamental concepts of mathematics", indented: true },
+  { id: 11, text: "Mastery of fundamental concepts of statistics", indented: true },
+  { id: 12, text: "Mastery of fundamental concepts of computer science", indented: true },
+  { id: 13, text: "Enhanced analytical thinking skills through covering advanced mathematics courses", indented: true },
+  { id: 14, text: "Ability to use operations research (OR) techniques to aid efficiency of the solution process", indented: true },
+  { id: 15, text: "Ability to use GIS tools to aid efficiency of the solution process", indented: true },
+  { id: 16, text: "Ability to use statistical methods to aid efficiency of the solution process", indented: true },
+  { id: 17, text: "Implementation/development of computer programs for ease in complex computations", indented: true },
+  { id: 18, text: "Ability to apply OR and statistical techniques to scientific research practices", indented: true },
+  { id: 19, text: "Readiness or confidence to pursue a master's degree in applied mathematics", indented: true },
+  { id: 20, text: "Readiness or confidence to pursue a master's degree in statistics", indented: true },
+  { id: 21, text: "Readiness or confidence to pursue a master's degree in computer science", indented: true },
 ];
 
 export default function OverallSatisfaction() {
