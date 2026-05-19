@@ -14,23 +14,85 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import Others2EntryModal from "../modals/others2";
+import whySemesterEntryModal from "../modals/whySemester";
+import mostHelpfulEntryModal from "../modals/mostHelpful";
+import leastHelpfulEntryModal from "../modals/leastHelpful";
+import notIncludedEntryModal from "../modals/notIncluded";
+import beAddedEntryModal from "../modals/beAdded";
+import ChallengesEntryModal from "../modals/challenges";
+
+const WhySemesterEntryModal = whySemesterEntryModal;
+const MostHelpfulEntryModal = mostHelpfulEntryModal;
+const LeastHelpfulEntryModal = leastHelpfulEntryModal;
+const NotIncludedEntryModal = notIncludedEntryModal;
+const BeAddedEntryModal = beAddedEntryModal;
 
 interface Props {
   program?: string;
 }
 
+interface Response {
+  name: string;
+  classOf: string;
+  answer: string;
+  program: string;
+}
+
+interface Others2Entry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface whySemesterEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface mostHelpfulEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface leastHelpfulEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface notIncludedEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface beAddedEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+interface challengesEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
 //  Shared factor colors 
 const FACTORS = [
-  { key: "Family obligations",                                       color: "#f5dede" },
-  { key: "Challenges of requirements for each course",   color: "#ebb8b8" },
-  { key: "Volume of requirements for each course",                                       color: "#e09898" },
-  { key: "Lack of access to the concerned faculty",                                                 color: "#d07878" },
-  { key: "Work obligations/demands",                           color: "#b85050" },
-  { key: "Financial concerns",  color: "#9b1d2a" },
-  { key: "Lack of motivation",  color: "#9b1d2a" },
-  { key: "Health reasons",  color: "#9b1d2a" },
-  { key: "Challenges about the program, in general",  color: "#9b1d2a" },
-  { key: "Challenges about the faculty in general",  color: "#9b1d2a" },
+  { key: "Family obligations", color: "#f5dede" },
+  { key: "Challenges of requirements for each course", color: "#ebb8b8" },
+  { key: "Volume of requirements for each course", color: "#e09898" },
+  { key: "Lack of access to the concerned faculty", color: "#d07878" },
+  { key: "Work obligations/demands", color: "#b85050" },
+  { key: "Financial concerns", color: "#9b1d2a" },
+  { key: "Lack of motivation", color: "#9b1d2a" },
+  { key: "Health reasons", color: "#9b1d2a" },
+  { key: "Challenges about the program, in general", color: "#9b1d2a" },
+  { key: "Challenges about the faculty in general", color: "#9b1d2a" },
 ];
 
 //  Chart 1: Factors chart data 
@@ -115,14 +177,14 @@ const FACTORS_DATA = [
   },
 ];
 
-// â”€â”€ Chart 2: 
+//  Chart 2: 
 const LEAVING_DATA = [
   { name: "Yes", value: 86.08 },
-  { name: "No",  value: 13.92 },
+  { name: "No", value: 13.92 },
 ];
 const LEAVING_COLORS = ["#D89A9A", "#f5dede"];
 
-// â”€â”€ Chart 3: Favorite year/semester 
+//  Chart 3: Favorite year/semester 
 const YEAR_DATA = [
   { year: "First Year and First Semester", count: 18 },
   { year: "First Year and Second Semester", count: 32 },
@@ -132,32 +194,75 @@ const YEAR_DATA = [
   { year: "Third Year and Mid Year", count: 48 },
 ];
 
-// â”€â”€ Open-ended response sets 
-const SAMPLE_RESPONSES = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
+//  Open-ended response sets 
+const SAMPLE_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
 ];
 
-// â”€â”€ Custom donut label 
+const OTHERS_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const WHY_SEMESTER_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const MOST_HELPFUL_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const LEAST_HELPFUL_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const NOT_INCLUDED_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const BE_ADDED_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+const CHALLENGES_RESPONSES: Response[] = [
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
+  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
+];
+
+//  Custom donut label 
 const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
   <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
     86.08
   </text>
 );
 
-// â”€â”€ Reusable response card 
+//  Reusable response card 
 function ResponseCard({
   question,
   isHighlighted = false,
   responses,
+  onViewAll,
 }: {
   question: string;
   isHighlighted?: boolean;
   responses: typeof SAMPLE_RESPONSES;
+  onViewAll?: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? responses : responses.slice(0, 3);
+  const visible = responses.slice(0, 3);
 
   return (
     <div className="bg-white rounded-2xl p-7 shadow-sm">
@@ -175,21 +280,102 @@ function ResponseCard({
         ))}
       </div>
       <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
-          {expanded ? "Show Less" : "View Responses"}
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
+          View Responses
         </button>
       </div>
     </div>
   );
 }
 
-// â”€â”€ Main component 
+//  Main component 
 export default function FactorsAcademicProgress({ program }: Props) {
+  const [isOthers2ModalOpen, setIsOthers2ModalOpen] = useState(false);
+  const [others2ModalData, setOthers2ModalData] = useState<Others2Entry[]>([]);
+  const [isWhySemesterModalOpen, setIsWhySemesterModalOpen] = useState(false);
+  const [whySemesterModalData, setWhySemesterModalData] = useState<whySemesterEntry[]>([]);
+  const [isWhyModalOpen, setIsWhyModalOpen] = useState(false);
+  const [whyModalData, setWhyModalData] = useState<whySemesterEntry[]>([]);
+  const [isMostHelpfulEntryModalOpen, setIsMostHelpfulEntryModalOpen] = useState(false);
+  const [mostHelpfulEntryModalData, setMostHelpfulEntryModalData] = useState<mostHelpfulEntry[]>([]);
+  const [isLeastHelpfulEntryModalOpen, setIsLeastHelpfulEntryModalOpen] = useState(false);
+  const [leastHelpfulEntryModalData, setLeastHelpfulEntryModalData] = useState<leastHelpfulEntry[]>([]);
+  const [isNotIncludedEntryModalOpen, setIsNotIncludedEntryModalOpen] = useState(false);
+  const [notIncludedEntryModalData, setNotIncludedEntryModalData] = useState<notIncludedEntry[]>([]);
+  const [isBeAddedEntryModalOpen, setIsBeAddedEntryModalOpen] = useState(false);
+  const [beAddedEntryModalData, setBeAddedEntryModalData] = useState<beAddedEntry[]>([]);
+  const [isChallengesEntryModalOpen, setIsChallengesEntryModalOpen] = useState(false);
+  const [challengesEntryModalData, setChallengesEntryModalData] = useState<challengesEntry[]>([]);
+
+  const openOthers2Modal = () => {
+    const reasonData: Others2Entry[] = OTHERS_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setOthers2ModalData(reasonData);
+    setIsOthers2ModalOpen(true);
+  };
+
+  const openWhySemesterModal = () => {
+    const reasonData: whySemesterEntry[] = WHY_SEMESTER_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setWhySemesterModalData(reasonData);
+    setIsWhySemesterModalOpen(true);
+  };
+
+
+  const openMostHelpfulModal = () => {
+    const reasonData: mostHelpfulEntry[] = MOST_HELPFUL_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setMostHelpfulEntryModalData(reasonData);
+    setIsMostHelpfulEntryModalOpen(true);
+  };
+
+  const openLeastHelpfulModal = () => {
+    const reasonData: leastHelpfulEntry[] = LEAST_HELPFUL_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setLeastHelpfulEntryModalData(reasonData);
+    setIsLeastHelpfulEntryModalOpen(true);
+  };
+
+  const openNotIncludedModal = () => {
+    const reasonData: notIncludedEntry[] = NOT_INCLUDED_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setNotIncludedEntryModalData(reasonData);
+    setIsNotIncludedEntryModalOpen(true);
+  };
+
+  const openBeAddedModal = () => {
+    const reasonData: beAddedEntry[] = BE_ADDED_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setBeAddedEntryModalData(reasonData);
+    setIsBeAddedEntryModalOpen(true);
+  };
+
+  const openChallengesModal = () => {
+    const reasonData: challengesEntry[] = CHALLENGES_RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setChallengesEntryModalData(reasonData);
+    setIsChallengesEntryModalOpen(true);
+  };
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Factors that might have affected your academic progress</h2>
 
-      {/* â”€â”€ Card 1: Horizontal grouped bar chart â”€â”€ */}
+      {/*  Card 1: Horizontal grouped bar chart    */}
       <div className="bg-white rounded-2xl p-7 shadow-sm">
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Please indicate how the following factors might have influenced your progress toward the BSAM degree.
@@ -238,10 +424,10 @@ export default function FactorsAcademicProgress({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* â”€â”€ Card 2: Others (please specify) â”€â”€ */}
-      <ResponseCard question="Others (please specify)" responses={SAMPLE_RESPONSES} />
+      {/*  Card 2: Others (please specify)  */}
+      <ResponseCard question="Others (please specify)" responses={OTHERS_RESPONSES} onViewAll={openOthers2Modal} />
 
-      {/* â”€â”€ Card 3: Donut + favorite year side by side â”€â”€ */}
+      {/*  Card 3: Donut + favorite year side by side  */}
       <div className="flex gap-4">
         {/* Donut chart */}
         <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
@@ -266,7 +452,7 @@ export default function FactorsAcademicProgress({ program }: Props) {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => `${value}%`}
+                  formatter={(value: any) => `${value}%`}
                   contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
                 />
                 <Legend
@@ -313,41 +499,96 @@ export default function FactorsAcademicProgress({ program }: Props) {
               <Bar dataKey="count" fill="#D89A9A" radius={[999, 999, 999, 999]} maxBarSize={36} />
             </BarChart>
           </ResponsiveContainer>
+          <div className="flex justify-center mt-4">
+            <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openWhySemesterModal}>
+              View Why
+            </button>
+          </div>
         </div>
       </div>
-
-      {/*  Card 4: Why did you consider leaving  */}
-      <ResponseCard question="Why?" responses={SAMPLE_RESPONSES} />
 
       {/*  Card 5: Most helpful courses  */}
       <ResponseCard
         question="What course/subject/topic do you think will be most helpful in your future endeavors?"
-        responses={SAMPLE_RESPONSES}
+        responses={MOST_HELPFUL_RESPONSES}
+        onViewAll={openMostHelpfulModal}
       />
 
       <ResponseCard
         question="What course/subject/topic do you think will be least helpful in your future endeavors?"
-        responses={SAMPLE_RESPONSES}
+        responses={LEAST_HELPFUL_RESPONSES}
+        onViewAll={openLeastHelpfulModal}
       />
 
       {/*  Card 6: Should not be included  */}
       <ResponseCard
         question="What course/subject/topic do you think should not be included to the program? Why?"
-        responses={SAMPLE_RESPONSES}
+        responses={NOT_INCLUDED_RESPONSES}
+        onViewAll={openNotIncludedModal}
       />
 
       {/*  Card 7: Should be added  */}
       <ResponseCard
         question="What course/subject/topic do you think should be added to the program?"
-        responses={SAMPLE_RESPONSES}
+        responses={BE_ADDED_RESPONSES}
+        onViewAll={openBeAddedModal}
       />
 
       {/*  Card 8: Specific challenges (highlighted in red)  */}
       <ResponseCard
         question="What other specific challenges did you encounter in finishing the program?"
         isHighlighted
-        responses={SAMPLE_RESPONSES}
+        responses={CHALLENGES_RESPONSES}
+        onViewAll={openChallengesModal}
       />
+
+      {/* Modal */}
+      <Others2EntryModal
+        isOpen={isOthers2ModalOpen}
+        onClose={() => setIsOthers2ModalOpen(false)}
+        data={others2ModalData}
+      />
+      <WhySemesterEntryModal
+        isOpen={isWhySemesterModalOpen}
+        onClose={() => setIsWhySemesterModalOpen(false)}
+        data={whySemesterModalData}
+      />
+      <WhySemesterEntryModal
+        isOpen={isWhyModalOpen}
+        onClose={() => setIsWhyModalOpen(false)}
+        data={whyModalData}
+      />
+
+      <MostHelpfulEntryModal
+        isOpen={isMostHelpfulEntryModalOpen}
+        onClose={() => setIsMostHelpfulEntryModalOpen(false)}
+        data={mostHelpfulEntryModalData}
+      />
+
+      <LeastHelpfulEntryModal
+        isOpen={isLeastHelpfulEntryModalOpen}
+        onClose={() => setIsLeastHelpfulEntryModalOpen(false)}
+        data={leastHelpfulEntryModalData}
+      />
+
+      <NotIncludedEntryModal
+        isOpen={isNotIncludedEntryModalOpen}
+        onClose={() => setIsNotIncludedEntryModalOpen(false)}
+        data={notIncludedEntryModalData}
+      />
+
+      <BeAddedEntryModal
+        isOpen={isBeAddedEntryModalOpen}
+        onClose={() => setIsBeAddedEntryModalOpen(false)}
+        data={beAddedEntryModalData}                        
+      />
+
+      <ChallengesEntryModal
+        isOpen={isChallengesEntryModalOpen}
+        onClose={() => setIsChallengesEntryModalOpen(false)}
+        data={challengesEntryModalData}
+      />
+
     </section>
   );
 }

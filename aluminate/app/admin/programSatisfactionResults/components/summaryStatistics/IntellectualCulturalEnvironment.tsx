@@ -12,6 +12,7 @@ import {
   LabelList,
   ResponsiveContainer,
 } from "recharts";
+import ExplainEntryModal from "../modals/cultureEnvironment";
 
 interface Props {
   program?: string;
@@ -58,7 +59,20 @@ const CHART_DATA = [
 ];
 
 //  Sample open-ended responses 
-const RESPONSES = [
+interface Response {
+  name: string;
+  classOf: string;
+  answer: string;
+  program: string;
+}
+
+interface ReasonEntry {
+  category: string;
+  label: string;
+  count?: number;
+}
+
+const RESPONSES: Response[] = [
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
   { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
@@ -81,9 +95,61 @@ const renderLabel = (props: any) => {
   );
 };
 
+//  Sub-components 
+function ResponseCard({
+  question,
+  questionHighlight,
+  responses,
+  onViewAll,
+}: {
+  question: string;
+  questionHighlight?: string;
+  responses: Response[];
+  onViewAll: () => void;
+}) {
+  const visible = responses.slice(0, 3);
+
+  return (
+    <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <p className="text-xs font-semibold text-gray-800 mb-4">
+        {question}
+        {questionHighlight && (
+          <p className="font-bold text-red-900">{questionHighlight}</p>
+        )}
+      </p>
+
+      <div className="flex flex-col gap-5">
+        {visible.map((r, i) => (
+          <div key={i} className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+            <p className="text-xs text-gray-500">{r.classOf}</p>
+            <p className="text-sm text-gray-700">{r.answer}</p>
+            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
+          View Responses
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function IntellectualCulturalEnvironment({ program }: Props) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? RESPONSES : RESPONSES.slice(0, 3);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<ReasonEntry[]>([]);
+
+  const openExplainModal = () => {
+    const reasonData: ReasonEntry[] = RESPONSES.map((r) => ({
+      label: r.name,
+      category: r.answer,
+    }));
+    setModalData(reasonData);
+    setIsModalOpen(true);
+  };
 
   return (
     <section className="flex flex-col gap-4">
@@ -91,7 +157,7 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
         Intellectual and cultural environment and support given by the Department of Math, Physics and Computer Science
       </h2>
 
-      {/* â”€â”€ Chart card â”€â”€ */}
+      {/*  Chart card  */}
       <div className="bg-white rounded-2xl p-7 shadow-sm">
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Please rate how the culture in your school environment captures the factors stated below.
@@ -150,32 +216,20 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
         </ResponsiveContainer>
       </div>
 
-      {/* â”€â”€ Open-ended response card â”€â”€ */}
-      <div className="bg-white rounded-2xl p-7 shadow-sm">
-        <p className="text-xs font-semibold text-gray-800 mb-4">
-          Please explain your answer above:
-        </p>
-        <p className="font-bold text-red-900">
-          &ldquo;Please rate how the culture in your school environment captures the factors stated below.&rdquo;
-        </p>
+      {/*  Open-ended response card  */}
+      <ResponseCard
+        question="Please explain your answer above:"
+        questionHighlight="&ldquo;Please rate how the culture in your school environment captures the factors stated below.&rdquo;"
+        responses={RESPONSES}
+        onViewAll={openExplainModal}
+      />
 
-        <div className="flex flex-col gap-5">
-          {visible.map((r, i) => (
-            <div key={i} className="flex flex-col gap-0.5">
-              <p className="font-bold text-gray-900 text-sm">{r.name}</p>
-              <p className="text-xs text-gray-500">{r.classOf}</p>
-              <p className="text-sm text-gray-700">{r.answer}</p>
-              <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-          <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => setExpanded(!expanded)}>
-            {expanded ? "Show Less" : "View Responses"}
-          </button>
-        </div>
-      </div>
+      {/* Modal */}
+      <ExplainEntryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={modalData}
+      />
     </section>
   );
 }

@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import ReasonsForRatingModal from "../modals/levelOfDifficulty";
+import SuggestionEntryModal from "../modals/suggestToPrep";
 
 interface Props {
   program?: string;
@@ -108,9 +109,12 @@ function ResponseCard({
 export default function TransitiontoProgram({ program }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<ReasonEntry[]>([]);
+  const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
+  const [suggestionData, setSuggestionData] = useState<ReasonEntry[]>([]);
 
   const openDifficultyModal = () => {
     const reasonData: ReasonEntry[] = DIFFICULTY_RESPONSES.map((r) => ({
+    
       label: r.name,
       category: r.answer,
     }));
@@ -120,11 +124,12 @@ export default function TransitiontoProgram({ program }: Props) {
 
   const openSuggestModal = () => {
     const reasonData: ReasonEntry[] = SUGGEST_RESPONSES.map((r) => ({
+    
       label: r.name,
       category: r.answer,
     }));
-    setModalData(reasonData);
-    setIsModalOpen(true);
+    setSuggestionData(reasonData);
+    setIsSuggestionModalOpen(true);
   };
 
   return (
@@ -235,6 +240,11 @@ export default function TransitiontoProgram({ program }: Props) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         data={modalData}
+      />
+      <SuggestionEntryModal
+        isOpen={isSuggestionModalOpen}
+        onClose={() => setIsSuggestionModalOpen(false)}
+        data={suggestionData}
       />
     </section>
   );
