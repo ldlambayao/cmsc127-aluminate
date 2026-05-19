@@ -10,7 +10,6 @@ type Question = {
 
 const initialQuestions: Question[] = [
   { id: 1, text: "How did you learn about the BSAM program?" },
-  { id: 2, text: "Other:" },
   {
     id: 3,
     text: "Please rate the importance of each of the following factors in your decision to enroll in the BSAM Program:",
