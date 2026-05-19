@@ -5,6 +5,10 @@ import { ChevronDown } from "lucide-react";
 import EmploymentEducationCareer from "./components/summaryStatistics/EmploymentEducationCareer";
 import ProgramFeedback from "./components/summaryStatistics/ProgramFeedback";
 
+// Edit Questions Components
+import EQEmploymentEducationCareer from "./components/editQuestions/EmploymentEducationCareer";
+import EQProgramFeedback from "./components/editQuestions/ProgramFeedback";
+
 export const dynamic = "force-dynamic";
 
 export default function AlumniTracerResults() {
@@ -79,9 +83,9 @@ export default function AlumniTracerResults() {
             </div>
           )}
           {activeTab === "edit" && (
-            <div>
-              {/* Edit Questions content will go here */}
-              <p className="text-gray-600">Edit Questions content</p>
+            <div className="flex flex-col gap-8">
+              <EQEmploymentEducationCareer />
+              <EQProgramFeedback />
             </div>
           )}
         </div>
