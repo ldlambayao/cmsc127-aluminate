@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DeleteQuestionModal from "./modals/DeleteQuestionModal";
 
 type Question = {
   id: number;
@@ -43,6 +44,8 @@ export default function ProgramFeedback() {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
 
   const handleEditClick = (question: Question) => {
     setEditingId(question.id);
@@ -62,8 +65,17 @@ export default function ProgramFeedback() {
     setEditText("");
   };
 
-  const handleDelete = (id: number) => {
-    setQuestions((prev) => prev.filter((q) => q.id !== id));
+  const handleDeleteClick = (question: Question) => {
+    setQuestionToDelete(question);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (questionToDelete) {
+      setQuestions((prev) => prev.filter((q) => q.id !== questionToDelete.id));
+      setIsDeleteModalOpen(false);
+      setQuestionToDelete(null);
+    }
   };
 
   return (
@@ -112,7 +124,7 @@ export default function ProgramFeedback() {
               </td>
               <td style={styles.tdActions}>
                 <div style={styles.actionBtns}>
-                  <button style={styles.iconBtn} title="Delete" onClick={() => handleDelete(q.id)}>
+                  <button style={styles.iconBtn} title="Delete" onClick={() => handleDeleteClick(q)}>
                     <TrashIcon />
                   </button>
                   <button style={styles.iconBtn} title="Edit" onClick={() => handleEditClick(q)}>
@@ -124,6 +136,13 @@ export default function ProgramFeedback() {
           ))}
         </tbody>
       </table>
+
+      <DeleteQuestionModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        questionText={questionToDelete?.text || ""}
+      />
     </div>
   );
 }
