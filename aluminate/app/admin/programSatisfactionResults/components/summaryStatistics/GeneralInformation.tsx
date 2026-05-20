@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -10,31 +11,87 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 interface Props {
   program?: string;
 }
 
-// ── Sample data ────────────────────────────────────────────────────────────────
-// Replace with a Supabase query that groups responses by rating (1–5)
-// e.g. SELECT rating, COUNT(*) FROM program_satisfaction
-//      WHERE section = 'general_info' AND program = $1
-//      GROUP BY rating ORDER BY rating
-// ──────────────────────────────────────────────────────────────────────────────
-const SAMPLE_DATA = [
-  { rating: "1", "Supervision of BSAMAT Program": 95 },
-  { rating: "2", "Supervision of BSAMAT Program": 88 },
-  { rating: "3", "Supervision of BSAMAT Program": 35 },
-  { rating: "4", "Supervision of BSAMAT Program": 55 },
-  { rating: "5", "Supervision of BSAMAT Program": 30 },
-];
+interface ChartDataPoint {
+  category: string;
+  label: string;
+  count: number;
+}
+
+interface SurveyResponseRow {
+  p1q1: string;
+}
 
 const BAR_COLOR = "#D89A9A";
 const SECTION_COLOR = "#9b1d2a";
 
 export default function GeneralInformation({ program }: Props) {
-  // TODO: swap SAMPLE_DATA for a real Supabase fetch filtered by `program`
-  const data = SAMPLE_DATA;
+  const supabase = getSupabaseBrowserClient();
+  const [p1q1Data, setP1q1Data] = useState<{ rating: string; "Count": number }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        let query = supabase
+          .from("satisfaction_survey_response")
+          .select(`
+            p1q1,
+            alumni!inner(
+              program!inner(program_name)
+            )
+          `);
+
+        if (program) {
+          query = query.eq("alumni.program.program_name", program);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        const p1q1Counts: Record<string, number> = {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        };
+
+        if (data) {
+          data.forEach((row: any) => {
+            const value = String(row.p1q1);
+            if (value in p1q1Counts) {
+              p1q1Counts[value]++;
+            }
+          });
+        }
+
+        const formattedData = Object.keys(p1q1Counts).map((key) => ({
+          rating: key,
+          "Count": p1q1Counts[key],
+        }));
+
+        setP1q1Data(formattedData);
+      } catch (err) {
+        console.error("Error fetching survey metrics:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [program, supabase]);
+
+  if (loading) {
+    return <div className="p-8 text-center text-gray-500 text-sm">Loading charts...</div>;
+  }
 
   return (
     <section className="flex flex-col gap-4">
@@ -49,24 +106,18 @@ export default function GeneralInformation({ program }: Props) {
 
         <ResponsiveContainer width="100%" height={260}>
           <BarChart
-            data={data}
+            data={p1q1Data}
             margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
             barCategoryGap="30%"
-            barGap={4}
           >
             <CartesianGrid vertical={false} stroke="#f0f0f0" />
             <XAxis
               dataKey="rating"
-              axisLine={false}
-              tickLine={false}
               tick={{ fontSize: 12, fill: "#888" }}
             />
             <YAxis
-              domain={[0, 100]}
-              ticks={[0, 20, 40, 60, 80, 100]}
-              axisLine={false}
-              tickLine={false}
               tick={{ fontSize: 12, fill: "#888" }}
+              allowDecimals={false}
             />
             <Tooltip
               cursor={{ fill: "rgba(216,154,154,0.10)" }}
@@ -75,6 +126,8 @@ export default function GeneralInformation({ program }: Props) {
                 border: "1px solid #eee",
                 fontSize: "13px",
               }}
+              labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+              itemStyle={{ color: "#333" }}
             />
             <Legend
               iconType="square"
@@ -82,9 +135,9 @@ export default function GeneralInformation({ program }: Props) {
               wrapperStyle={{ fontSize: "12px", color: "#555", paddingTop: "12px" }}
             />
             <Bar
-              dataKey="Supervision of BSAMAT Program"
+              dataKey="Count"
               fill={BAR_COLOR}
-              radius={[999, 999, 999, 999]}
+              radius={[8, 8, 0, 0]}
               maxBarSize={48}
             />
           </BarChart>
