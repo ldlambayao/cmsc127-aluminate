@@ -33,15 +33,6 @@ interface PieChartDataPoint {
 
 interface SurveyResponseRow {
   q01_time_to_find_job: string;
-<<<<<<< HEAD
-  current_employment_status: string;
-  date_hired: string;
-  current_workplace: string;
-  current_position: string;
-  nature_of_work: string;
-  higher_studies: string;
-  list_for_higher_studies: string;
-=======
   q02_current_employment_status: string;
   q03_date_hired: string;
   q04_current_workplace: string;
@@ -49,7 +40,6 @@ interface SurveyResponseRow {
   q06_nature_of_work: string;
   q07_higher_studies: string;
   q08_list_for_higher_studies: string;
->>>>>>> main
 }
 
 export default function EmploymentEducationCareer() {
