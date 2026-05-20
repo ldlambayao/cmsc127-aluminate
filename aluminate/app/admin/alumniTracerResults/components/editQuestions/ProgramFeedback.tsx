@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import DeleteQuestionModal from "./modals/DeleteQuestionModal";
+import DeleteQuestionModal from "@/admin/components/modals/DeleteQuestionModal";
 
 type Question = {
   id: number;
