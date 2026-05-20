@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Trash2, AlertTriangle, X } from "lucide-react";
+import { Question } from "@/admin/alumniTracerResults/components/editQuestions/EmploymentEducationCareer"
 
 interface DeleteQuestionModalProps {
   isOpen: boolean;
