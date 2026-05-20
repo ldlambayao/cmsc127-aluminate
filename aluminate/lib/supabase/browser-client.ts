@@ -81,9 +81,7 @@ export function getSupabaseBrowserClient(): SupabaseClient<Database> {
     return client;
   }
 
-  // During build time (server-side rendering), return a dummy client to avoid initialization errors
   if (typeof window === "undefined") {
-    // Return a minimal object that won't fail during build
     return {
       auth: {},
       from: () => ({})

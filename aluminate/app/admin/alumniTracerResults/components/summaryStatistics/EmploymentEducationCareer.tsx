@@ -33,6 +33,7 @@ interface PieChartDataPoint {
 
 interface SurveyResponseRow {
   q01_time_to_find_job: string;
+<<<<<<< HEAD
   current_employment_status: string;
   date_hired: string;
   current_workplace: string;
@@ -40,6 +41,15 @@ interface SurveyResponseRow {
   nature_of_work: string;
   higher_studies: string;
   list_for_higher_studies: string;
+=======
+  q02_current_employment_status: string;
+  q03_date_hired: string;
+  q04_current_workplace: string;
+  q05_current_position: string;
+  q06_nature_of_work: string;
+  q07_higher_studies: string;
+  q08_list_for_higher_studies: string;
+>>>>>>> main
 }
 
 export default function EmploymentEducationCareer() {
@@ -114,7 +124,7 @@ export default function EmploymentEducationCareer() {
         // --------------
         const { data: currentEmploymentStatusQuery, error: currentEmploymentStatusError} = await supabase
           .from("tracer_survey_response")
-          .select("current_employment_status")
+          .select("q02_current_employment_status")
 
         if (currentEmploymentStatusError) throw currentEmploymentStatusError;
 
@@ -125,7 +135,7 @@ export default function EmploymentEducationCareer() {
 
         if (currentEmploymentStatusQuery) {
           (currentEmploymentStatusQuery as SurveyResponseRow[]).forEach((row) => {
-            const value = row.current_employment_status;
+            const value = row.q02_current_employment_status;
 
             if (value && value in currentEmploymentStatusCounts) {
               currentEmploymentStatusCounts[value]++;
@@ -146,7 +156,7 @@ export default function EmploymentEducationCareer() {
         // --------------
         const { data: dateHiredQuery, error: dateHiredError} = await supabase
           .from("tracer_survey_response")
-          .select("date_hired")
+          .select("q03_date_hired")
 
         if (dateHiredError) throw dateHiredError;
 
@@ -154,7 +164,7 @@ export default function EmploymentEducationCareer() {
 
         if (dateHiredQuery) {
           (dateHiredQuery as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.date_hired || "N/A";
+            const rawValue = row.q03_date_hired || "N/A";
 
             if(rawValue) {
               const value = rawValue.substring(0, 4);
@@ -178,7 +188,7 @@ export default function EmploymentEducationCareer() {
         // --------------
         const { data: currentWorkplaceData, error: currentWorkplaceError } = await supabase
           .from("tracer_survey_response")
-          .select("current_workplace");
+          .select("q04_current_workplace");
 
         if (currentWorkplaceError) throw currentWorkplaceError;
 
@@ -186,7 +196,7 @@ export default function EmploymentEducationCareer() {
 
         if (currentWorkplaceData) {
           (currentWorkplaceData as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.current_workplace;
+            const rawValue = row.q04_current_workplace;
 
             const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
 
@@ -210,7 +220,7 @@ export default function EmploymentEducationCareer() {
         // --------------
         const { data: currentPositionData, error: currentPositionError } = await supabase
           .from("tracer_survey_response")
-          .select("current_position");
+          .select("q05_current_position");
 
         if (currentPositionError) throw currentPositionError;
 
@@ -218,7 +228,7 @@ export default function EmploymentEducationCareer() {
 
         if (currentPositionData) {
           (currentPositionData as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.current_position;
+            const rawValue = row.q05_current_position;
 
             const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
 
@@ -242,7 +252,7 @@ export default function EmploymentEducationCareer() {
         // -----------
         const { data: natureOfWorkData, error: natureOfWorkError } = await supabase
           .from("tracer_survey_response")
-          .select("nature_of_work");
+          .select("q06_nature_of_work");
 
         if (natureOfWorkError) throw natureOfWorkError;
 
@@ -250,7 +260,7 @@ export default function EmploymentEducationCareer() {
 
         if (natureOfWorkData) {
           (natureOfWorkData as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.nature_of_work;
+            const rawValue = row.q06_nature_of_work;
 
             const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
 
@@ -274,7 +284,7 @@ export default function EmploymentEducationCareer() {
         // ------------
         const { data: higherStudiesData, error: higherStudiesError} = await supabase
           .from("tracer_survey_response")
-          .select("higher_studies");
+          .select("q07_higher_studies");
 
         if (higherStudiesError) throw higherStudiesError;
 
@@ -282,7 +292,7 @@ export default function EmploymentEducationCareer() {
 
         if (higherStudiesData) {
           (higherStudiesData as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.higher_studies;
+            const rawValue = row.q07_higher_studies;
 
             const value = rawValue ? "Yes" : "No";
             if(!(value in higherStudiesCounts)) {
@@ -306,7 +316,7 @@ export default function EmploymentEducationCareer() {
         // -----------
         const { data: listForHigherStudiesData, error: listForHigherStudiesError } = await supabase
           .from("tracer_survey_response")
-          .select("list_for_higher_studies")
+          .select("q08_list_for_higher_studies")
 
         if (listForHigherStudiesError) throw listForHigherStudiesError;
 
@@ -314,7 +324,7 @@ export default function EmploymentEducationCareer() {
 
         if (listForHigherStudiesData) {
           (listForHigherStudiesData as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.list_for_higher_studies;
+            const rawValue = row.q08_list_for_higher_studies;
 
             const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
 
