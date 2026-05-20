@@ -19,7 +19,7 @@ export type Question = {
 export default function EmploymentEducationCareer() {
   const supabase = getSupabaseBrowserClient();
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [editText, setEditText] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
@@ -41,7 +41,6 @@ export default function EmploymentEducationCareer() {
           }));
 
         setQuestions(formattedQuestions);
-        console.log(formattedQuestions);
     }
   }
 
@@ -50,20 +49,28 @@ export default function EmploymentEducationCareer() {
   }, [])
 
   const handleEditClick = (question: Question) => {
-    setEditingId(question.id);
+    setEditingQuestion(question);
     setEditText(question.text);
   };
 
-  const handleEditSave = (id: number) => {
+  const handleEditSave = async (id: number) => {
+    const table_name = "tracer_survey_response";
+    if (editingQuestion) {
+      const { error } = await supabase
+        .rpc('update_column_description' as any, {t_name: table_name, c_name: editingQuestion.columnName, new_desc: editText} as any);
+      if (error) throw error;
+    }
     setQuestions((prev) =>
       prev.map((q) => (q.id === id ? { ...q, text: editText } : q))
     );
-    setEditingId(null);
+    setEditingQuestion(null);
     setEditText("");
+
+    alert("Question edits saved.")
   };
 
   const handleEditCancel = () => {
-    setEditingId(null);
+    setEditingQuestion(null);
     setEditText("");
   };
 
@@ -75,7 +82,6 @@ export default function EmploymentEducationCareer() {
   const handleConfirmDelete = async () => {
     const table_name = "tracer_survey_response"
     if (questionToDelete) {
-      console.log(questionToDelete)
       const { error } = await supabase
         .rpc('drop_column' as any, {table_name: table_name, column_name: questionToDelete.columnName} as any);
       if (error) throw error;
@@ -112,7 +118,7 @@ export default function EmploymentEducationCareer() {
           {questions.map((q) => (
             <tr key={q.id} style={styles.row}>
               <td style={{ ...styles.tdQuestion, paddingLeft: q.indented ? "56px" : "24px" }}>
-                {editingId === q.id ? (
+                {editingQuestion === q ? (
                   <div style={styles.editWrapper}>
                     <textarea
                       style={styles.textarea}
