@@ -1,51 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DeleteQuestionModal from "@/admin/components/modals/DeleteQuestionModal";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
+
+interface ColumnData {
+  column_name: string;
+  description: string;
+}
 
 type Question = {
   id: number;
+  columnName: string;
   text: string;
   indented?: boolean;
 };
 
-const initialQuestions: Question[] = [
-  {
-    id: 1,
-    text: "Please share your suggestions for activities (programs, mentoring, etc.) that allow us to better help alumni find jobs after graduation. Please elaborate below.",
-  },
-  {
-    id: 2,
-    text: "What is your level of satisfaction for your undergraduate study under the BSCS degree program?",
-  },
-  {
-    id: 3,
-    text: "Reasons for giving that rating above",
-  },
-  {
-    id: 4,
-    text: "In what way did your degree program help you in your professional career?",
-  },
-  {
-    id: 5,
-    text: "What are your suggestions on how to improve the program in terms of structure, content, teaching, assessments, etc.?",
-  },
-  {
-    id: 6,
-    text: "Would you like to get updates regarding new DMPCS program offerings, trainings and/or activities for alumni? If yes, please provide your email below.",
-  },
-  {
-    id: 7,
-    text: "Would you be interested in taking part as an alumni interviewer for the review and revision of the BSCS Program?",
-  },
-];
 
 export default function ProgramFeedback() {
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  const supabase = getSupabaseBrowserClient();
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
+
+  const handleLoadQuestions = async () => {
+      const { data: initialQuestionsQuery, error: initialQuestionsError } = await supabase
+        .rpc('get_all_column_descriptions' as any, {t_name: 'tracer_survey_response'} as any)
+
+      if (initialQuestionsError) throw initialQuestionsError;
+
+      if(initialQuestionsQuery) {
+        const formattedQuestions: Question[] = (initialQuestionsQuery as ColumnData[])
+            .filter((row) => row.description !== null && row.description.trim() !== "")
+            .slice(8, 17)
+            .map((row, index) => ({
+              id: index + 1,
+              columnName: row.column_name,
+              text: row.description,
+            }));
+
+          setQuestions(formattedQuestions);
+          console.log(formattedQuestions);
+      }
+    }
+
+    useEffect(() => {
+      handleLoadQuestions();
+    }, [])
 
   const handleEditClick = (question: Question) => {
     setEditingId(question.id);
@@ -70,8 +73,14 @@ export default function ProgramFeedback() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
+      const table_name = "tracer_survey_response"
     if (questionToDelete) {
+      console.log(questionToDelete)
+      const { error } = await supabase
+        .rpc('drop_column' as any, {table_name: table_name, column_name: questionToDelete.columnName} as any);
+      if (error) throw error;
+
       setQuestions((prev) => prev.filter((q) => q.id !== questionToDelete.id));
       setIsDeleteModalOpen(false);
       setQuestionToDelete(null);

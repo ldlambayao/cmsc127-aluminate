@@ -35,12 +35,12 @@ interface ChartDataPoint {
 }
 
 interface SurveyResponseRow {
-  share_suggestions: string;
-  satisfaction_level: string;
-  satisfaction_reason: string;
-  degprog_suggestions: string;
-  receive_updates: string;
-  interview_interest: string;
+  q11_share_suggestions: string;
+  q12_satisfaction_level: string;
+  q13_satisfaction_reason: string;
+  q15_degprog_suggestions: string;
+  q16_receive_updates: string;
+  q17_interview_interest: string;
 }
 
 const satisfactionLevel5Options = [
@@ -74,7 +74,7 @@ export default function ProgramFeedback() {
         // -----------
         const { data: shareSuggestionsQuery, error: shareSuggestionsError } = await supabase
           .from("tracer_survey_response")
-          .select("share_suggestions")
+          .select("q11_share_suggestions")
 
         if (shareSuggestionsError) throw shareSuggestionsError;
 
@@ -82,7 +82,7 @@ export default function ProgramFeedback() {
 
         if (shareSuggestionsQuery) {
           (shareSuggestionsQuery as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.share_suggestions;
+            const rawValue = row.q11_share_suggestions;
 
             const value = rawValue && rawValue.trim() !== "" ? rawValue : "N/A";
             if (!(value in shareSuggestionsCounts)) {
@@ -104,7 +104,7 @@ export default function ProgramFeedback() {
         // -----------
         const { data: satisfactionLevelQuery, error: satisfactionLevelError } = await supabase
           .from("tracer_survey_response")
-          .select("satisfaction_level")
+          .select("q12_satisfaction_level")
 
         if (satisfactionLevelError) throw satisfactionLevelError;
 
@@ -115,7 +115,7 @@ export default function ProgramFeedback() {
 
         if(satisfactionLevelQuery) {
           (satisfactionLevelQuery as SurveyResponseRow[]).forEach((row) => {
-            const value = row.satisfaction_level;
+            const value = row.q12_satisfaction_level;
 
             if (value && value in satisfactionLevelCounts){
               satisfactionLevelCounts[value]++;
@@ -136,7 +136,7 @@ export default function ProgramFeedback() {
         // -----------
         const { data: satisfactionReasonQuery, error: satisfactionReasonError } = await supabase
           .from("tracer_survey_response")
-          .select("satisfaction_level, satisfaction_reason")
+          .select("q12_satisfaction_level, q13_satisfaction_reason")
 
         if (satisfactionReasonError) throw satisfactionReasonError;
 
@@ -144,8 +144,8 @@ export default function ProgramFeedback() {
 
         if (satisfactionReasonQuery) {
           (satisfactionReasonQuery as SurveyResponseRow[]).forEach((row) => {
-            const rate = row.satisfaction_level;
-            const rawReason = row.satisfaction_reason;
+            const rate = row.q12_satisfaction_level;
+            const rawReason = row.q13_satisfaction_reason;
 
             const reason = rawReason.trim() !== "" ? rawReason : "N/A";
 
@@ -171,7 +171,7 @@ export default function ProgramFeedback() {
         // ---------
         const { data: degprogSuggestionsQuery, error: degprogSuggestionsError } = await supabase
           .from("tracer_survey_response")
-          .select("degprog_suggestions")
+          .select("q15_degprog_suggestions")
 
         if (degprogSuggestionsError) throw degprogSuggestionsError;
 
@@ -179,7 +179,7 @@ export default function ProgramFeedback() {
 
         if (degprogSuggestionsQuery) {
           (degprogSuggestionsQuery as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.degprog_suggestions;
+            const rawValue = row.q15_degprog_suggestions;
 
             const value = rawValue.trim() !== "" ? rawValue : "N/A";
             if (value && value in degprogSuggestionsCounts) {
@@ -201,7 +201,7 @@ export default function ProgramFeedback() {
         // ---------
         const { data: receiveUpdatesQuery, error: receiveUpdatesError } = await supabase
           .from("tracer_survey_response")
-          .select("receive_updates")
+          .select("q16_receive_updates")
 
         if (receiveUpdatesError) throw receiveUpdatesError;
 
@@ -209,7 +209,7 @@ export default function ProgramFeedback() {
 
         if (receiveUpdatesData) {
           (receiveUpdatesQuery as SurveyResponseRow[]).forEach((row) => {
-            const rawValue = row.receive_updates;
+            const rawValue = row.q16_receive_updates;
 
             if (rawValue.includes("@")) {
               const value = rawValue;
@@ -234,7 +234,7 @@ export default function ProgramFeedback() {
         // ---------
         const { data: interviewInterestQuery, error: interviewInterestError } = await supabase
           .from("tracer_survey_response")
-          .select("interview_interest")
+          .select("q17_interview_interest")
 
         if (interviewInterestError) throw interviewInterestError;
 
@@ -242,7 +242,7 @@ export default function ProgramFeedback() {
 
         if (interviewInterestQuery) {
           (interviewInterestQuery as SurveyResponseRow[]).forEach((row) => {
-            const value = row.interview_interest;
+            const value = row.q17_interview_interest;
 
             if(!(value in interviewInterestCounts)){
               interviewInterestCounts[value] = 0;

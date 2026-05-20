@@ -1,55 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteQuestionModal from "@/admin/components/modals/DeleteQuestionModal";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
-type Question = {
+interface ColumnData {
+  column_name: string;
+  description: string;
+}
+
+export type Question = {
   id: number;
+  columnName: string,
   text: string;
   indented?: boolean;
 };
 
-const initialQuestions: Question[] = [
-  {
-    id: 1,
-    text: "How long did it take you to find a job after graduation?",
-  },
-  {
-    id: 2,
-    text: "Current status of employment",
-  },
-  {
-    id: 3,
-    text: "Date hired in present employment if employed, self-employed or with business",
-  },
-  {
-    id: 4,
-    text: "Where do you work now? (Please specify company name and location.)",
-  },
-  {
-    id: 5,
-    text: "What is your current position for your job?",
-  },
-  {
-    id: 6,
-    text: "What is the nature of your work? (Education, IT/ICT Position in the Organization/Company, Business, Research and Development, Others, etc.) If currently employed, please provide the name of your employer.",
-  },
-  {
-    id: 7,
-    text: "Are you pursuing higher studies?",
-  },
-  {
-    id: 8,
-    text: "If you answered yes above, please specify degree program, field of study, and university. Otherwise, type N/A.",
-  },
-];
-
 export default function EmploymentEducationCareer() {
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  const supabase = getSupabaseBrowserClient();
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
+
+  const handleLoadQuestions = async () => {
+    const { data: initialQuestionsQuery, error: initialQuestionsError } = await supabase
+      .rpc('get_all_column_descriptions' as any, {t_name: 'tracer_survey_response'} as any)
+
+    if (initialQuestionsError) throw initialQuestionsError;
+
+    if(initialQuestionsQuery) {
+      const formattedQuestions: Question[] = (initialQuestionsQuery as ColumnData[])
+          .filter((row) => row.description !== null && row.description.trim() !== "")
+          .slice(0, 8)
+          .map((row, index) => ({
+            id: index + 1,
+            columnName: row.column_name,
+            text: row.description,
+          }));
+
+        setQuestions(formattedQuestions);
+        console.log(formattedQuestions);
+    }
+  }
+
+  useEffect(() => {
+    handleLoadQuestions();
+  }, [])
 
   const handleEditClick = (question: Question) => {
     setEditingId(question.id);
@@ -74,13 +72,23 @@ export default function EmploymentEducationCareer() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
+    const table_name = "tracer_survey_response"
     if (questionToDelete) {
+      console.log(questionToDelete)
+      const { error } = await supabase
+        .rpc('drop_column' as any, {table_name: table_name, column_name: questionToDelete.columnName} as any);
+      if (error) throw error;
+
+
       setQuestions((prev) => prev.filter((q) => q.id !== questionToDelete.id));
       setIsDeleteModalOpen(false);
       setQuestionToDelete(null);
+
+      alert("Delete column successful.");
     }
   };
+
 
   return (
     <div style={styles.card}>
