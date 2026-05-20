@@ -32,7 +32,7 @@ interface PieChartDataPoint {
 }
 
 interface SurveyResponseRow {
-  time_to_find_job: string;
+  q01_time_to_find_job: string;
   current_employment_status: string;
   date_hired: string;
   current_workplace: string;
@@ -82,7 +82,7 @@ export default function EmploymentEducationCareer() {
         // --------------
         const { data: timeToFindJobQuery, error: timetofindJobError } = await supabase
           .from("tracer_survey_response")
-          .select("time_to_find_job");
+          .select("q01_time_to_find_job");
 
         if (timetofindJobError) throw timetofindJobError;
 
@@ -93,7 +93,7 @@ export default function EmploymentEducationCareer() {
 
         if (timeToFindJobQuery) {
           (timeToFindJobQuery as SurveyResponseRow[]).forEach((row) => {
-            const value = row.time_to_find_job;
+            const value = row.q01_time_to_find_job;
 
             if (value && value in timeToFindJobCounts) {
               timeToFindJobCounts[value]++;
