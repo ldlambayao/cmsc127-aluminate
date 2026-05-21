@@ -99,7 +99,7 @@ export default function TransitiontoProgram({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let query = supabase
+        const query = supabase
           .from("satisfaction_survey_response")
           .select(`
             p1q3, p1q4, p1q4c1, p1q4c2, p1q4c3, p1q4t1, p1q5,
@@ -199,43 +199,50 @@ export default function TransitiontoProgram({ program }: Props) {
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Transition to the Program</h2>
 
       <div className="flex gap-4">
-        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0 flex flex-col">
           <p className="text-xs font-semibold text-gray-800 mb-4">
             What is the level of difficulty of your adjustment to the BSAM program?
           </p>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart
-              data={difficultyData}
-              margin={{ top: 10, right: 10, left: -10, bottom: 45 }}
-              barCategoryGap="30%"
-            >
-              <CartesianGrid vertical={false} stroke="#f0f0f0" />
-              <XAxis
-                dataKey="rating"
-                tick={{ fontSize: 10, fill: "#888" }}
-                angle={-45}
-                textAnchor="end"
-                interval={0}
-              />
-              <YAxis
-                tick={{ fontSize: 11, fill: "#888" }}
-                allowDecimals={false} />
-              <Tooltip
-                cursor={{ fill: "rgba(216,154,154,0.10)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
-                labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
-                itemStyle={{ color: "#333" }} />
-              <Bar 
-                dataKey="Count" 
-                fill="#D89A9A" 
-                radius={[8, 8, 0, 0]} 
-                maxBarSize={40} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="flex-grow">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={difficultyData}
+                margin={{ top: 10, right: 10, left: -10, bottom: 45 }}
+                barCategoryGap="30%"
+              >
+                <CartesianGrid vertical={false} stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="rating"
+                  tick={{ fontSize: 10, fill: "#888" }}
+                  angle={-45}
+                  textAnchor="end"
+                  interval={0}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "#888" }}
+                  allowDecimals={false} />
+                <Tooltip
+                  cursor={{ fill: "rgba(216,154,154,0.10)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
+                  labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+                  itemStyle={{ color: "#333" }} />
+                <Bar 
+                  dataKey="Count" 
+                  fill="#D89A9A" 
+                  radius={[8, 8, 0, 0]} 
+                  maxBarSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-center mt-4 border-t border-gray-100 pt-4">
+            <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openDifficultyModal}>
+              View Reasons
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
           <p className="text-xs font-semibold text-gray-800 mb-4">What will make the transition easier for you?</p>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart
               data={transitionData}
               margin={{ top: 10, right: 10, left: -10, bottom: 40 }}
@@ -268,13 +275,6 @@ export default function TransitiontoProgram({ program }: Props) {
           </ResponsiveContainer>
         </div>
       </div>
-
-      <ResponseCard
-        question='Please explain the reason to your answer on the previous question '
-        questionHighlight='"What is the level of difficulty of your adjustment to the BSAM program?"'
-        responses={difficultyResponses}
-        onViewAll={openDifficultyModal}
-      />
 
       <ResponseCard
         question="What can you suggest to prepare you for the course requirements of the whole BSAM program?"
