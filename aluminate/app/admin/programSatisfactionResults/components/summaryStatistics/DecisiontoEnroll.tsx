@@ -88,17 +88,10 @@ export default function DecisiontoEnroll({ program }: Props) {
         if (error) throw error;
 
         if (rawData) {
-          console.log("DecisiontoEnroll: Raw data count from Supabase:", rawData.length);
-          
           // Filter data by program if specified
           const data = program 
             ? rawData.filter((row: any) => row.alumni?.program?.program_name === program)
             : rawData;
-
-          console.log("DecisiontoEnroll: Processed data count (after program filter):", data.length);
-          if (data.length > 0) {
-            console.log("DecisiontoEnroll: First row sample:", JSON.stringify(data[0], null, 2));
-          }
 
           // Process Learn About Data
           const learnCounts: Record<string, number> = {
@@ -132,8 +125,6 @@ export default function DecisiontoEnroll({ program }: Props) {
           });
 
           setFactorsData(formattedFactorsData);
-
-          console.log(formattedFactorsData);
         }
       } catch (err) {
         console.error("Error fetching survey metrics:", err);
