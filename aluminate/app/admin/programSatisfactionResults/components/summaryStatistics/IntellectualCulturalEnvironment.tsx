@@ -38,13 +38,6 @@ const FACTORS = [
   { key: "p3q4", label: "The expertise of the faculty", color: "#9b1d2a" },
 ];
 
-const RATING_LABELS: Record<string, string> = {
-  "Strongly Agree": "Strongly Agree",
-  "Agree": "Agree",
-  "Disagree": "Disagree",
-  "Strongly Disagree": "Strongly Disagree",
-};
-
 //  Sub-components 
 function ResponseCard({
   question,
