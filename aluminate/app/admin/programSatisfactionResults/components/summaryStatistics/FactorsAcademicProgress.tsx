@@ -179,7 +179,6 @@ export default function FactorsAcademicProgress({ program }: Props) {
             : rawData;
 
           // Process Factors Data
-          const influenceColors = ["#7a1a23", "#9b1d2a", "#d07878", "#e8b4b4", "#f5dede", "#e0e0e0"];
           const formattedFactorsData = FACTORS.map(f => {
             const entry: Record<string, any> = { factor: f.label };
             INFLUENCE_LABELS.forEach(label => {
