@@ -52,7 +52,7 @@ export default function AlumniTracerParticipation() {
           <CheckIcon />
         </div>
         <div style={styles.content}>
-          <span style={styles.label}>Participate Rate</span>
+          <span style={styles.label}>Participation Rate</span>
           <div style={styles.rateRow}>
             <span style={styles.rateValue}>{rate !== null ? `${rate}%` : "—"}</span>
             <div style={styles.progressBar}>

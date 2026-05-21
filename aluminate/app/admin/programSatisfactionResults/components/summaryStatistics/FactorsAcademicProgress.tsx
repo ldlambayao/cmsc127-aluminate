@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -21,6 +21,7 @@ import leastHelpfulEntryModal from "../modals/leastHelpful";
 import notIncludedEntryModal from "../modals/notIncluded";
 import beAddedEntryModal from "../modals/beAdded";
 import ChallengesEntryModal from "../modals/challenges";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 const WhySemesterEntryModal = whySemesterEntryModal;
 const MostHelpfulEntryModal = mostHelpfulEntryModal;
@@ -39,216 +40,55 @@ interface Response {
   program: string;
 }
 
-interface Others2Entry {
+interface ModalEntry {
   category: string;
   label: string;
   count?: number;
 }
 
-interface whySemesterEntry {
-  category: string;
-  label: string;
-  count?: number;
-}
-
-interface mostHelpfulEntry {
-  category: string;
-  label: string;
-  count?: number;
-}
-
-interface leastHelpfulEntry {
-  category: string;
-  label: string;
-  count?: number;
-}
-
-interface notIncludedEntry {
-  category: string;
-  label: string;
-  count?: number;
-}
-
-interface beAddedEntry {
-  category: string;
-  label: string;
-  count?: number;
-}
-
-interface challengesEntry {
-  category: string;
-  label: string;
-  count?: number;
-}
-
-//  Shared factor colors 
+// Factors & colors 
 const FACTORS = [
-  { key: "Family obligations", color: "#f5dede" },
-  { key: "Challenges of requirements for each course", color: "#ebb8b8" },
-  { key: "Volume of requirements for each course", color: "#e09898" },
-  { key: "Lack of access to the concerned faculty", color: "#d07878" },
-  { key: "Work obligations/demands", color: "#b85050" },
-  { key: "Financial concerns", color: "#9b1d2a" },
-  { key: "Lack of motivation", color: "#9b1d2a" },
-  { key: "Health reasons", color: "#9b1d2a" },
-  { key: "Challenges about the program, in general", color: "#9b1d2a" },
-  { key: "Challenges about the faculty in general", color: "#9b1d2a" },
+  { key: "p4q1", label: "Family obligations", color: "#f5dede" },
+  { key: "p4q2", label: "Challenges of requirements for each course", color: "#f0d0d0" },
+  { key: "p4q3", label: "Volume of requirements for each course", color: "#ebb8b8" },
+  { key: "p4q4", label: "Lack of access to the intended faculty", color: "#e6a0a0" },
+  { key: "p4q5", label: "Work conditions/demands", color: "#e09898" },
+  { key: "p4q6", label: "Financial concerns", color: "#d68080" },
+  { key: "p4q7", label: "Lack of motivation", color: "#d07878" },
+  { key: "p4q8", label: "Health issues", color: "#c06060" },
+  { key: "p4q9", label: "Challenges about the program in general", color: "#b85050" },
+  { key: "p4q10", label: "Challenges about the faculty in general", color: "#9b1d2a" },
 ];
 
-//  Chart 1: Factors chart data 
-const FACTORS_DATA = [
-  {
-    level: "Very positive influence",
-    "Family obligations": 38,
-    "Challenges of requirements for each course": 28,
-    "Volume of requirements for each course": 18,
-    "Lack of access to the concerned faculty": 12,
-    "Work obligations/demands": 8,
-    "Financial concerns": 4,
-    "Lack of motivation": 4,
-    "Health reasons": 4,
-    "Challenges about the program, in general": 4,
-    "Challenges about the faculty, in general": 4,
-  },
-  {
-    level: "Positive influence",
-    "Family obligations": 38,
-    "Challenges of requirements for each course": 28,
-    "Volume of requirements for each course": 18,
-    "Lack of access to the concerned faculty": 12,
-    "Work obligations/demands": 8,
-    "Financial concerns": 4,
-    "Lack of motivation": 4,
-    "Health reasons": 4,
-    "Challenges about the program, in general": 4,
-    "Challenges about the faculty, in general": 4,
-  },
-  {
-    level: "No influence",
-    "Family obligations": 38,
-    "Challenges of requirements for each course": 28,
-    "Volume of requirements for each course": 18,
-    "Lack of access to the concerned faculty": 12,
-    "Work obligations/demands": 8,
-    "Financial concerns": 4,
-    "Lack of motivation": 4,
-    "Health reasons": 4,
-    "Challenges about the program, in general": 4,
-    "Challenges about the faculty, in general": 4,
-  },
-  {
-    level: "Negative influence",
-    "Family obligations": 38,
-    "Challenges of requirements for each course": 28,
-    "Volume of requirements for each course": 18,
-    "Lack of access to the concerned faculty": 12,
-    "Work obligations/demands": 8,
-    "Financial concerns": 4,
-    "Lack of motivation": 4,
-    "Health reasons": 4,
-    "Challenges about the program, in general": 4,
-    "Challenges about the faculty, in general": 4,
-  },
-  {
-    level: "Very negative influence",
-    "Family obligations": 38,
-    "Challenges of requirements for each course": 28,
-    "Volume of requirements for each course": 18,
-    "Lack of access to the concerned faculty": 12,
-    "Work obligations/demands": 8,
-    "Financial concerns": 4,
-    "Lack of motivation": 4,
-    "Health reasons": 4,
-    "Challenges about the program, in general": 4,
-    "Challenges about the faculty, in general": 4,
-  },
-  {
-    level: "Not applicable",
-    "Family obligations": 38,
-    "Challenges of requirements for each course": 28,
-    "Volume of requirements for each course": 18,
-    "Lack of access to the concerned faculty": 12,
-    "Work obligations/demands": 8,
-    "Financial concerns": 4,
-    "Lack of motivation": 4,
-    "Health reasons": 4,
-    "Challenges about the program, in general": 4,
-    "Challenges about the faculty, in general": 4,
-  },
+const INFLUENCE_LABELS = [
+  "Very Positive",
+  "Positive",
+  "No Influence",
+  "Negative",
+  "Very Negative",
+  "Not Applicable",
 ];
 
-//  Chart 2: 
-const LEAVING_DATA = [
-  { name: "Yes", value: 86.08 },
-  { name: "No", value: 13.92 },
-];
-const LEAVING_COLORS = ["#D89A9A", "#f5dede"];
-
-//  Chart 3: Favorite year/semester 
-const YEAR_DATA = [
-  { year: "First Year and First Semester", count: 18 },
-  { year: "First Year and Second Semester", count: 32 },
-  { year: "Second Year and First Semester", count: 55 },
-  { year: "Second Year and Second Semester", count: 42 },
-  { year: "Third Year and First Semester", count: 28 },
-  { year: "Third Year and Mid Year", count: 48 },
-];
-
-//  Open-ended response sets 
-const SAMPLE_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const OTHERS_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const WHY_SEMESTER_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const MOST_HELPFUL_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const LEAST_HELPFUL_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const NOT_INCLUDED_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const BE_ADDED_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
-
-const CHALLENGES_RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud", program: "BS COMPUTER SCIENCE" },
-];
+const LEAVING_COLORS = ["#9b1d2a", "#f5dede"];
 
 //  Custom donut label 
-const renderDonutLabel = ({ cx, cy }: { cx: number; cy: number }) => (
-  <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={20} fontWeight={700} fill="#333">
-    86.08
-  </text>
-);
+const renderDonutLabel = (props: any) => {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  // Only render label for the first (Yes) segment
+  if (props.payload.name === "Yes") {
+    return (
+      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={24} fontWeight={700} fill="#333">
+        {(percent * 100).toFixed(0)}%
+      </text>
+    );
+  }
+  return null;
+};
 
 //  Reusable response card 
 function ResponseCard({
@@ -259,7 +99,7 @@ function ResponseCard({
 }: {
   question: string;
   isHighlighted?: boolean;
-  responses: typeof SAMPLE_RESPONSES;
+  responses: Response[];
   onViewAll?: () => void;
 }) {
   const visible = responses.slice(0, 3);
@@ -270,14 +110,14 @@ function ResponseCard({
         {question}
       </p>
       <div className="flex flex-col gap-5">
-        {visible.map((r, i) => (
+        {visible.length > 0 ? visible.map((r, i) => (
           <div key={i} className="flex flex-col gap-0.5">
             <p className="font-bold text-gray-900 text-sm">{r.name}</p>
             <p className="text-xs text-gray-500">{r.classOf}</p>
             <p className="text-sm text-gray-700">{r.answer}</p>
             <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
           </div>
-        ))}
+        )) : <p className="text-sm text-gray-500">No responses yet.</p>}
       </div>
       <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
         <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
@@ -288,155 +128,204 @@ function ResponseCard({
   );
 }
 
-//  Main component 
 export default function FactorsAcademicProgress({ program }: Props) {
+  const supabase = getSupabaseBrowserClient();
+  const [loading, setLoading] = useState(true);
+  const [factorsData, setFactorsData] = useState<any[]>([]);
+  const [leavingData, setLeavingData] = useState<any[]>([]);
+  const [yearData, setYearData] = useState<any[]>([]);
+
+  const [othersResponses, setOthersResponses] = useState<Response[]>([]);
+  const [leavingWhyResponses, setLeavingWhyResponses] = useState<Response[]>([]);
+  const [favoriteWhyResponses, setFavoriteWhyResponses] = useState<Response[]>([]);
+  const [mostHelpfulResponses, setMostHelpfulResponses] = useState<Response[]>([]);
+  const [helpfulFutureResponses, setHelpfulFutureResponses] = useState<Response[]>([]);
+  const [shouldNotIncludeResponses, setShouldNotIncludeResponses] = useState<Response[]>([]);
+  const [shouldBeAddedResponses, setShouldBeAddedResponses] = useState<Response[]>([]);
+  const [otherChallengesResponses, setOtherChallengesResponses] = useState<Response[]>([]);
+
   const [isOthers2ModalOpen, setIsOthers2ModalOpen] = useState(false);
-  const [others2ModalData, setOthers2ModalData] = useState<Others2Entry[]>([]);
   const [isWhySemesterModalOpen, setIsWhySemesterModalOpen] = useState(false);
-  const [whySemesterModalData, setWhySemesterModalData] = useState<whySemesterEntry[]>([]);
-  const [isWhyModalOpen, setIsWhyModalOpen] = useState(false);
-  const [whyModalData, setWhyModalData] = useState<whySemesterEntry[]>([]);
   const [isMostHelpfulEntryModalOpen, setIsMostHelpfulEntryModalOpen] = useState(false);
-  const [mostHelpfulEntryModalData, setMostHelpfulEntryModalData] = useState<mostHelpfulEntry[]>([]);
   const [isLeastHelpfulEntryModalOpen, setIsLeastHelpfulEntryModalOpen] = useState(false);
-  const [leastHelpfulEntryModalData, setLeastHelpfulEntryModalData] = useState<leastHelpfulEntry[]>([]);
   const [isNotIncludedEntryModalOpen, setIsNotIncludedEntryModalOpen] = useState(false);
-  const [notIncludedEntryModalData, setNotIncludedEntryModalData] = useState<notIncludedEntry[]>([]);
   const [isBeAddedEntryModalOpen, setIsBeAddedEntryModalOpen] = useState(false);
-  const [beAddedEntryModalData, setBeAddedEntryModalData] = useState<beAddedEntry[]>([]);
   const [isChallengesEntryModalOpen, setIsChallengesEntryModalOpen] = useState(false);
-  const [challengesEntryModalData, setChallengesEntryModalData] = useState<challengesEntry[]>([]);
 
-  const openOthers2Modal = () => {
-    const reasonData: Others2Entry[] = OTHERS_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setOthers2ModalData(reasonData);
-    setIsOthers2ModalOpen(true);
+  const [modalData, setModalData] = useState<ModalEntry[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const query = supabase
+          .from("satisfaction_survey_response")
+          .select(`
+            p4q1, p4q2, p4q3, p4q4, p4q5, p4q6, p4q7, p4q8, p4q9, p4q10,
+            p4q11, p4q12, p4q13, p4q14, p4q15, p4q16, p4q17, p4q18, p4q19, p4q20,
+            alumni(
+              graduation_year,
+              program(program_name),
+              users(fname, lname)
+            )
+          `);
+
+        const { data: rawData, error } = await query;
+        if (error) throw error;
+
+        if (rawData) {
+          const data = program
+            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
+            : rawData;
+
+          // Process Factors Data
+          const formattedFactorsData = FACTORS.map(f => {
+            const entry: Record<string, any> = { factor: f.label };
+            INFLUENCE_LABELS.forEach(label => {
+              entry[label] = data.filter(row => String((row as any)[f.key]) === label).length;
+            });
+            return entry;
+          });
+          setFactorsData(formattedFactorsData);
+
+          // Process Leaving Data
+          const yesCount = data.filter(row => (row as any).p4q12 === "Yes").length;
+          const noCount = data.filter(row => (row as any).p4q12 === "No").length;
+          const total = yesCount + noCount || 1;
+          setLeavingData([
+            { name: "Yes", value: parseFloat(((yesCount / total) * 100).toFixed(2)) },
+            { name: "No", value: parseFloat(((noCount / total) * 100).toFixed(2)) },
+          ]);
+
+          // Process Favorite Year Data
+          const yearCounts: Record<string, number> = {};
+          data.forEach(row => {
+            if ((row as any).p4q14) {
+              yearCounts[(row as any).p4q14] = (yearCounts[(row as any).p4q14] || 0) + 1;
+            }
+          });
+          setYearData(Object.entries(yearCounts).map(([year, count]) => ({ year, count })));
+
+          // Process Responses
+          const mapResponse = (key: string) => data
+            .filter(row => (row as any)[key] && (row as any)[key].trim() !== "")
+            .map(row => {
+              const fname = (row as any).alumni?.users?.fname?.trim();
+              const lname = (row as any).alumni?.users?.lname?.trim();
+              const graduationYear = (row as any).alumni?.graduation_year;
+              const fullName = [fname, lname].filter(Boolean).join(" ");
+
+              return {
+                name: fullName || "Anonymous",
+                classOf: graduationYear ? `Class of ${graduationYear}` : "Unknown Year",
+                answer: (row as any)[key],
+                program: (row as any).alumni?.program?.program_name || "Unknown Program"
+              };
+            });
+
+          setOthersResponses(mapResponse("p4q11"));
+          setLeavingWhyResponses(mapResponse("p4q13"));
+          setFavoriteWhyResponses(mapResponse("p4q15"));
+          setMostHelpfulResponses(mapResponse("p4q16"));
+          setHelpfulFutureResponses(mapResponse("p4q17"));
+          setShouldNotIncludeResponses(mapResponse("p4q18"));
+          setShouldBeAddedResponses(mapResponse("p4q19"));
+          setOtherChallengesResponses(mapResponse("p4q20"));
+        }
+      } catch (err) {
+        console.error("Error fetching factors data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [program, supabase]);
+
+  const influenceColors = ["#7a1a23", "#9b1d2a", "#d07878", "#e8b4b4", "#f5dede", "#e0e0e0"];
+
+  const openModal = (responses: Response[], setOpen: (open: boolean) => void) => {
+    setModalData(responses.map(r => ({ label: r.name, category: r.answer })));
+    setOpen(true);
   };
 
-  const openWhySemesterModal = () => {
-    const reasonData: whySemesterEntry[] = WHY_SEMESTER_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setWhySemesterModalData(reasonData);
-    setIsWhySemesterModalOpen(true);
-  };
-
-
-  const openMostHelpfulModal = () => {
-    const reasonData: mostHelpfulEntry[] = MOST_HELPFUL_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setMostHelpfulEntryModalData(reasonData);
-    setIsMostHelpfulEntryModalOpen(true);
-  };
-
-  const openLeastHelpfulModal = () => {
-    const reasonData: leastHelpfulEntry[] = LEAST_HELPFUL_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setLeastHelpfulEntryModalData(reasonData);
-    setIsLeastHelpfulEntryModalOpen(true);
-  };
-
-  const openNotIncludedModal = () => {
-    const reasonData: notIncludedEntry[] = NOT_INCLUDED_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setNotIncludedEntryModalData(reasonData);
-    setIsNotIncludedEntryModalOpen(true);
-  };
-
-  const openBeAddedModal = () => {
-    const reasonData: beAddedEntry[] = BE_ADDED_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setBeAddedEntryModalData(reasonData);
-    setIsBeAddedEntryModalOpen(true);
-  };
-
-  const openChallengesModal = () => {
-    const reasonData: challengesEntry[] = CHALLENGES_RESPONSES.map((r) => ({
-      label: r.name,
-      category: r.answer,
-    }));
-    setChallengesEntryModalData(reasonData);
-    setIsChallengesEntryModalOpen(true);
-  };
+  if (loading) return <div className="p-8 text-center text-gray-500 text-sm">Loading...</div>;
 
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Factors that might have affected your academic progress</h2>
 
-      {/*  Card 1: Horizontal grouped bar chart    */}
-      <div className="bg-white rounded-2xl p-7 shadow-sm">
+      {/*  Card 1: Factors Chart  */}
+      <div className="bg-white rounded-2xl p-7 shadow-sm flex flex-col">
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Please indicate how the following factors might have influenced your progress toward the BSAM degree.
         </p>
-        <ResponsiveContainer width="100%" height={360}>
-          <BarChart
-            data={FACTORS_DATA}
-            layout="vertical"
-            margin={{ top: 10, right: 20, left: 100, bottom: 10 }}
-            barCategoryGap="18%"
-            barGap={2}
-          >
-            <CartesianGrid horizontal={false} stroke="#f0f0f0" />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 10, fill: "#aaa" }}
-            />
-            <YAxis
-              type="category"
-              dataKey="level"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: "#555" }}
-              width={98}
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(0,0,0,0.03)" }}
-              contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
-            />
-            <Legend
+        <div className="flex-grow">
+          <ResponsiveContainer width="100%" height={500}>
+            <BarChart
+              data={factorsData}
               layout="vertical"
-              align="right"
-              verticalAlign="middle"
-              iconType="square"
-              iconSize={10}
-              wrapperStyle={{ fontSize: "11px", color: "#555", paddingLeft: "16px", maxWidth: "220px", lineHeight: "1.8" }}
-            />
-            {FACTORS.map(({ key, color }) => (
-              <Bar key={key} dataKey={key} fill={color} radius={[0, 4, 4, 0]} maxBarSize={9} />
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+              margin={{ top: 10, right: 30, left: 150, bottom: 10 }}
+              barCategoryGap="20%"
+            >
+              <CartesianGrid horizontal={false} stroke="#f0f0f0" />
+              <XAxis
+                type="number"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: "#aaa" }}
+                allowDecimals={false}
+              />
+              <YAxis
+                type="category"
+                dataKey="factor"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 11, fill: "#555" }}
+                width={140}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(0,0,0,0.03)" }}
+                contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
+                labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+                itemStyle={{ color: "#333" }}
+              />
+              <Legend
+                layout="horizontal"
+                align="center"
+                verticalAlign="bottom"
+                iconType="square"
+                iconSize={10}
+                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }}
+              />
+              {INFLUENCE_LABELS.map((label, index) => (
+                <Bar
+                  key={label}
+                  dataKey={label}
+                  stackId="a"
+                  fill={influenceColors[index]}
+                  radius={index === 0 ? [0, 0, 0, 0] : (index === INFLUENCE_LABELS.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])}
+                  maxBarSize={25}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex justify-center mt-4 border-t border-gray-100 pt-4">
+          <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => openModal(othersResponses, setIsOthers2ModalOpen)}>
+            View Others
+          </button>
+        </div>
       </div>
 
-      {/*  Card 2: Others (please specify)  */}
-      <ResponseCard question="Others (please specify)" responses={OTHERS_RESPONSES} onViewAll={openOthers2Modal} />
-
-      {/*  Card 3: Donut + favorite year side by side  */}
       <div className="flex gap-4">
         {/* Donut chart */}
-        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0 flex flex-col">
           <p className="text-xs font-semibold text-gray-800 mb-4">Did you consider leaving the program?</p>
-          <div className="w-full h-40">
-            <ResponsiveContainer width="100%" height={160}>
+          <div className="flex-1 flex items-center justify-center" style={{ minHeight: "300px" }}>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={LEAVING_DATA}
+                  data={leavingData}
                   cx="50%"
                   cy="50%"
                   innerRadius={52}
@@ -447,13 +336,15 @@ export default function FactorsAcademicProgress({ program }: Props) {
                   labelLine={false}
                   label={renderDonutLabel}
                 >
-                  {LEAVING_DATA.map((_, i) => (
+                  {leavingData.map((_, i) => (
                     <Cell key={i} fill={LEAVING_COLORS[i]} />
                   ))}
                 </Pie>
                 <Tooltip
                   formatter={(value: any) => `${value}%`}
                   contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
+                  labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+              itemStyle={{ color: "#333" }}
                 />
                 <Legend
                   layout="vertical"
@@ -466,132 +357,94 @@ export default function FactorsAcademicProgress({ program }: Props) {
               </PieChart>
             </ResponsiveContainer>
           </div>
+          <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+            <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => openModal(leavingWhyResponses, setIsWhySemesterModalOpen)}>
+              View Why
+            </button>
+          </div>
         </div>
 
         {/* Favorite year/semester bar chart */}
-        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0">
+        <div className="flex-1 bg-white rounded-2xl p-7 shadow-sm min-w-0 flex flex-col">
           <p className="text-xs font-semibold text-gray-800 mb-4">What is your favorite year and semester?</p>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={YEAR_DATA}
-              margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
-              barCategoryGap="25%"
-            >
-              <CartesianGrid vertical={false} stroke="#f0f0f0" />
-              <XAxis
-                dataKey="year"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 10, fill: "#888" }}
-                angle={-45}
-                textAnchor="end"
-                height={100}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: "#888" }}
-              />
-              <Tooltip
-                cursor={{ fill: "rgba(216,154,154,0.10)" }}
-                contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
-              />
-              <Bar dataKey="count" fill="#D89A9A" radius={[999, 999, 999, 999]} maxBarSize={36} />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center mt-4">
-            <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openWhySemesterModal}>
+          <div className="flex-1 flex items-center justify-center" style={{ minHeight: "300px" }}>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart
+                data={yearData}
+                margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
+                barCategoryGap="25%"
+              >
+                <CartesianGrid vertical={false} stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="year"
+                  tick={{ fontSize: 10, fill: "#888" }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  interval={0}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "#888" }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  cursor={{ fill: "rgba(216,154,154,0.10)" }}
+                  contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
+                  labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+                  itemStyle={{ color: "#333" }}
+                />
+                <Bar dataKey="count" fill="#D89A9A" radius={[8, 8, 0, 0]} maxBarSize={36} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+            <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={() => openModal(favoriteWhyResponses, setIsWhySemesterModalOpen)}>
               View Why
             </button>
           </div>
         </div>
       </div>
 
-      {/*  Card 5: Most helpful courses  */}
       <ResponseCard
         question="What course/subject/topic do you think will be most helpful in your future endeavors?"
-        responses={MOST_HELPFUL_RESPONSES}
-        onViewAll={openMostHelpfulModal}
+        responses={mostHelpfulResponses}
+        onViewAll={() => openModal(mostHelpfulResponses, setIsMostHelpfulEntryModalOpen)}
       />
 
       <ResponseCard
-        question="What course/subject/topic do you think will be least helpful in your future endeavors?"
-        responses={LEAST_HELPFUL_RESPONSES}
-        onViewAll={openLeastHelpfulModal}
+        question="What course/subject/topic do you think will be helpful in your future endeavors?"
+        responses={helpfulFutureResponses}
+        onViewAll={() => openModal(helpfulFutureResponses, setIsLeastHelpfulEntryModalOpen)}
       />
 
-      {/*  Card 6: Should not be included  */}
       <ResponseCard
-        question="What course/subject/topic do you think should not be included to the program? Why?"
-        responses={NOT_INCLUDED_RESPONSES}
-        onViewAll={openNotIncludedModal}
+        question="What course/subject/topic do you think should not be included in the program?"
+        responses={shouldNotIncludeResponses}
+        onViewAll={() => openModal(shouldNotIncludeResponses, setIsNotIncludedEntryModalOpen)}
       />
 
-      {/*  Card 7: Should be added  */}
       <ResponseCard
         question="What course/subject/topic do you think should be added to the program?"
-        responses={BE_ADDED_RESPONSES}
-        onViewAll={openBeAddedModal}
+        responses={shouldBeAddedResponses}
+        onViewAll={() => openModal(shouldBeAddedResponses, setIsBeAddedEntryModalOpen)}
       />
 
-      {/*  Card 8: Specific challenges (highlighted in red)  */}
       <ResponseCard
         question="What other specific challenges did you encounter in finishing the program?"
         isHighlighted
-        responses={CHALLENGES_RESPONSES}
-        onViewAll={openChallengesModal}
+        responses={otherChallengesResponses}
+        onViewAll={() => openModal(otherChallengesResponses, setIsChallengesEntryModalOpen)}
       />
 
-      {/* Modal */}
-      <Others2EntryModal
-        isOpen={isOthers2ModalOpen}
-        onClose={() => setIsOthers2ModalOpen(false)}
-        data={others2ModalData}
-      />
-      <WhySemesterEntryModal
-        isOpen={isWhySemesterModalOpen}
-        onClose={() => setIsWhySemesterModalOpen(false)}
-        data={whySemesterModalData}
-      />
-      <WhySemesterEntryModal
-        isOpen={isWhyModalOpen}
-        onClose={() => setIsWhyModalOpen(false)}
-        data={whyModalData}
-      />
-
-      <MostHelpfulEntryModal
-        isOpen={isMostHelpfulEntryModalOpen}
-        onClose={() => setIsMostHelpfulEntryModalOpen(false)}
-        data={mostHelpfulEntryModalData}
-      />
-
-      <LeastHelpfulEntryModal
-        isOpen={isLeastHelpfulEntryModalOpen}
-        onClose={() => setIsLeastHelpfulEntryModalOpen(false)}
-        data={leastHelpfulEntryModalData}
-      />
-
-      <NotIncludedEntryModal
-        isOpen={isNotIncludedEntryModalOpen}
-        onClose={() => setIsNotIncludedEntryModalOpen(false)}
-        data={notIncludedEntryModalData}
-      />
-
-      <BeAddedEntryModal
-        isOpen={isBeAddedEntryModalOpen}
-        onClose={() => setIsBeAddedEntryModalOpen(false)}
-        data={beAddedEntryModalData}                        
-      />
-
-      <ChallengesEntryModal
-        isOpen={isChallengesEntryModalOpen}
-        onClose={() => setIsChallengesEntryModalOpen(false)}
-        data={challengesEntryModalData}
-      />
+      {/* Modals */}
+      <Others2EntryModal isOpen={isOthers2ModalOpen} onClose={() => setIsOthers2ModalOpen(false)} data={modalData} />
+      <WhySemesterEntryModal isOpen={isWhySemesterModalOpen} onClose={() => setIsWhySemesterModalOpen(false)} data={modalData} />
+      <MostHelpfulEntryModal isOpen={isMostHelpfulEntryModalOpen} onClose={() => setIsMostHelpfulEntryModalOpen(false)} data={modalData} />
+      <LeastHelpfulEntryModal isOpen={isLeastHelpfulEntryModalOpen} onClose={() => setIsLeastHelpfulEntryModalOpen(false)} data={modalData} />
+      <NotIncludedEntryModal isOpen={isNotIncludedEntryModalOpen} onClose={() => setIsNotIncludedEntryModalOpen(false)} data={modalData} />
+      <BeAddedEntryModal isOpen={isBeAddedEntryModalOpen} onClose={() => setIsBeAddedEntryModalOpen(false)} data={modalData} />
+      <ChallengesEntryModal isOpen={isChallengesEntryModalOpen} onClose={() => setIsChallengesEntryModalOpen(false)} data={modalData} />
 
     </section>
   );
 }
-
-
-
