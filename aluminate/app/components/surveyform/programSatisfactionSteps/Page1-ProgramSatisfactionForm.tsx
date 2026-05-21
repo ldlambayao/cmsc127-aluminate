@@ -41,7 +41,6 @@ interface ProgramSatisfactionFormProps {
   progressBar?: React.ReactNode;
 }
 
-// --- Constants ---
 const enrollmentFactorItems = [
   "Reputation of UP Mindanao",
   "Reputation of UP Mindanao Department of Math, Physics and Computer Science",

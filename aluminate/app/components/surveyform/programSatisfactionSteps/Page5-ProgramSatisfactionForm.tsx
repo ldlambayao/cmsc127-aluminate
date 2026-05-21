@@ -35,7 +35,7 @@ interface Page5FormState {
 
 interface Page5FormProps {
   onBack?: () => void;
-  onSubmit?: (data: Page5FormState) => void;
+  onSubmit?: (e: any, data: Page5FormState) => void;
   progressBar?: React.ReactNode;
 }
 
@@ -76,9 +76,9 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit, progres
     return true;
   })();
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     if(isPageValid){
-      onSubmit?.(formData.page5Data as unknown as Page5FormState);
+      onSubmit?.(e as any, formData.page5Data as unknown as Page5FormState);
     } else {
       alert("Please answer all required questions before submitting.");
     }
@@ -109,9 +109,9 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit, progres
             </label>
             <div style={styles.checkboxList}>
               {[
-                { key: "curriculumStructure" as const,   label: "Curriculum structure" },
+                { key: "curriculumStructure" as const,   label: "Courses are relevant" },
                 { key: "adequateFacilities" as const,    label: "Facilities and equipment are adequate (laboratories, library, classrooms)" },
-                { key: "classroomsAndSoftware" as const, label: "Classrooms and software (both reading and printable materials)" },
+                { key: "classroomsAndSoftware" as const, label: "Resources are sufficient (wifi, reading materials, books)" },
                 { key: "facultyExpertise" as const,      label: "Expertise of the faculty members" },
                 { key: "supportiveFaculty" as const,     label: "Supportive faculty members" },
                 { key: "supportiveNonTeaching" as const, label: "Supportive non-teaching staff" },
@@ -254,7 +254,7 @@ export default function Page5ProgramSatisfactionForm({ onBack, onSubmit, progres
         {/* Action Row */}
         <div style={styles.actionRow}>
           <button style={styles.backBtn} onClick={onBack}>Back</button>
-          <button style={{...styles.submitBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={handleFinalSubmit} disabled={!isPageValid}>
+          <button style={{...styles.submitBtn, ...(isPageValid ? {} : styles.disabledBtn)}} onClick={(e) => handleFinalSubmit(e)} disabled={!isPageValid}>
             Submit
           </button>
         </div>
