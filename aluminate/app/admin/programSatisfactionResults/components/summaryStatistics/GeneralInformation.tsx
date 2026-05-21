@@ -17,18 +17,7 @@ interface Props {
   program?: string;
 }
 
-interface ChartDataPoint {
-  category: string;
-  label: string;
-  count: number;
-}
-
-interface SurveyResponseRow {
-  p1q1: string;
-}
-
 const BAR_COLOR = "#D89A9A";
-const SECTION_COLOR = "#9b1d2a";
 
 export default function GeneralInformation({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
