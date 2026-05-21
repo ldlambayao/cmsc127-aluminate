@@ -42,13 +42,6 @@ const PLO_FACTORS = [
 { key: "p2q19", label: "Readiness in confidence to pursue a master's degree in computer science", color: "#7f1f2a" }
 ];
 
-const RATING_LABELS: Record<string, string> = {
-  "Very Satisfied": "Very Satisfied",
-  "Satisfied": "Satisfied",
-  "Dissatisfied": "Dissatisfied",
-  "Very Dissatisfied": "Very Dissatisfied",
-};
-
 export default function OverallSatisfaction({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
   const [deptData, setDeptData] = useState<any[]>([]);
