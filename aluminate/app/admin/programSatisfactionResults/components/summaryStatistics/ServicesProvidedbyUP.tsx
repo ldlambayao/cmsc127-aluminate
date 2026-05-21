@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -12,64 +12,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import OthersEntryModal from "../modals/others";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 interface Props {
   program?: string;
 }
-
-// Factors & colors (light â†’ dark pink/red) 
-const FACTORS = [
-  { key: "DMPCS Staff",                                       color: "#f5dede" },
-  { key: "Faculty members, in general",   color: "#ebb8b8" },
-  { key: "Faculty members who handles the courses",                                       color: "#e09898" },
-  { key: "Office of the University Registrar",                                                 color: "#d07878" },
-  { key: "Cashier's Office",                           color: "#b85050" },
-  { key: "University Library",  color: "#9b1d2a" },
-  { key: "IT Office",  color: "#9b1d2a" },
-  { key: "Office of Student Affairs",  color: "#9b1d2a" },
-  { key: "Janitors",  color: "#9b1d2a" },
-  { key: "Guards",  color: "#9b1d2a" },
-];
-
-// TODO: replace with Supabase query filtered by `program`
-const CHART_DATA = [
-  {
-    level: "Very Satisfied",
-    "DMPCS Staff": 42,
-    "Faculty members, in general":  32,
-    "Faculty members who handles the courses": 22,
-    "Office of the University Registrar":  16,
-    "Cashier's Office":  10,
-    "University Library": 5,
-  },
-  {
-    level: "Satisfied",
-    "DMPCS Staff": 42,
-    "Faculty members, in general":  32,
-    "Faculty members who handles the courses": 22,
-    "Office of the University Registrar":  16,
-    "Cashier's Office":  10,
-    "University Library": 5,
-  },
-  {
-    level: "Dissatisfied",
-    "DMPCS Staff": 42,
-    "Faculty members, in general":  32,
-    "Faculty members who handles the courses": 22,
-    "Office of the University Registrar":  16,
-    "Cashier's Office":  10,
-    "University Library": 5,
-  },
-  {
-    level: "Very Dissatisfied",
-    "DMPCS Staff": 42,
-    "Faculty members, in general":  32,
-    "Faculty members who handles the courses": 22,
-    "Office of the University Registrar":  16,
-    "Cashier's Office":  10,
-    "University Library": 5,
-  },
-];
 
 interface Response {
   name: string;
@@ -84,61 +31,102 @@ interface OthersEntry {
   count?: number;
 }
 
-//  Sample open-ended responses 
-const RESPONSES = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
+// Factors & colors (light → dark pink/red) 
+const FACTORS = [
+  { key: "p3q6", label: "DMPCS Staff", color: "#f5dede" },
+  { key: "p3q7", label: "Faculty members in general", color: "#f0d0d0" },
+  { key: "p3q8", label: "Faculty members who handle the courses", color: "#ebb8b8" },
+  { key: "p3q9", label: "Office of the University Registrar", color: "#e6a0a0" },
+  { key: "p3q10", label: "Dean's Office", color: "#e09898" },
+  { key: "p3q11", label: "Guidance and Counseling Office", color: "#d68080" },
+  { key: "p3q12", label: "University Library", color: "#d07878" },
+  { key: "p3q13", label: "ICT Office", color: "#c06060" },
+  { key: "p3q14", label: "Office of Student Affairs", color: "#b85050" },
+  { key: "p3q15", label: "Canteen", color: "#a03030" },
+  { key: "p3q16", label: "Guards", color: "#9b1d2a" },
 ];
 
-//  Sub-components 
-function ResponseCard({
-  question,
-  questionHighlight,
-  responses,
-  onViewAll,
-}: {
-  question: string;
-  questionHighlight?: string;
-  responses: Response[];
-  onViewAll: () => void;
-}) {
-  const visible = responses.slice(0, 3);
-
-  return (
-    <div className="bg-white rounded-2xl p-7 shadow-sm">
-      <p className="text-xs font-semibold text-gray-800 mb-4">
-        {question}
-        {questionHighlight && (
-          <p className="font-bold text-red-900">{questionHighlight}</p>
-        )}
-      </p>
-
-      <div className="flex flex-col gap-5">
-        {visible.map((r, i) => (
-          <div key={i} className="flex flex-col gap-0.5">
-            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
-            <p className="text-xs text-gray-500">{r.classOf}</p>
-            <p className="text-sm text-gray-700">{r.answer}</p>
-            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
-          View Responses
-        </button>
-      </div>
-    </div>
-  );
-}
+const RATING_LABELS: Record<string, string> = {
+  "Very Satisfied": "Very Satisfied",
+  "Satisfied": "Satisfied",
+  "Dissatisfied": "Dissatisfied",
+  "Very Dissatisfied": "Very Dissatisfied",
+};
 
 export default function ServicesProvidedbyUP({ program }: Props) {
+  const supabase = getSupabaseBrowserClient();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [otherResponses, setOtherResponses] = useState<Response[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<OthersEntry[]>([]);
-  const openExplainModal = () => {
-    const reasonData: OthersEntry[] = RESPONSES.map((r) => ({
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const query = supabase
+          .from("satisfaction_survey_response")
+          .select(`
+            p3q6, p3q7, p3q8, p3q9, p3q10, p3q11, p3q12, p3q13, p3q14, p3q15, p3q16, p3q17,
+            alumni(
+              graduation_year,
+              program(program_name),
+              users(fname, lname)
+            )
+          `);
+
+        const { data: rawData, error } = await query;
+
+        if (error) throw error;
+
+        if (rawData) {
+          // Filter data by program if specified
+          const data = program 
+            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
+            : rawData;
+
+          // Process Chart Data
+          const ratingEntries = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
+          const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
+
+          const formattedChartData = FACTORS.map(f => {
+            const entry: Record<string, any> = { factor: f.label };
+            ratingEntries.forEach(rating => {
+              entry[rating] = data.filter(row => {
+                const rowVal = String((row as any)[f.key] || "").trim();
+                return rowVal === rating;
+              }).length;
+            });
+            return entry;
+          });
+          setChartData(formattedChartData);
+
+          // Process Other Responses (p3q17)
+          const responses: Response[] = data
+            .filter(row => (row as any).p3q17 && (row as any).p3q17.trim() !== "")
+            .map(row => ({
+              name: `${(row as any).alumni?.users?.fname} ${(row as any).alumni?.users?.lname}` || "Anonymous",
+              classOf: `Class of ${(row as any).alumni?.graduation_year}` || "Unknown Year",
+              answer: (row as any).p3q17,
+              program: (row as any).alumni?.program?.program_name || "Unknown Program"
+            }));
+          setOtherResponses(responses);
+        }
+      } catch (err) {
+        console.error("Error fetching services data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [program, supabase]);
+
+  const ratingEntries = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
+  const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
+
+  const openOthersModal = () => {
+    const reasonData: OthersEntry[] = otherResponses.map((r) => ({
       label: r.name,
       category: r.answer,
     }));
@@ -146,90 +134,83 @@ export default function ServicesProvidedbyUP({ program }: Props) {
     setIsModalOpen(true);
   };
 
+  if (loading) return <div className="p-8 text-center text-gray-500 text-sm">Loading...</div>;
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-red-900 m-0 border-b-2 border-gray-200 pb-2.5">Services provided by UP Mindanao</h2>
 
       {/*  Chart card  */}
-      <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <div className="bg-white rounded-2xl p-7 shadow-sm flex flex-col">
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Please indicate your level of satisfaction with the services provided by the following offices/personnel.
         </p>
 
-        <ResponsiveContainer width="100%" height={360}>
-          <BarChart
-            data={CHART_DATA}
-            layout="vertical"
-            margin={{ top: 10, right: 20, left: 100, bottom: 10 }}
-            barCategoryGap="18%"
-            barGap={2}
-          >
-            <CartesianGrid horizontal={false} stroke="#f0f0f0" />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 10, fill: "#aaa" }}
-            />
-            <YAxis
-              type="category"
-              dataKey="level"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: "#555" }}
-              width={98}
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(0,0,0,0.03)" }}
-              contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
-            />
-            <Legend
+        <div className="flex-grow">
+          <ResponsiveContainer width="100%" height={500}>
+            <BarChart
+              data={chartData}
               layout="vertical"
-              align="right"
-              verticalAlign="middle"
-              iconType="square"
-              iconSize={10}
-              wrapperStyle={{
-                fontSize: "11px",
-                color: "#555",
-                paddingLeft: "16px",
-                maxWidth: "220px",
-                lineHeight: "1.8",
-              }}
-            />
-            {FACTORS.map(({ key, color }) => (
-              <Bar
-                key={key}
-                dataKey={key}
-                fill={color}
-                radius={[0, 4, 4, 0]}
-                maxBarSize={9}
+              margin={{ top: 10, right: 30, left: 150, bottom: 10 }}
+              barCategoryGap="20%"
+            >
+              <CartesianGrid horizontal={false} stroke="#f0f0f0" />
+              <XAxis
+                type="number"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: "#aaa" }}
+                allowDecimals={false}
               />
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+              <YAxis
+                type="category"
+                dataKey="factor"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 11, fill: "#555" }}
+                width={140}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(0,0,0,0.03)" }}
+                contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
+                labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+                itemStyle={{ color: "#333" }}
+              />
+              <Legend
+                layout="horizontal"
+                align="center"
+                verticalAlign="bottom"
+                iconType="square"
+                iconSize={10}
+                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+              />
+              {ratingEntries.map((rating, index) => (
+                <Bar 
+                  key={rating} 
+                  dataKey={rating} 
+                  stackId="a"
+                  fill={colors[index]} 
+                  radius={index === 0 ? [0, 0, 0, 0] : (index === ratingEntries.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
+                  maxBarSize={25} 
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="flex justify-center mt-4 border-t border-gray-100 pt-4">
+          <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openOthersModal}>
+            View Others
+          </button>
+        </div>
       </div>
 
-      {/*  Open-ended response card  */}
-            <ResponseCard
-              question="Please explain your answer above:"
-              questionHighlight="&ldquo;Please rate how the culture in your school environment captures the factors stated below.&rdquo;"
-              responses={RESPONSES}
-              onViewAll={openExplainModal}
-            />
-      
-            {/* Modal */}
-            <OthersEntryModal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              data={modalData}
-            />
+      {/* Modal */}
+      <OthersEntryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={modalData}
+      />
     </section>
   );
 }
-
-
-
-
