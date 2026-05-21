@@ -22,7 +22,7 @@ export default function RecentSubmissions() {
           .from("ssatisfaction_survey_response")
           .select("date_answered, alumni!inner(student_number,users!inner(fname, mname, lname))")
           .order("date_answered", { ascending: false })
-          .limit(5);
+          .limit(10);
 
         console.log("sat rows", satRows)
 
@@ -31,7 +31,7 @@ export default function RecentSubmissions() {
           .from("tracer_survey_response")
           .select("date_answered,alumni!inner(student_number,users!inner(fname, mname, lname))")
           .order("date_answered", { ascending: false })
-          .limit(5);
+          .limit(10);
 
         console.log("tracer rows", tracerRows)
 
