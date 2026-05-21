@@ -237,7 +237,7 @@ export default function Page4ProgramSatisfactionForm({ onBack, onNext, progressB
             },
             {
               key: "helpfulFutureEndeavors" as const,
-              label: "What course/subject/topic do you think will be helpful in your future endeavors?",
+              label: "What course/subject/topic do you think will be least helpful in your future endeavors?",
             },
             {
               key: "shouldNotInclude" as const,
