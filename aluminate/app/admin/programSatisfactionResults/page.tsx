@@ -88,8 +88,14 @@ export default function ProgramSatisfactionResultsPage() {
         {/* Filters */}
         <div className="flex gap-4 mt-6 justify-end">
           <div className="relative">
-            <select className="appearance-none w-56 px-4 py-3 border border-gray-200 rounded-2xl text-gray-400 bg-white text-xs">
-              <option>Filter by Program</option>
+            <select 
+              value={selectedProgram}
+              onChange={(e) => setSelectedProgram(e.target.value)}
+              className="appearance-none w-56 px-4 py-3 border border-gray-200 rounded-2xl text-gray-700 bg-white text-xs"
+            >
+              {PROGRAMS.map((p) => (
+                <option key={p.value} value={p.value}>{p.label}</option>
+              ))}
             </select>
             <ChevronDown
               className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black"
@@ -98,8 +104,14 @@ export default function ProgramSatisfactionResultsPage() {
             />
           </div>
           <div className="relative">
-            <select className="appearance-none w-56 px-4 py-3 border border-gray-200 rounded-2xl text-gray-400 bg-white text-xs">
-              <option>Filter by section</option>
+            <select 
+              value={selectedSection}
+              onChange={(e) => setSelectedSection(e.target.value)}
+              className="appearance-none w-56 px-4 py-3 border border-gray-200 rounded-2xl text-gray-700 bg-white text-xs"
+            >
+              {SECTIONS.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
             </select>
             <ChevronDown
               className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-black"

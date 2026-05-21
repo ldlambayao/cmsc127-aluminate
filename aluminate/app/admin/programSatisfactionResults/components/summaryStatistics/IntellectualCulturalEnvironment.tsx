@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -9,56 +9,15 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  LabelList,
   ResponsiveContainer,
 } from "recharts";
 import ExplainEntryModal from "../modals/cultureEnvironment";
+import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
 interface Props {
   program?: string;
 }
 
-// Factors & colors 
-const FACTORS = [
-  { key: "Inclusivity (individuals with diverse backgrounds)",  color: "#f5dede" },
-  { key: "Faculty members serve as examples of honor and excellence", color: "#e8b4b4" },
-  { key: "Students are encouraged to practice ",                color: "#d07878" },
-  { key: "The expertise of the faculty",                          color: "#9b1d2a" },
-];
-
-// Chart data 
-const CHART_DATA = [
-  {
-    level: "Strongly agree",
-    "Inclusivity (individuals with diverse backgrounds)":  69.03,
-    "Faculty members serve as examples of honor and excellence": 51.75,
-    "Students are encouraged to participate":                83.27,
-    "The expertise of the faculty":                          90,
-  },
-  {
-    level: "Agree",
-    "Inclusivity (individuals with diverse backgrounds)":  47.89,
-    "Faculty members serve as examples of honor and excellence": 87.03,
-    "Students are encouraged to practice ":                55.79,
-    "The expertise of the faculty":                          50,
-  },
-  {
-    level: "Disagree",
-    "Inclusivity (individuals with diverse backgrounds)":  17.23,
-    "Faculty members serve as examples of honor and excellence": 77.17,
-    "Students are encouraged to practice ":                70.97,
-    "The expertise of the faculty":                          20,
-  },
-  {
-    level: "Strongly disagree",
-    "Inclusivity (individuals with diverse backgrounds)":  31.68,
-    "Faculty members serve as examples of honor and excellence": 34.99,
-    "Students are encouraged to practice ":                48.09,
-    "The expertise of the faculty":                          11,
-  },
-];
-
-//  Sample open-ended responses 
 interface Response {
   name: string;
   classOf: string;
@@ -67,33 +26,17 @@ interface Response {
 }
 
 interface ReasonEntry {
-  category: string;
   label: string;
-  count?: number;
+  category: string;
 }
 
-const RESPONSES: Response[] = [
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Makaboang Slight", program: "BS COMPUTER SCIENCE" },
-  { name: "Liarrah Daniya Lambayao", classOf: "Class of 2028", answer: "Grabe na gyud",    program: "BS COMPUTER SCIENCE" },
+// Factors & colors 
+const FACTORS = [
+  { key: "p3q1", label: "Inclusivity (individuals with diverse backgrounds)", color: "#f5dede" },
+  { key: "p3q2", label: "Faculty members serve as exemplars of 'honor and excellence'", color: "#e8b4b4" },
+  { key: "p3q3", label: "Students are encouraged to participate", color: "#d07878" },
+  { key: "p3q4", label: "The expertise of the faculty", color: "#9b1d2a" },
 ];
-
-//  Custom label: only show non-zero values 
-const renderLabel = (props: any) => {
-  const { x, y, width, height, value } = props;
-  if (!value || value === 0) return null;
-  return (
-    <text
-      x={x + width + 4}
-      y={y + height / 2 + 4}
-      fontSize={9}
-      fill="#888"
-      textAnchor="start"
-    >
-      {value}
-    </text>
-  );
-};
 
 //  Sub-components 
 function ResponseCard({
@@ -111,22 +54,22 @@ function ResponseCard({
 
   return (
     <div className="bg-white rounded-2xl p-7 shadow-sm">
-      <p className="text-xs font-semibold text-gray-800 mb-4">
+      <div className="text-xs font-semibold text-gray-800 mb-4">
         {question}
         {questionHighlight && (
-          <p className="font-bold text-red-900">{questionHighlight}</p>
+          <span className="font-bold text-red-900">{questionHighlight}</span>
         )}
-      </p>
+      </div>
 
       <div className="flex flex-col gap-5">
-        {visible.map((r, i) => (
+        {visible.length > 0 ? visible.map((r, i) => (
           <div key={i} className="flex flex-col gap-0.5">
             <p className="font-bold text-gray-900 text-sm">{r.name}</p>
             <p className="text-xs text-gray-500">{r.classOf}</p>
             <p className="text-sm text-gray-700">{r.answer}</p>
             <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
           </div>
-        ))}
+        )) : <p className="text-sm text-gray-500">No responses yet.</p>}
       </div>
 
       <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
@@ -139,17 +82,87 @@ function ResponseCard({
 }
 
 export default function IntellectualCulturalEnvironment({ program }: Props) {
+  const supabase = getSupabaseBrowserClient();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [explainResponses, setExplainResponses] = useState<Response[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<ReasonEntry[]>([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const query = supabase
+          .from("satisfaction_survey_response")
+          .select(`
+            p3q1, p3q2, p3q3, p3q4, p3q5,
+            alumni(
+              graduation_year,
+              program(program_name),
+              users(fname, lname)
+            )
+          `);
+
+        const { data: rawData, error } = await query;
+
+        if (error) throw error;
+
+        if (rawData) {
+          // Filter data by program if specified
+          const data = program 
+            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
+            : rawData;
+
+          // Process Chart Data
+          const ratingEntries = ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"];
+          const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
+
+          const formattedChartData = FACTORS.map(f => {
+            const entry: Record<string, any> = { factor: f.label };
+            ratingEntries.forEach(rating => {
+              entry[rating] = data.filter(row => {
+                const rowVal = String((row as any)[f.key] || "").trim();
+                return rowVal === rating;
+              }).length;
+            });
+            return entry;
+          });
+          setChartData(formattedChartData);
+
+          // Process Explain Responses
+          const responses: Response[] = data
+            .filter(row => (row as any).p3q5 && (row as any).p3q5.trim() !== "")
+            .map(row => ({
+              name: `${(row as any).alumni?.users?.fname} ${(row as any).alumni?.users?.lname}` || "Anonymous",
+              classOf: `Class of ${(row as any).alumni?.graduation_year}` || "Unknown Year",
+              answer: (row as any).p3q5,
+              program: (row as any).alumni?.program?.program_name || "Unknown Program"
+            }));
+          setExplainResponses(responses);
+        }
+      } catch (err) {
+        console.error("Error fetching culture data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [program, supabase]);
+
+  const ratingEntries = ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"];
+  const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
+
   const openExplainModal = () => {
-    const reasonData: ReasonEntry[] = RESPONSES.map((r) => ({
+    const reasonData: ReasonEntry[] = explainResponses.map((r) => ({
       label: r.name,
       category: r.answer,
     }));
     setModalData(reasonData);
     setIsModalOpen(true);
   };
+
+  if (loading) return <div className="p-8 text-center text-gray-500 text-sm">Loading...</div>;
 
   return (
     <section className="flex flex-col gap-4">
@@ -158,71 +171,69 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
       </h2>
 
       {/*  Chart card  */}
-      <div className="bg-white rounded-2xl p-7 shadow-sm">
+      <div className="bg-white rounded-2xl p-7 shadow-sm flex flex-col">
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Please rate how the culture in your school environment captures the factors stated below.
         </p>
 
-        <ResponsiveContainer width="100%" height={360}>
-          <BarChart
-            data={CHART_DATA}
-            layout="vertical"
-            margin={{ top: 10, right: 60, left: 100, bottom: 10 }}
-            barCategoryGap="18%"
-            barGap={2}
-          >
-            <CartesianGrid horizontal={false} stroke="#f0f0f0" />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 10, fill: "#aaa" }}
-            />
-            <YAxis
-              type="category"
-              dataKey="level"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: "#555" }}
-              width={98}
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(0,0,0,0.03)" }}
-              contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
-              formatter={(value: any) => (value === 0 ? "No data" : value)}
-            />
-            <Legend
+        <div className="flex-grow">
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={chartData}
               layout="vertical"
-              align="right"
-              verticalAlign="middle"
-              iconType="square"
-              iconSize={10}
-              wrapperStyle={{
-                fontSize: "11px",
-                color: "#555",
-                paddingLeft: "16px",
-                maxWidth: "200px",
-                lineHeight: "1.8",
-              }}
-            />
-            {FACTORS.map(({ key, color }) => (
-              <Bar key={key} dataKey={key} fill={color} radius={[0, 4, 4, 0]} maxBarSize={9}>
-                <LabelList dataKey={key} content={renderLabel} />
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+              margin={{ top: 10, right: 30, left: 150, bottom: 10 }}
+              barCategoryGap="20%"
+            >
+              <CartesianGrid horizontal={false} stroke="#f0f0f0" />
+              <XAxis
+                type="number"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: "#aaa" }}
+                allowDecimals={false}
+              />
+              <YAxis
+                type="category"
+                dataKey="factor"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 11, fill: "#555" }}
+                width={140}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(0,0,0,0.03)" }}
+                contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
+                labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
+                itemStyle={{ color: "#333" }}
+              />
+              <Legend
+                layout="horizontal"
+                align="center"
+                verticalAlign="bottom"
+                iconType="square"
+                iconSize={10}
+                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+              />
+              {ratingEntries.map((rating, index) => (
+                <Bar 
+                  key={rating} 
+                  dataKey={rating} 
+                  stackId="a"
+                  fill={colors[index]} 
+                  radius={index === 0 ? [0, 0, 0, 0] : (index === ratingEntries.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
+                  maxBarSize={25} 
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        
+        <div className="flex justify-center mt-4 border-t border-gray-100 pt-4">
+          <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openExplainModal}>
+            View Explanations
+          </button>
+        </div>
       </div>
-
-      {/*  Open-ended response card  */}
-      <ResponseCard
-        question="Please explain your answer above:"
-        questionHighlight="&ldquo;Please rate how the culture in your school environment captures the factors stated below.&rdquo;"
-        responses={RESPONSES}
-        onViewAll={openExplainModal}
-      />
 
       {/* Modal */}
       <ExplainEntryModal
@@ -233,7 +244,3 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
     </section>
   );
 }
-
-
-
-
