@@ -68,12 +68,12 @@ export default function OverallSatisfaction({ program }: Props) {
               program!inner(program_name)
             )
           `);
-          
-        const { data: rawData, error } = await query;
 
         if (program) {
           query = query.eq("alumni.program.program_name", program);
         }
+
+        const { data: rawData, error } = await query;
 
         if (error) throw error;
 
