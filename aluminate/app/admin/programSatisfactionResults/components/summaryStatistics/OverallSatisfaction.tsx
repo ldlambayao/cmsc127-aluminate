@@ -68,31 +68,32 @@ export default function OverallSatisfaction({ program }: Props) {
               program!inner(program_name)
             )
           `);
+          
+        const { data: rawData, error } = await query;
 
         if (program) {
           query = query.eq("alumni.program.program_name", program);
         }
 
-        const { data, error } = await query;
-
         if (error) throw error;
 
-        if (data) {
+        if (rawData) {
           const ratings = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
-          
-          const formattedDeptData = ratings.map(rating => {
-            const entry: any = { level: RATING_LABELS[rating] };
-            DEPT_FACTORS.forEach(f => {
-              entry[f.label] = data.filter(row => String(row[f.key]) === rating).length;
+          const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
+
+          const formattedDeptData = DEPT_FACTORS.map(f => {
+            const entry: any = { factor: f.label };
+            ratings.forEach(rating => {
+              entry[rating] = rawData.filter(row => String(row[f.key]) === rating).length;
             });
             return entry;
           });
           setDeptData(formattedDeptData);
 
-          const formattedPloData = ratings.map(rating => {
-            const entry: any = { level: RATING_LABELS[rating] };
-            PLO_FACTORS.forEach(f => {
-              entry[f.label] = data.filter(row => String(row[f.key]) === rating).length;
+          const formattedPloData = PLO_FACTORS.map(f => {
+            const entry: any = { factor: f.label };
+            ratings.forEach(rating => {
+              entry[rating] = rawData.filter(row => String(row[f.key]) === rating).length;
             });
             return entry;
           });
@@ -106,6 +107,9 @@ export default function OverallSatisfaction({ program }: Props) {
     };
     fetchData();
   }, [program, supabase]);
+
+  const ratings = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
+  const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
 
   if (loading) return <div className="p-8 text-center text-gray-500 text-sm">Loading...</div>;
 
@@ -122,34 +126,52 @@ export default function OverallSatisfaction({ program }: Props) {
           <BarChart 
             data={deptData} 
             layout="vertical" 
-            margin={{ top: 10, right: 20, left: 90, bottom: 10 }} barCategoryGap="18%" 
-            barGap={1}>
+            margin={{ top: 10, right: 20, left: 150, bottom: 10 }} 
+            barCategoryGap="20%">
             <CartesianGrid horizontal={false} stroke="#f0f0f0" />
             <XAxis 
-            type="number" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 10, fill: "#aaa" }} allowDecimals={false}
+              type="number" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 10, fill: "#aaa" }} 
+              allowDecimals={false}
             />
             <YAxis 
-            type="category" 
-            dataKey="level" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 12, fill: "#555" }} width={100} 
+              type="category" 
+              dataKey="factor" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fontSize: 11, fill: "#555" }} 
+              width={140} 
             />
             <Tooltip 
-            cursor={{ fill: "rgba(0,0,0,0.03)" }} 
-            contentStyle={{ 
-              borderRadius: "8px", 
-              border: "1px solid #eee", 
-              fontSize: "11px" }} 
+              cursor={{ fill: "rgba(0,0,0,0.03)" }} 
+              contentStyle={{ 
+                borderRadius: "8px", 
+                border: "1px solid #eee", 
+                fontSize: "11px" }} 
               labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
               itemStyle={{ color: "#333" }}
             />
             
-            <Legend layout="vertical" align="right" verticalAlign="middle" iconType="square" iconSize={10} wrapperStyle={{ fontSize: "11px", color: "#555", paddingLeft: "16px", maxWidth: "240px" }} />
-            {DEPT_FACTORS.map(f => <Bar key={f.key} dataKey={f.label} fill={f.color} radius={[0, 4, 4, 0]} maxBarSize={9} />)}
+            <Legend 
+              layout="horizontal" 
+              align="center" 
+              verticalAlign="bottom" 
+              iconType="square" 
+              iconSize={10} 
+              wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+            />
+            {ratings.map((rating, index) => (
+              <Bar 
+                key={rating} 
+                dataKey={rating} 
+                stackId="a" 
+                fill={colors[index]} 
+                radius={index === 0 ? [0, 0, 0, 0] : (index === ratings.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
+                maxBarSize={25} 
+              />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -158,13 +180,12 @@ export default function OverallSatisfaction({ program }: Props) {
         <p className="text-xs font-semibold text-gray-800 mb-4">
           Rate your overall satisfaction based on the program learning outcomes:
         </p>
-        <ResponsiveContainer width="100%" height={600}>
+        <ResponsiveContainer width="100%" height={700}>
           <BarChart 
             data={ploData} 
             layout="vertical" 
-            margin={{ top: 10, right: 20, left: 90, bottom: 10 }} 
-            barCategoryGap="18%" 
-            barGap={2}>
+            margin={{ top: 10, right: 20, left: 150, bottom: 10 }} 
+            barCategoryGap="20%">
             <CartesianGrid 
               horizontal={false} 
               stroke="#f0f0f0" 
@@ -178,11 +199,11 @@ export default function OverallSatisfaction({ program }: Props) {
               />
             <YAxis 
               type="category" 
-              dataKey="level" 
+              dataKey="factor" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fontSize: 12, fill: "#555" }} 
-              width={100} 
+              tick={{ fontSize: 11, fill: "#555" }} 
+              width={140} 
               />
             <Tooltip 
               cursor={{ fill: "rgba(0,0,0,0.03)" }} 
@@ -191,13 +212,23 @@ export default function OverallSatisfaction({ program }: Props) {
               itemStyle={{ color: "#333" }}
               />
             <Legend 
-              layout="vertical" 
-              align="right" 
-              verticalAlign="middle" 
+              layout="horizontal" 
+              align="center" 
+              verticalAlign="bottom" 
               iconType="square" 
               iconSize={10} 
-              wrapperStyle={{ fontSize: "11px", color: "#555", paddingLeft: "16px", maxWidth: "240px" }} />
-            {PLO_FACTORS.map(f => <Bar key={f.key} dataKey={f.label} fill={f.color} radius={[0, 4, 4, 0]} maxBarSize={9} />)}
+              wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+            />
+            {ratings.map((rating, index) => (
+              <Bar 
+                key={rating} 
+                dataKey={rating} 
+                stackId="a" 
+                fill={colors[index]} 
+                radius={index === 0 ? [0, 0, 0, 0] : (index === ratings.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
+                maxBarSize={25} 
+              />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
