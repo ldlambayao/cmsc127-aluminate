@@ -20,47 +20,16 @@ interface Props {
   program?: string;
 }
 
-//  Sub-components 
-function ResponseCard({
-  question,
-  questionHighlight,
-  responses,
-  onViewAll,
-}: {
-  question: string;
-  questionHighlight?: string;
-  responses: Response[];
-  onViewAll: () => void;
-}) {
-  const visible = responses.slice(0, 3);
+interface Response {
+  name: string;
+  classOf: string;
+  answer: string;
+  program: string;
+}
 
-  return (
-    <div className="bg-white rounded-2xl p-7 shadow-sm">
-      <p className="text-xs font-semibold text-gray-800 mb-4">
-        {question}
-        {questionHighlight && (
-          <span className="font-bold text-red-900">{questionHighlight}</span>
-        )}
-      </p>
-
-      <div className="flex flex-col gap-5">
-        {visible.length > 0 ? visible.map((r, i) => (
-          <div key={i} className="flex flex-col gap-0.5">
-            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
-            <p className="text-xs text-gray-500">{r.classOf}</p>
-            <p className="text-sm text-gray-700">{r.answer}</p>
-            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
-          </div>
-        )) : <p className="text-sm text-gray-500">No responses yet.</p>}
-      </div>
-
-      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
-          View Responses
-        </button>
-      </div>
-    </div>
-  );
+interface ReasonEntry {
+  label: string;
+  category: string;
 }
 
 const DIFFICULTY_LABELS: Record<string, string> = {
@@ -107,12 +76,12 @@ export default function TransitiontoProgram({ program }: Props) {
         if (rawData) {
           // Filter data by program if specified
           const data = program 
-            ? rawData.filter((row: any) => row.alumni?.program?.program_name === program)
-            : rawData;
+            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
+            : (rawData as any[]);
 
           // Difficulty Level
           const difficultyCounts: Record<string, number> = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
-          data.forEach(row => {
+          data.forEach((row: any) => {
             const val = String(row.p1q3);
             if (val in difficultyCounts) difficultyCounts[val]++;
           });
@@ -123,21 +92,21 @@ export default function TransitiontoProgram({ program }: Props) {
 
           // Transition Help
           const transitionCounts: Record<string, number> = { "Bridging Program": 0, "Refresher course": 0, "Other": 0 };
-          data.forEach(row => {
+          data.forEach((row: any) => {
             if (row.p1q4c1) transitionCounts["Bridging Program"]++;
             if (row.p1q4c2) transitionCounts["Refresher course"]++;
             if (row.p1q4c3 || (row.p1q4t1 && row.p1q4t1.trim() !== "")) transitionCounts["Other"]++;
           });
           setTransitionData([
-            { category: "Bridging\nProgram", "Count": transitionCounts["Bridging Program"] },
-            { category: "Refresher course\nfor certain topics", "Count": transitionCounts["Refresher course"] },
+            { category: "Bridging Program", "Count": transitionCounts["Bridging Program"] },
+            { category: "Refresher course for certain topics", "Count": transitionCounts["Refresher course"] },
             { category: "Other", "Count": transitionCounts["Other"] }
           ]);
 
           // Responses
           const diffRes: Response[] = data
-            .filter(row => row.p1q4 && row.p1q4.trim() !== "")
-            .map(row => ({
+            .filter((row: any) => row.p1q4 && row.p1q4.trim() !== "")
+            .map((row: any) => ({
               name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
               classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
               answer: row.p1q4,
@@ -146,8 +115,8 @@ export default function TransitiontoProgram({ program }: Props) {
           setDifficultyResponses(diffRes);
 
           const sugRes: Response[] = data
-            .filter(row => row.p1q5 && row.p1q5.trim() !== "")
-            .map(row => ({
+            .filter((row: any) => row.p1q5 && row.p1q5.trim() !== "")
+            .map((row: any) => ({
               name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
               classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
               answer: row.p1q5,
@@ -266,16 +235,29 @@ export default function TransitiontoProgram({ program }: Props) {
         </div>
       </div>
 
-      <ResponseCard
-        question="What can you suggest to prepare you for the course requirements of the whole BSAM program?"
-        responses={suggestResponses}
-        onViewAll={openSuggestModal}
-      />
+      <div className="bg-white rounded-2xl p-7 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800 mb-4">What can you suggest to prepare you for the course requirements of the whole BSAM program?</p>
+        <div className="flex flex-col gap-5">
+          {suggestResponses.slice(0, 3).length > 0 ? suggestResponses.slice(0, 3).map((r, i) => (
+            <div key={i} className="flex flex-col gap-0.5">
+              <p className="font-bold text-gray-900 text-sm">{r.name}</p>
+              <p className="text-xs text-gray-500">{r.classOf}</p>
+              <p className="text-sm text-gray-700">{r.answer}</p>
+              <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
+            </div>
+          )) : <p className="text-sm text-gray-500">No responses yet.</p>}
+        </div>
+        {suggestResponses.length > 3 && (
+          <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
+            <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openSuggestModal}>
+              View Responses
+            </button>
+          </div>
+        )}
+      </div>
 
       <ReasonsForRatingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} data={modalData} />
       <SuggestionEntryModal isOpen={isSuggestionModalOpen} onClose={() => setIsSuggestionModalOpen(false)} data={suggestionData} />
     </section>
   );
 }
-
-

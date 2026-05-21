@@ -18,66 +18,66 @@ interface Props {
 }
 
 const DEPT_FACTORS = [
-  { key: "p2q1", label: "Overall BSAM curriculum at UP Mindanao", color: "#f5dede" },
-  { key: "p2q2", label: "Overall experience at the Department of Math, Physics, and Computer Science", color: "#ebb8b8" },
-  { key: "p2q3", label: "Your academic experience at UP Mindanao", color: "#e09898" },
-  { key: "p2q4", label: "The atmosphere of the faculty", color: "#d07878" },
-  { key: "p2q5", label: "In meeting/fulfilling the expected program outcomes", color: "#b85050" },
-  { key: "p2q6", label: "Alignment of the module learning outcomes with the program learning outcomes", color: "#9b1d2a" },
+  { key: "p2q1", label: "Overall experience at UP Mindanao" },
+  { key: "p2q2", label: "Overall experience at the Department of Math, Physics, and Computer Science" },
+  { key: "p2q3", label: "Non-academic experience at UP Mindanao" },
+  { key: "p2q4", label: "The expertise of the faculty" },
+  { key: "p2q5", label: "In meeting/fulfilling the expected program outcomes" },
+  { key: "p2q6", label: "Alignment of the course learning outcomes with the program learning outcomes" },
 ];
 
 const PLO_FACTORS = [
-{ key: "p2q7", label: "Development of a holistic understanding of the same general education (GE) courses", color: "#f2c9c9" },
-{ key: "p2q8", label: "Mastery of \"foundational concepts of mathematics\"", color: "#eaa8a8" },
-{ key: "p2q9", label: "Mastery of \"fundamental concepts of statistics\"", color: "#e08f8f" },
-{ key: "p2q10", label: "Mastery of \"fundamental concepts of computer science\"", color: "#d67676" },
-{ key: "p2q11", label: "Enhanced academic thinking skills through solving complex mathematical and technical problems", color: "#c85f5f" },
-{ key: "p2q12", label: "Ability to use appropriate numerical/GIS tools based on effectiveness of the solution process", color: "#b94a4a" },
-{ key: "p2q13", label: "Ability to use R/R tools to efficiently aid the solution process", color: "#a93f3f" },
-{ key: "p2q14", label: "Ability to use statistical methods and efficiency of the various disciplines", color: "#993636" },
-{ key: "p2q15", label: "Implementation/Specification of computer programs to support multiple computations", color: "#8a2f2f" },
-{ key: "p2q16", label: "Ability to apply data analytics techniques to support research programs", color: "#7a2929" },
-{ key: "p2q17", label: "Readiness in confidence to pursue a master's degree in applied mathematics", color: "#6a2323" },
-{ key: "p2q18", label: "Readiness in confidence to pursue a master's degree in statistics", color: "#5a1e1e" },
-{ key: "p2q19", label: "Readiness in confidence to pursue a master's degree in computer science", color: "#7f1f2a" }
+  { key: "p2q7", label: "Development of a holistic understanding of the new general education (GE) courses" },
+  { key: "p2q8", label: "Mastery of fundamental concepts of mathematics" },
+  { key: "p2q9", label: "Mastery of fundamental concepts of statistics" },
+  { key: "p2q10", label: "Mastery of fundamental concepts of computer science" },
+  { key: "p2q11", label: "Enhanced analytical thinking skills through covering advanced mathematics courses" },
+  { key: "p2q12", label: "Ability to use operations research (OR) techniques to aid efficiency of the solution process" },
+  { key: "p2q13", label: "Ability to use GIS tools to aid efficiency of the solution process" },
+  { key: "p2q14", label: "Ability to use statistical methods to aid efficiency of the solution process" },
+  { key: "p2q15", label: "Implementation/development of computer programs for ease in complex computations" },
+  { key: "p2q16", label: "Ability to apply OR and statistical techniques to scientific research practices" },
+  { key: "p2q17", label: "Readiness or confidence to pursue a master's degree in applied mathematics" },
+  { key: "p2q18", label: "Readiness or confidence to pursue a master's degree in statistics" },
+  { key: "p2q19", label: "Readiness or confidence to pursue a master's degree in computer science" },
 ];
 
 export default function OverallSatisfaction({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
+  const [loading, setLoading] = useState(true);
   const [deptData, setDeptData] = useState<any[]>([]);
   const [ploData, setPloData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let query = supabase
+        const query = supabase
           .from("satisfaction_survey_response")
           .select(`
             p2q1, p2q2, p2q3, p2q4, p2q5, p2q6,
             p2q7, p2q8, p2q9, p2q10, p2q11, p2q12, p2q13, p2q14, p2q15, p2q16, p2q17, p2q18, p2q19,
-            alumni!inner(
-              program!inner(program_name)
+            alumni(
+              graduation_year,
+              program(program_name),
+              users(fname, lname)
             )
           `);
 
-        if (program) {
-          query = query.eq("alumni.program.program_name", program);
-        }
-
         const { data: rawData, error } = await query;
-
         if (error) throw error;
 
         if (rawData) {
+          const data = program 
+            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
+            : (rawData as any[]);
+
           const ratings = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
-          const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
 
           const formattedDeptData = DEPT_FACTORS.map(f => {
             const entry: any = { factor: f.label };
             ratings.forEach(rating => {
-              entry[rating] = rawData.filter(row => String(row[f.key]) === rating).length;
+              entry[rating] = data.filter((row: any) => String(row[f.key]) === rating).length;
             });
             return entry;
           });
@@ -86,7 +86,7 @@ export default function OverallSatisfaction({ program }: Props) {
           const formattedPloData = PLO_FACTORS.map(f => {
             const entry: any = { factor: f.label };
             ratings.forEach(rating => {
-              entry[rating] = rawData.filter(row => String(row[f.key]) === rating).length;
+              entry[rating] = data.filter((row: any) => String(row[f.key]) === rating).length;
             });
             return entry;
           });
@@ -137,8 +137,8 @@ export default function OverallSatisfaction({ program }: Props) {
               tick={{ fontSize: 11, fill: "#555" }} 
               width={140} 
             />
-            <Tooltip 
-              cursor={{ fill: "rgba(0,0,0,0.03)" }} 
+            <Tooltip
+              cursor={{ fill: "rgba(0,0,0,0.03)" }}
               contentStyle={{ 
                 borderRadius: "8px", 
                 border: "1px solid #eee", 
@@ -146,7 +146,6 @@ export default function OverallSatisfaction({ program }: Props) {
               labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
               itemStyle={{ color: "#333" }}
             />
-            
             <Legend 
               layout="horizontal" 
               align="center" 
@@ -198,12 +197,12 @@ export default function OverallSatisfaction({ program }: Props) {
               tick={{ fontSize: 11, fill: "#555" }} 
               width={140} 
               />
-            <Tooltip 
-              cursor={{ fill: "rgba(0,0,0,0.03)" }} 
-              contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }} 
+            <Tooltip
+              cursor={{ fill: "rgba(0,0,0,0.03)" }}
+              contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }}
               labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
               itemStyle={{ color: "#333" }}
-              />
+            />
             <Legend 
               layout="horizontal" 
               align="center" 

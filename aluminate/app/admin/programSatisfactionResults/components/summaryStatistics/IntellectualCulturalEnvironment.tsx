@@ -38,49 +38,6 @@ const FACTORS = [
   { key: "p3q4", label: "The expertise of the faculty", color: "#9b1d2a" },
 ];
 
-//  Sub-components 
-function ResponseCard({
-  question,
-  questionHighlight,
-  responses,
-  onViewAll,
-}: {
-  question: string;
-  questionHighlight?: string;
-  responses: Response[];
-  onViewAll: () => void;
-}) {
-  const visible = responses.slice(0, 3);
-
-  return (
-    <div className="bg-white rounded-2xl p-7 shadow-sm">
-      <div className="text-xs font-semibold text-gray-800 mb-4">
-        {question}
-        {questionHighlight && (
-          <span className="font-bold text-red-900">{questionHighlight}</span>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-5">
-        {visible.length > 0 ? visible.map((r, i) => (
-          <div key={i} className="flex flex-col gap-0.5">
-            <p className="font-bold text-gray-900 text-sm">{r.name}</p>
-            <p className="text-xs text-gray-500">{r.classOf}</p>
-            <p className="text-sm text-gray-700">{r.answer}</p>
-            <span className="inline-block px-2.5 py-0.75 bg-red-50 text-red-900 rounded-full text-xs font-bold tracking-wide self-start">{r.program}</span>
-          </div>
-        )) : <p className="text-sm text-gray-500">No responses yet.</p>}
-      </div>
-
-      <div className="flex justify-center mt-6 border-t border-gray-100 pt-4">
-        <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={onViewAll}>
-          View Responses
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function IntellectualCulturalEnvironment({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
   const [chartData, setChartData] = useState<any[]>([]);
@@ -111,8 +68,8 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
         if (rawData) {
           // Filter data by program if specified
           const data = program 
-            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
-            : rawData;
+            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
+            : (rawData as any[]);
 
           // Process Chart Data
           const ratingEntries = ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"];
@@ -121,8 +78,8 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
           const formattedChartData = FACTORS.map(f => {
             const entry: Record<string, any> = { factor: f.label };
             ratingEntries.forEach(rating => {
-              entry[rating] = data.filter(row => {
-                const rowVal = String((row as any)[f.key] || "").trim();
+              entry[rating] = data.filter((row: any) => {
+                const rowVal = String(row[f.key] || "").trim();
                 return rowVal === rating;
               }).length;
             });
@@ -132,12 +89,12 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
 
           // Process Explain Responses
           const responses: Response[] = data
-            .filter(row => (row as any).p3q5 && (row as any).p3q5.trim() !== "")
-            .map(row => ({
-              name: `${(row as any).alumni?.users?.fname} ${(row as any).alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${(row as any).alumni?.graduation_year}` || "Unknown Year",
-              answer: (row as any).p3q5,
-              program: (row as any).alumni?.program?.program_name || "Unknown Program"
+            .filter((row: any) => row.p3q5 && String(row.p3q5).trim() !== "")
+            .map((row: any) => ({
+              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
+              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
+              answer: row.p3q5,
+              program: row.alumni?.program?.program_name || "Unknown Program"
             }));
           setExplainResponses(responses);
         }

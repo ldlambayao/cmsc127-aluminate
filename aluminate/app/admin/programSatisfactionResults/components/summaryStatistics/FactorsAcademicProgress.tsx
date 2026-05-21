@@ -73,13 +73,7 @@ const LEAVING_COLORS = ["#9b1d2a", "#f5dede"];
 
 //  Custom donut label 
 const renderDonutLabel = (props: any) => {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
-  const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  // Only render label for the first (Yes) segment
+  const { cx, cy, innerRadius, outerRadius, percent } = props;
   if (props.payload.name === "Yes") {
     return (
       <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={24} fontWeight={700} fill="#333">
@@ -175,22 +169,23 @@ export default function FactorsAcademicProgress({ program }: Props) {
 
         if (rawData) {
           const data = program
-            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
-            : rawData;
+            ? (rawData as any[]).filter((row: any) => row.alumni?.program?.program_name === program)
+            : (rawData as any[]);
 
           // Process Factors Data
+          const influenceColors = ["#7a1a23", "#9b1d2a", "#d07878", "#e8b4b4", "#f5dede", "#e0e0e0"];
           const formattedFactorsData = FACTORS.map(f => {
             const entry: Record<string, any> = { factor: f.label };
             INFLUENCE_LABELS.forEach(label => {
-              entry[label] = data.filter(row => String((row as any)[f.key]) === label).length;
+              entry[label] = data.filter((row: any) => String(row[f.key]) === label).length;
             });
             return entry;
           });
           setFactorsData(formattedFactorsData);
 
           // Process Leaving Data
-          const yesCount = data.filter(row => (row as any).p4q12 === "Yes").length;
-          const noCount = data.filter(row => (row as any).p4q12 === "No").length;
+          const yesCount = data.filter((row: any) => row.p4q12 === "Yes").length;
+          const noCount = data.filter((row: any) => row.p4q12 === "No").length;
           const total = yesCount + noCount || 1;
           setLeavingData([
             { name: "Yes", value: parseFloat(((yesCount / total) * 100).toFixed(2)) },
@@ -199,29 +194,22 @@ export default function FactorsAcademicProgress({ program }: Props) {
 
           // Process Favorite Year Data
           const yearCounts: Record<string, number> = {};
-          data.forEach(row => {
-            if ((row as any).p4q14) {
-              yearCounts[(row as any).p4q14] = (yearCounts[(row as any).p4q14] || 0) + 1;
+          data.forEach((row: any) => {
+            if (row.p4q14) {
+              yearCounts[row.p4q14] = (yearCounts[row.p4q14] || 0) + 1;
             }
           });
           setYearData(Object.entries(yearCounts).map(([year, count]) => ({ year, count })));
 
           // Process Responses
           const mapResponse = (key: string) => data
-            .filter(row => (row as any)[key] && (row as any)[key].trim() !== "")
-            .map(row => {
-              const fname = (row as any).alumni?.users?.fname?.trim();
-              const lname = (row as any).alumni?.users?.lname?.trim();
-              const graduationYear = (row as any).alumni?.graduation_year;
-              const fullName = [fname, lname].filter(Boolean).join(" ");
-
-              return {
-                name: fullName || "Anonymous",
-                classOf: graduationYear ? `Class of ${graduationYear}` : "Unknown Year",
-                answer: (row as any)[key],
-                program: (row as any).alumni?.program?.program_name || "Unknown Program"
-              };
-            });
+            .filter((row: any) => row[key] && String(row[key]).trim() !== "")
+            .map((row: any) => ({
+              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
+              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
+              answer: row[key],
+              program: row.alumni?.program?.program_name || "Unknown Program"
+            }));
 
           setOthersResponses(mapResponse("p4q11"));
           setLeavingWhyResponses(mapResponse("p4q13"));
@@ -412,7 +400,7 @@ export default function FactorsAcademicProgress({ program }: Props) {
       />
 
       <ResponseCard
-        question="What course/subject/topic do you think will be helpful in your future endeavors?"
+        question="What course/subject/topic do you think will be least helpful in your future endeavors?"
         responses={helpfulFutureResponses}
         onViewAll={() => openModal(helpfulFutureResponses, setIsLeastHelpfulEntryModalOpen)}
       />
