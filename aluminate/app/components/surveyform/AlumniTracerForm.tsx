@@ -7,6 +7,18 @@ interface AlumniTracerFormProps {
   onSubmit?: () => void;
 }
 
+interface ColumnData {
+  column_name: string,
+  description: string;
+}
+
+type Question = {
+  id: number;
+  columnName: string;
+  text: string;
+  indented?: boolean;
+};
+
 type SatisfactionLevel = "Very Satisfied" | "Satisfied" | "Neutral" | "Dissatisfied" | "Very Dissatisfied" | "";
 type InterviewAnswer = "Yes" | "No" | "Maybe, I'll join later at some other time" | "";
 
@@ -38,6 +50,7 @@ interface FormData {
 export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const supabase = getSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   //const variables to store user input into
   const [natureOfWork, setNatureOfWork] = useState("");
@@ -133,7 +146,28 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     }
 
     getProfile();
+    fetchQuestions();
   }, []);
+
+  const fetchQuestions = async () => {
+    const { data: questionsQuery, error: questionsError } = await supabase
+      .rpc('get_all_column_descriptions' as any, {t_name: "tracer_survey_response"} as any);
+
+    if (questionsError) throw questionsError;
+
+    if (questionsQuery) {
+      const formattedQuestions: Question[] = (questionsQuery as ColumnData[])
+          .filter((row) => row.description !== null && row.description.trim() !== "")
+          .map((row, index) => ({
+            id: index + 1,
+            columnName: row.column_name,
+            text: row.description,
+          }));
+
+        setQuestions(formattedQuestions);
+        console.log(formattedQuestions);
+    }
+  }
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -172,24 +206,24 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
       .insert([
         {
           alumnus_id: currentAlumnusId,
-          nature_of_work: natureOfWork,
-          higher_studies: higherStudies,
-          list_for_higher_studies: listOfHigherStudies,
-          employment_status: employmentStatus,
-          work_relation: workRelation,
-          share_suggestions: suggestions,
-          satisfaction_level: satisfactionLevel,
-          satisfaction_reason: satisfactionReason,
-          ways_degprog_helped: waysDegprogHelped,
-          degprog_suggestions: degprogSuggestions,
-          receive_updates: receiveUpdates,
-          interview_interest: interviewInterest,
-          time_to_find_job: timeToFindJob,
-          current_employment_status: currentEmploymentStatus,
-          date_hired: dateHired || null,
-          current_workplace: currentWorkplace,
-          current_position: currentPosition,
-          date_answered: dateAnswered,
+          q06_nature_of_work: natureOfWork || null,
+          q07_higher_studies: higherStudies,
+          q08_list_for_higher_studies: listOfHigherStudies || "N/A",
+          q09_employment_status: employmentStatus,
+          q10_work_relation: workRelation,
+          q11_share_suggestions: suggestions,
+          q12_satisfaction_level: satisfactionLevel,
+          q13_satisfaction_reason: satisfactionReason,
+          q14_ways_degprog_helped: waysDegprogHelped,
+          q15_degprog_suggestions: degprogSuggestions,
+          q16_receive_updates: receiveUpdates,
+          q17_interview_interest: interviewInterest,
+          q01_time_to_find_job: timeToFindJob,
+          q02_current_employment_status: currentEmploymentStatus,
+          q03_date_hired: dateHired || null,
+          q04_current_workplace: currentWorkplace || null,
+          q05_current_position: currentPosition || null,
+          q06_date_answered: dateAnswered,
         }
       ] as any) as any);
 
@@ -224,7 +258,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
     return (
       <div style={styles.content}>
         <div style={styles.pageHeader}>
-          <h1 style={styles.pageTitle}>Loading...</h1>
+          <h1 style={styles.pageTitle}>Loading...</h1>21
         </div>
       </div>
     );
@@ -282,7 +316,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
 
           <div style={styles.twoColumnRow}>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>How long did it take you to find a job after graduation?</label>
+              <label style={styles.questionLabel}>{questions[0].text}</label>
               <select style={styles.textInput} value={form.timeToFindJob} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setTimeToFindJob(e.target.value); set("timeToFindJob")(e); }}>
                 <option value="">Select option</option>
                 <option>Less than 1 month</option>
@@ -294,7 +328,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               </select>
             </div>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Current status of employment</label>
+              <label style={styles.questionLabel}>{questions[1].text}</label>
               <select style={styles.textInput} value={form.currentEmploymentStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { setCurrentEmploymentStatus(e.target.value); set("currentEmploymentStatus")(e); }}>
                 <option value="">Select option</option>
                 <option>Employed (Full-time)</option>
@@ -308,39 +342,30 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              Date hired in present employment if employed, self-employed or with business:
-            </label>
-            <p style={styles.helperText}>
-              (If you cannot recall the exact date, just provide the month and year, and input the day as 1. For example, if you were hired sometime in June 2019, input June 1, 2019.)
-            </p>
+            <label style={styles.questionLabel}>{questions[2].text}</label>
             <input style={{ ...styles.textInput, maxWidth: "260px" }} type="date" value={form.dateHired} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDateHired(e.target.value); set("dateHired")(e); }} />
           </div>
 
           <div style={styles.twoColumnRow}>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Where do you work now? (Please specify company name and location.)</label>
+              <label style={styles.questionLabel}>{questions[3].text}</label>
               <input style={styles.textInput} value={form.currentWorkplace} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCurrentWorkplace(e.target.value); set("currentWorkplace")(e); }} placeholder="" />
             </div>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>What is your current position for your job?</label>
+              <label style={styles.questionLabel}>{questions[4].text}</label>
               <input style={styles.textInput} value={form.currentPosition} onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCurrentPosition(e.target.value); set("currentPosition")(e); }} placeholder="" />
             </div>
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              What is the nature of your work? (Education, IT/ICT Position in the
-              Organization/Company, Business, Research and Development, Others, etc.)
-              If currently employed, please provide the name of your employer.
-            </label>
+            <label style={styles.questionLabel}>{questions[5].text}</label>
             <textarea style={styles.textarea} rows={4} value={form.workField} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setNatureOfWork(e.target.value); set("workField")(e)}}
               placeholder="Share with us the nature of your work..." />
           </div>
 
           <div style={styles.twoColumnRow}>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Are you pursuing higher studies?</label>
+              <label style={styles.questionLabel}>{questions[6].text}</label>
               <select style={styles.textInput} value={form.pursuingHigherStudies} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {setHigherStudies(e.target.value); set("pursuingHigherStudies")(e)}}>
                 <option value="">Select option</option>
                 <option>Yes</option>
@@ -348,9 +373,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               </select>
             </div>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>
-                Please specify degree program, field of study, and university.
-              </label>
+              <label style={styles.questionLabel}>{questions[7].text}</label>
               <textarea style={styles.textarea} rows={3} value={form.degreesHeld} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setListOfHigherStudies(e.target.value); set("degreesHeld")(e)}}
                 placeholder="List each program if applicable..." />
             </div>
@@ -358,7 +381,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
 
           <div style={styles.twoColumnRow}>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Are you currently employed?</label>
+              <label style={styles.questionLabel}>{questions[8].text}</label>
               <div style={styles.checkboxList}>
                 {["Yes", "No"].map((opt) => (
                   <label key={opt} style={styles.checkboxLabel}>
@@ -376,7 +399,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
               </div>
             </div>
             <div style={styles.inputGroup}>
-              <label style={styles.questionLabel}>Is your work related to your degree program?</label>
+              <label style={styles.questionLabel}>{questions[9].text}</label>
               <div style={styles.checkboxList}>
                 {["Yes", "No"].map((opt) => (
                   <label key={opt} style={styles.checkboxLabel}>
@@ -402,18 +425,13 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           <div style={styles.divider} />
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              Please share your suggestions for activities (programs, mentoring, etc.) that
-              allow us to better help alumni find jobs after graduation. Please elaborate below.
-            </label>
+            <label style={styles.questionLabel}>{questions[10].text} </label>
             <textarea style={styles.textarea} rows={5} value={form.suggestions} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setSuggestions(e.target.value); set("suggestions")(e)}}
               placeholder="Share your suggestions with us..." />
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              What is your level of satisfaction for your undergraduate study under the BSCS degree program?
-            </label>
+            <label style={styles.questionLabel}>{questions[11].text}</label>
             <div style={styles.ratingCard}>
               {satisfactionLevels.map((level) => (
                 <button
@@ -432,42 +450,31 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>Reasons for giving that rating above:</label>
+            <label style={styles.questionLabel}>{questions[12].text}</label>
             <textarea style={styles.textarea} rows={4} value={form.satisfactionReasons} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setSatisfactionReason(e.target.value); set("satisfactionReasons")(e)}}
               placeholder="Share your reasons with us..." />
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              In what way did your degree program help you in your professional career?
-            </label>
+            <label style={styles.questionLabel}>{questions[13].text}</label>
             <textarea style={styles.textarea} rows={4} value={form.degreeHelpfulness} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setWaysDegprogHelped(e.target.value); set("degreeHelpfulness")(e)}}
               placeholder="Share your thoughts with us..." />
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              What are your suggestions on how to improve the program in terms of structure,
-              content, teaching, assessments, etc.?
-            </label>
+            <label style={styles.questionLabel}>{questions[14].text}</label>
             <textarea style={styles.textarea} rows={4} value={form.programImprovements} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {setDegprogSuggestions(e.target.value); set("programImprovements")(e)}}
               placeholder="Share your suggestions with us..." />
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              Would you like to get updates regarding new DMPCS program offerings, trainings
-              and/or activities for alumni? If yes, please provide your email below.
-            </label>
+            <label style={styles.questionLabel}>{questions[15].text}</label>
             <input style={styles.textInput} type="email" value={form.emailUpdates} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setReceiveUpdates(e.target.value); set("emailUpdates")(e)}}
               placeholder="email@example.com" />
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.questionLabel}>
-              Would you be interested in taking part as an alumni interviewer for the review
-              and revision of the BSCS Program?
-            </label>
+            <label style={styles.questionLabel}>{questions[16].text}</label>
             <div style={styles.checkboxList}>
               {interviewOptions.map((opt) => (
                 <label key={opt} style={styles.checkboxLabel}>
