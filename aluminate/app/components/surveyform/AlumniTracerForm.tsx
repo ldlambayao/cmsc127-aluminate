@@ -65,7 +65,6 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
   const [degprogSuggestions, setDegprogSuggestions] = useState("");
   const [receiveUpdates, setReceiveUpdates] = useState("");
   const [interviewInterest, setInterviewInterest] = useState<InterviewAnswer>("");
-  const [dateAnswered, setDateAnswered] = useState(new Date().toISOString().split('T')[0]);
   const [timeToFindJob, setTimeToFindJob] = useState("");
   const [currentEmploymentStatus, setCurrentEmploymentStatus] = useState("");
   const [dateHired, setDateHired] = useState("");
@@ -147,7 +146,7 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
 
     getProfile();
     fetchQuestions();
-  }, []);
+  }, [supabase]);
 
   const fetchQuestions = async () => {
     const { data: questionsQuery, error: questionsError } = await supabase
@@ -165,7 +164,6 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           }));
 
         setQuestions(formattedQuestions);
-        console.log(formattedQuestions);
     }
   }
 
@@ -223,7 +221,6 @@ export default function AlumniTracerForm({ onSubmit }: AlumniTracerFormProps) {
           q03_date_hired: dateHired || null,
           q04_current_workplace: currentWorkplace || null,
           q05_current_position: currentPosition || null,
-          q06_date_answered: dateAnswered,
         }
       ] as any) as any);
 

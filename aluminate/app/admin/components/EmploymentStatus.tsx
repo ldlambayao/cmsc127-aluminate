@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { getSupabaseBrowserClient } from "@/../lib/supabase/browser-client";
 
-const LABELS = ["Employed", "Unemployed", "Self-employed", "Business"];
+const LABELS = ["Employed", "Self-employed", "Unemployed", "Further studies"];
 
 export default function EmploymentStatus() {
   const [data, setData] = useState<{ name: string; value: number }[]>([]);
@@ -15,28 +15,35 @@ export default function EmploymentStatus() {
       try {
         const { data: rows, error } = await supabase
           .from("tracer_survey_response")
-          .select("employment_status")
-          .eq("question_id", "current_employment_status"); // adjust as needed
+          .select("q02_current_employment_status");
 
         if (error) throw error;
 
+        const rowData = rows as any;
+
         const counts: Record<string, number> = {
-          Employed: 0,
-          Unemployed: 0,
+          "Employed": 0,
           "Self-employed": 0,
-          Business: 0,
+          "Unemployed": 0,
+          "Further studies": 0,
         };
 
-        (rows ?? []).forEach((row: any) => {
-          const val = String(row.answer);
-          if (counts[val] !== undefined) counts[val]++;
+        (rowData ?? []).forEach((row: any) => {
+          const val = String(row.q02_current_employment_status);
+          if (val.includes("-employed")) {
+            counts["Self-employed"]++;
+          } else if (val.includes("Further")) {
+            counts["Further studies"]++;
+          } else if (val.includes("Unemployed")) {
+            counts["Unemployed"]++;
+          } else {
+            counts["Employed"]++;
+          }
         });
 
         setData(LABELS.map((label) => ({ name: label, value: counts[label] })));
       } catch (err) {
         console.error(err);
-        // Fallback placeholder data
-        setData(LABELS.map((label, i) => ({ name: label, value: [4, 2, 6, 3][i] })));
       }
     };
     fetchData();

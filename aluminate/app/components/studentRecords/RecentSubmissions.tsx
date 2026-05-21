@@ -19,29 +19,21 @@ export default function RecentSubmissions() {
       try {
         // Fetch recent satisfaction form submissions
         const { data: satRows } = await supabase
-          .from("satisfaction_survey_answers")
-          .select(`
-            created_at,
-            alumni!inner(
-              student_number,
-              users!inner(fname, mname, lname)
-            )
-          `)
-          .order("created_at", { ascending: false })
+          .from("ssatisfaction_survey_response")
+          .select("date_answered, alumni!inner(student_number,users!inner(fname, mname, lname))")
+          .order("date_answered", { ascending: false })
           .limit(5);
+
+        console.log("sat rows", satRows)
 
         // Fetch recent tracer form submissions
         const { data: tracerRows } = await supabase
-          .from("tracer_survey_answers")
-          .select(`
-            created_at,
-            alumni!inner(
-              student_number,
-              users!inner(fname, mname, lname)
-            )
-          `)
-          .order("created_at", { ascending: false })
+          .from("tracer_survey_response")
+          .select("date_answered,alumni!inner(student_number,users!inner(fname, mname, lname))")
+          .order("date_answered", { ascending: false })
           .limit(5);
+
+        console.log("tracer rows", tracerRows)
 
         const format = (rows: any[], formName: string): Submission[] =>
           (rows ?? []).map((r: any) => {
@@ -50,8 +42,13 @@ export default function RecentSubmissions() {
             return {
               studentId: r.alumni?.student_number ?? "—",
               name: fullName || "—",
-              submissionDate: new Date(r.created_at).toLocaleDateString("en-US", {
-                month: "long", day: "numeric", year: "numeric",
+              submissionDate: new Date(r.date_answered).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
               }),
               formSubmitted: formName,
             };
@@ -60,8 +57,9 @@ export default function RecentSubmissions() {
         const all = [
           ...format(satRows ?? [], "Program Satisfaction Form"),
           ...format(tracerRows ?? [], "Alumni Tracer Form"),
-        ].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()).slice(0, 5);
+        ].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()).slice(0, 10);
 
+        console.log("all submissions: ", all);
         setSubmissions(all);
       } catch (err) {
         console.error(err);

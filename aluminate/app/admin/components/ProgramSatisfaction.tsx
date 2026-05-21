@@ -16,7 +16,7 @@ export default function ProgramSatisfaction() {
       try {
         // Fetch all satisfaction survey answers for the relevant question
         const { data: rows, error } = await supabase
-          .from("satisfaction_survey_response")
+          .from("ssatisfaction_survey_response")
           .select("answer")
           .eq("question_id", "overall_service_delivery"); // adjust column/value as needed
 

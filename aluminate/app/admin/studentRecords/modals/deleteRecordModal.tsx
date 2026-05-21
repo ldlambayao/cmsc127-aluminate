@@ -52,7 +52,6 @@ export default function DeleteRecordModal({ record, onClose, onSuccess }: Delete
           .eq("uuid", (alumniRow as any).uuid);
       }
 
-      console.log((alumniRow as any).uuid);
       await deleteUserAction((alumniRow as any).uuid);
       alert("Record deleted successfully!");
 

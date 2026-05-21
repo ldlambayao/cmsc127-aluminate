@@ -92,7 +92,6 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
         }
 
         const userId = data.user.id
-        console.log("data.user: ", data.user);
 
         const { data: userData, error: userError } = await (supabase as any)
           .from("users")
@@ -105,7 +104,6 @@ export default function AddRecordModal({ onClose, onSuccess, programs }: AddReco
           })
 
         if (userError) throw userError;
-        console.log("UserData: ", userData);
 
         const { data: programData } = await (supabase as any)
           .from("program")
