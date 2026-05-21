@@ -46,13 +46,6 @@ const FACTORS = [
   { key: "p3q16", label: "Guards", color: "#9b1d2a" },
 ];
 
-const RATING_LABELS: Record<string, string> = {
-  "Very Satisfied": "Very Satisfied",
-  "Satisfied": "Satisfied",
-  "Dissatisfied": "Dissatisfied",
-  "Very Dissatisfied": "Very Dissatisfied",
-};
-
 export default function ServicesProvidedbyUP({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
   const [chartData, setChartData] = useState<any[]>([]);
@@ -83,8 +76,8 @@ export default function ServicesProvidedbyUP({ program }: Props) {
         if (rawData) {
           // Filter data by program if specified
           const data = program 
-            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
-            : rawData;
+            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
+            : (rawData as any[]);
 
           // Process Chart Data
           const ratingEntries = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
@@ -93,8 +86,8 @@ export default function ServicesProvidedbyUP({ program }: Props) {
           const formattedChartData = FACTORS.map(f => {
             const entry: Record<string, any> = { factor: f.label };
             ratingEntries.forEach(rating => {
-              entry[rating] = data.filter(row => {
-                const rowVal = String((row as any)[f.key] || "").trim();
+              entry[rating] = data.filter((row: any) => {
+                const rowVal = String(row[f.key] || "").trim();
                 return rowVal === rating;
               }).length;
             });
@@ -104,12 +97,12 @@ export default function ServicesProvidedbyUP({ program }: Props) {
 
           // Process Other Responses (p3q17)
           const responses: Response[] = data
-            .filter(row => (row as any).p3q17 && (row as any).p3q17.trim() !== "")
-            .map(row => ({
-              name: `${(row as any).alumni?.users?.fname} ${(row as any).alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${(row as any).alumni?.graduation_year}` || "Unknown Year",
-              answer: (row as any).p3q17,
-              program: (row as any).alumni?.program?.program_name || "Unknown Program"
+            .filter((row: any) => row.p3q17 && String(row.p3q17).trim() !== "")
+            .map((row: any) => ({
+              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
+              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
+              answer: row.p3q17,
+              program: row.alumni?.program?.program_name || "Unknown Program"
             }));
           setOtherResponses(responses);
         }

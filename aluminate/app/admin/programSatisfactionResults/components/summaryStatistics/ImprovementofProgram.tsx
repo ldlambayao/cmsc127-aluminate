@@ -63,13 +63,7 @@ const DONUT_COLORS = ["#9b1d2a", "#f5dede"];
 
 //  Custom donut center label 
 const renderDonutLabel = (props: any) => {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
-  const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  
-  // Only render label for the first (Yes) segment
+  const { cx, cy, innerRadius, outerRadius, percent } = props;
   if (props.payload.name === "Yes") {
     return (
       <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={24} fontWeight={700} fill="#333">
@@ -165,21 +159,21 @@ export default function ImprovementofProgram({ program }: Props) {
 
         if (rawData) {
           const data = program 
-            ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
-            : rawData;
+            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
+            : (rawData as any[]);
 
           // Process Strengths/Weaknesses Data
           const processChecks = (labels: any[]) => labels.map(l => ({
             factor: l.label,
-            count: data.filter(row => (row as any)[l.key] === true).length
+            count: data.filter((row: any) => row[l.key] === true).length
           }));
           
           setStrengthsData(processChecks(STRENGTHS_LABELS));
           setWeaknessesData(processChecks(WEAKNESSES_LABELS));
 
           // Process Recommendation Data (p5q6)
-          const yesCount = data.filter(row => (row as any).p5q6 === "Yes").length;
-          const noCount = data.filter(row => (row as any).p5q6 === "No").length;
+          const yesCount = data.filter((row: any) => row.p5q6 === "Yes").length;
+          const noCount = data.filter((row: any) => row.p5q6 === "No").length;
           const total = yesCount + noCount || 1;
           setRecommendData([
             { name: "Yes", value: parseFloat(((yesCount / total) * 100).toFixed(2)) },
@@ -188,12 +182,12 @@ export default function ImprovementofProgram({ program }: Props) {
 
           // Map Responses
           const mapResponse = (key: string) => data
-            .filter(row => (row as any)[key] && (row as any)[key].trim() !== "")
-            .map(row => ({
-              name: `${(row as any).alumni?.users?.fname} ${(row as any).alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${(row as any).alumni?.graduation_year}` || "Unknown Year",
-              answer: (row as any)[key],
-              program: (row as any).alumni?.program?.program_name || "Unknown Program"
+            .filter((row: any) => row[key] && String(row[key]).trim() !== "")
+            .map((row: any) => ({
+              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
+              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
+              answer: row[key],
+              program: row.alumni?.program?.program_name || "Unknown Program"
             }));
 
           setStrengthsOtherResponses(mapResponse("p5q2"));
@@ -235,8 +229,7 @@ export default function ImprovementofProgram({ program }: Props) {
                 <CartesianGrid horizontal={false} stroke="#f0f0f0" />
                 <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#aaa" }} allowDecimals={false} />
                 <YAxis type="category" dataKey="factor" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#555" }} width={140} />
-                <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }} labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
-              itemStyle={{ color: "#333" }}/>
+                <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }} />
                 <Bar dataKey="count" fill="#E8C4C4" radius={[0, 4, 4, 0]} maxBarSize={25} />
               </BarChart>
             </ResponsiveContainer>
@@ -259,8 +252,7 @@ export default function ImprovementofProgram({ program }: Props) {
                 <CartesianGrid horizontal={false} stroke="#f0f0f0" />
                 <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#aaa" }} allowDecimals={false} />
                 <YAxis type="category" dataKey="factor" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#555" }} width={140} />
-                <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }} labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
-              itemStyle={{ color: "#333" }}/>
+                <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "11px" }} />
                 <Bar dataKey="count" fill="#D89A9A" radius={[0, 4, 4, 0]} maxBarSize={25} />
               </BarChart>
             </ResponsiveContainer>
@@ -302,8 +294,6 @@ export default function ImprovementofProgram({ program }: Props) {
             <Tooltip
               formatter={(value: any) => `${value}%`}
               contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
-              labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
-              itemStyle={{ color: "#333" }}
             />
             <Legend
               layout="vertical"
