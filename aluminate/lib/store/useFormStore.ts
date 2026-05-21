@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 
-// Define exactly what fields you want to collect across all 5 pages
 export interface SurveyData {
   // ---- Page 1 ----
   date: string,
