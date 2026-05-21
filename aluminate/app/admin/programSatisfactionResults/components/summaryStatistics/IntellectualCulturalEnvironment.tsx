@@ -116,17 +116,10 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
         if (error) throw error;
 
         if (rawData) {
-          console.log("IntellectualCulture: Raw data count:", rawData.length);
-          if (rawData.length > 0) {
-            console.log("IntellectualCulture: Sample row:", JSON.stringify(rawData[0], null, 2));
-          }
-
           // Filter data by program if specified
           const data = program 
             ? rawData.filter((row) => (row.alumni as any)?.program?.program_name === program)
             : rawData;
-
-          console.log("IntellectualCulture: Filtered data count:", data.length);
 
           // Process Chart Data
           const ratingEntries = ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"];
