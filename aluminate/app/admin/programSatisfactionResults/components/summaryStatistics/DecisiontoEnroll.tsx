@@ -51,13 +51,15 @@ const RATING_LABELS: Record<string, string> = {
   "2": "2-somewhat important",
   "3": "3-important",
   "4": "4-very important",
+  "5": "5-N/A",
 };
 
 const RATING_COLORS: Record<string, string> = {
-  "1-not important": "#E8C4C4",
-  "2-somewhat important": "#D66B66",
-  "3-important": "#A0302B",
-  "4-very important": "#742314",
+  "1-not important": "#ebb8b8",
+  "2-somewhat important": "#e09898",
+  "3-important": "#d07878",
+  "4-very important": "#b85050",
+  "5-N/A": "#9b1d2a",
 };
 
 
@@ -71,7 +73,7 @@ export default function DecisiontoEnroll({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let query = supabase
+        const query = supabase
           .from("satisfaction_survey_response")
           .select(`
             p1q2c1, p1q2c2, p1q2c3, p1q2t1,
@@ -130,6 +132,8 @@ export default function DecisiontoEnroll({ program }: Props) {
           });
 
           setFactorsData(formattedFactorsData);
+
+          console.log(formattedFactorsData);
         }
       } catch (err) {
         console.error("Error fetching survey metrics:", err);
