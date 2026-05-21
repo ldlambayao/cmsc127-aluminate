@@ -210,12 +210,19 @@ export default function FactorsAcademicProgress({ program }: Props) {
           // Process Responses
           const mapResponse = (key: string) => data
             .filter(row => (row as any)[key] && (row as any)[key].trim() !== "")
-            .map(row => ({
-              name: `${(row as any).alumni?.users?.fname} ${(row as any).alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${(row as any).alumni?.graduation_year}` || "Unknown Year",
-              answer: (row as any)[key],
-              program: (row as any).alumni?.program?.program_name || "Unknown Program"
-            }));
+            .map(row => {
+              const fname = (row as any).alumni?.users?.fname?.trim();
+              const lname = (row as any).alumni?.users?.lname?.trim();
+              const graduationYear = (row as any).alumni?.graduation_year;
+              const fullName = [fname, lname].filter(Boolean).join(" ");
+
+              return {
+                name: fullName || "Anonymous",
+                classOf: graduationYear ? `Class of ${graduationYear}` : "Unknown Year",
+                answer: (row as any)[key],
+                program: (row as any).alumni?.program?.program_name || "Unknown Program"
+              };
+            });
 
           setOthersResponses(mapResponse("p4q11"));
           setLeavingWhyResponses(mapResponse("p4q13"));
