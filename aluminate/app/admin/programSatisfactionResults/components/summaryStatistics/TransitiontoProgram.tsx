@@ -20,16 +20,6 @@ interface Props {
   program?: string;
 }
 
-interface ChartDataPoint {
-  category: string;
-  label: string;
-  count: number;
-}
-
-interface SurveyResponseRow {
-  p1q1: string;
-}
-
 //  Sub-components 
 function ResponseCard({
   question,
@@ -287,6 +277,5 @@ export default function TransitiontoProgram({ program }: Props) {
     </section>
   );
 }
-
 
 
