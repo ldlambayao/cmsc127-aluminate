@@ -227,13 +227,6 @@ export default function RecordTable({ onDataChange, searchQuery }: RecordTablePr
                       <div style={styles.actions}>
                         <button
                           style={styles.iconBtn}
-                          onClick={() => { setSelectedRecord(rec); setShowDelete(true); }}
-                          title="Delete"
-                        >
-                          <DeleteIcon />
-                        </button>
-                        <button
-                          style={styles.iconBtn}
                           onClick={() => { setSelectedRecord(rec); setShowEdit(true); }}
                           title="Edit"
                         >

@@ -28,24 +28,13 @@ export default function GeneralInformation({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let query = supabase
+        const { data, error } = await supabase
           .from("satisfaction_survey_response")
-          .select(`
-            p1q1,
-            alumni!inner(
-              program!inner(program_name)
-            )
-          `);
-
-        if (program) {
-          query = query.eq("alumni.program.program_name", program);
-        }
-
-        const { data, error } = await query;
+          .select("q1");
 
         if (error) throw error;
 
-        const p1q1Counts: Record<string, number> = {
+        const q1Counts: Record<string, number> = {
           "1": 0,
           "2": 0,
           "3": 0,
@@ -55,16 +44,16 @@ export default function GeneralInformation({ program }: Props) {
 
         if (data) {
           data.forEach((row: any) => {
-            const value = String(row.p1q1);
-            if (value in p1q1Counts) {
-              p1q1Counts[value]++;
+            const value = String(row.q1);
+            if (value in q1Counts) {
+              q1Counts[value]++;
             }
           });
         }
 
-        const formattedData = Object.keys(p1q1Counts).map((key) => ({
+        const formattedData = Object.keys(q1Counts).map((key) => ({
           rating: key,
-          "Count": p1q1Counts[key],
+          "Count": q1Counts[key],
         }));
 
         setP1q1Data(formattedData);

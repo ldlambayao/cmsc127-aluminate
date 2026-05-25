@@ -83,7 +83,6 @@ export default function ProgramFeedback() {
   const handleConfirmDelete = async () => {
       const table_name = "tracer_survey_response"
     if (questionToDelete) {
-      console.log(questionToDelete)
       const { error } = await supabase
         .rpc('drop_column' as any, {table_name: table_name, column_name: questionToDelete.columnName} as any);
       if (error) throw error;

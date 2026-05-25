@@ -40,28 +40,28 @@ interface suggestionEntry {
 
 //  Chart data labels
 const STRENGTHS_LABELS = [
-  { key: "p5q1c1", label: "Curriculum structure" },
-  { key: "p5q1c2", label: "Facilities and equipment are adequate (classrooms, library, projectors)" },
-  { key: "p5q1c3", label: "Resources are sufficient (wifi, reading materials, books)" },
-  { key: "p5q1c4", label: "Expertise of the faculty members" },
-  { key: "p5q1c5", label: "Supportive faculty members" },
-  { key: "p5q1c6", label: "Supportive non-teaching staff" },
-  { key: "p5q1c7", label: "Others" },
+  { key: "q1c1", label: "Curriculum structure" },
+  { key: "q1c2", label: "Facilities and equipment are adequate (classrooms, library, projectors)" },
+  { key: "q1c3", label: "Resources are sufficient (wifi, reading materials, books)" },
+  { key: "q1c4", label: "Expertise of the faculty members" },
+  { key: "q1c5", label: "Supportive faculty members" },
+  { key: "q1c6", label: "Supportive non-teaching staff" },
+  { key: "q1c7", label: "Others" },
 ];
 
 const WEAKNESSES_LABELS = [
-  { key: "p5q3c1", label: "Some courses are irrelevant" },
-  { key: "p5q3c2", label: "Facilities and equipment are not adequate (classrooms, library, projectors)" },
-  { key: "p5q3c3", label: "Resources are not sufficient (wifi, reading materials, books)" },
-  { key: "p5q3c4", label: "Lack of expertise of some faculty members" },
-  { key: "p5q3c5", label: "Lack of support from some faculty members" },
-  { key: "p5q3c6", label: "Lack of support from non-teaching staff" },
-  { key: "p5q3c7", label: "Others" },
+  { key: "q2c1", label: "Some courses are irrelevant" },
+  { key: "q2c2", label: "Facilities and equipment are not adequate (classrooms, library, projectors)" },
+  { key: "q2c3", label: "Resources are not sufficient (wifi, reading materials, books)" },
+  { key: "q2c4", label: "Lack of expertise of some faculty members" },
+  { key: "q2c5", label: "Lack of support from some faculty members" },
+  { key: "q2c6", label: "Lack of support from non-teaching staff" },
+  { key: "q2c7", label: "Others" },
 ];
 
 const DONUT_COLORS = ["#9b1d2a", "#f5dede"];
 
-//  Custom donut center label 
+//  Custom donut center label
 const renderDonutLabel = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, percent } = props;
   if (props.payload.name === "Yes") {
@@ -74,7 +74,7 @@ const renderDonutLabel = (props: any) => {
   return null;
 };
 
-//  Reusable response card 
+//  Reusable response card
 function ResponseCard({
   question,
   isHighlighted = false,
@@ -117,7 +117,7 @@ function ResponseCard({
 export default function ImprovementofProgram({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
-  
+
   const [strengthsData, setStrengthsData] = useState<any[]>([]);
   const [weaknessesData, setWeaknessesData] = useState<any[]>([]);
   const [recommendData, setRecommendData] = useState<any[]>([]);
@@ -134,46 +134,38 @@ export default function ImprovementofProgram({ program }: Props) {
   const [isWhyWhyNotModalOpen, setIsWhyWhyNotModalOpen] = useState(false);
   const [isSuggestOverallModalOpen, setIsSuggestOverallModalOpen] = useState(false);
   const [isAdditionalCommentsModalOpen, setIsAdditionalCommentsModalOpen] = useState(false);
-  
+
   const [modalData, setModalData] = useState<suggestionEntry[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p5q1c1, p5q1c2, p5q1c3, p5q1c4, p5q1c5, p5q1c6, p5q1c7,
-            p5q2, p5q3c1, p5q3c2, p5q3c3, p5q3c4, p5q3c5, p5q3c6, p5q3c7,
-            p5q4, p5q5, p5q6, p5q7, p5q8, p5q9,
-            alumni(
-              graduation_year,
-              program(program_name),
-              users(fname, lname)
-            )
-          `);
+        const { data: alumniData, error: alumniError } = await supabase
+          .from("alumni")
+          .select("users!inner(fname, mname, lname), graduation_year, program!inner(program_name), satisfaction_survey_response!inner(satisfaction_section7!inner(q1c1, q1c2, q1c3, q1c4, q1c5, q1c6, q1c7, q1t1, q2c1, q2c2, q2c3, q2c4, q2c5, q2c6, q2c7, q2t1, q3, q4, q5, q6, q7))");
 
-        const { data: rawData, error } = await query;
+        if (alumniError) throw alumniError
+
+        const { data, error } = await supabase
+          .from("satisfaction_section7")
+          .select("q1c1, q1c2, q1c3, q1c4, q1c5, q1c6, q1c7, q1t1, q2c1, q2c2, q2c3, q2c4, q2c5, q2c6, q2c7, q2t1, q3, q4, q5, q6, q7")
+
         if (error) throw error;
 
-        if (rawData) {
-          const data = program 
-            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
-            : (rawData as any[]);
-
+        if (data && alumniData) {
           // Process Strengths/Weaknesses Data
           const processChecks = (labels: any[]) => labels.map(l => ({
             factor: l.label,
             count: data.filter((row: any) => row[l.key] === true).length
           }));
-          
+
           setStrengthsData(processChecks(STRENGTHS_LABELS));
           setWeaknessesData(processChecks(WEAKNESSES_LABELS));
 
-          // Process Recommendation Data (p5q6)
-          const yesCount = data.filter((row: any) => row.p5q6 === "Yes").length;
-          const noCount = data.filter((row: any) => row.p5q6 === "No").length;
+          // Process Recommendation Data
+          const yesCount = data.filter((row: any) => row.q4 === "Yes").length;
+          const noCount = data.filter((row: any) => row.q4 === "No").length;
           const total = yesCount + noCount || 1;
           setRecommendData([
             { name: "Yes", value: parseFloat(((yesCount / total) * 100).toFixed(2)) },
@@ -181,21 +173,23 @@ export default function ImprovementofProgram({ program }: Props) {
           ]);
 
           // Map Responses
-          const mapResponse = (key: string) => data
-            .filter((row: any) => row[key] && String(row[key]).trim() !== "")
-            .map((row: any) => ({
-              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
-              answer: row[key],
-              program: row.alumni?.program?.program_name || "Unknown Program"
-            }));
+          const mapResponse = (key: string) => alumniData.flatMap((row: any) =>
+            row.satisfaction_survey_response
+              .filter((survey: any) => survey.satisfaction_section7?.[key] && String(survey.satisfaction_section7[key]).trim() !== "")
+              .map((survey: any) => ({
+                name: `${row.users?.fname || ""}${row.users?.mname ? " " + row.users.mname.charAt(0) + ". " : " "}${row.users?.lname || ""}`.trim() || "Anonymous",
+                classOf: row.graduation_year ? `Class of ${row.graduation_year}` : "Unknown Year",
+                answer: survey.satisfaction_section7[key],
+                program: row.program?.program_name || "Unknown Program"
+              }))
+          );
 
-          setStrengthsOtherResponses(mapResponse("p5q2"));
-          setWeaknessesOtherResponses(mapResponse("p5q4"));
-          setSuggestionResponses(mapResponse("p5q5"));
-          setRecommendWhyResponses(mapResponse("p5q7")); 
-          setOverallImprovementResponses(mapResponse("p5q8"));
-          setAdditionalCommentsResponses(mapResponse("p5q9"));
+          setStrengthsOtherResponses(mapResponse("q1t1"));
+          setWeaknessesOtherResponses(mapResponse("q2t1"));
+          setSuggestionResponses(mapResponse("q3"));
+          setRecommendWhyResponses(mapResponse("q5"));
+          setOverallImprovementResponses(mapResponse("q6"));
+          setAdditionalCommentsResponses(mapResponse("q7"));
         }
       } catch (err) {
         console.error("Error fetching improvement data:", err);

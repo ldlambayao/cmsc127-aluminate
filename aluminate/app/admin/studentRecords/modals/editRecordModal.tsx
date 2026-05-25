@@ -98,13 +98,6 @@ export default function EditRecordModal({ record, onClose, onSuccess, programs }
           })
           .eq("uuid", (alumniRow as any).uuid);
       }
-
-      console.log("form data:", form);
-      console.log("full name:", nameParts);
-      console.log("fname:", (alumniRow as any).fname);
-      console.log("program new:", form.program);
-      console.log("program code new:", programData);
-
       onSuccess();
       onClose();
     } catch (err: any) {
