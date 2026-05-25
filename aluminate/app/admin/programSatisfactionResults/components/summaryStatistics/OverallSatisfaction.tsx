@@ -18,28 +18,28 @@ interface Props {
 }
 
 const DEPT_FACTORS = [
-  { key: "p2q1", label: "Overall experience at UP Mindanao" },
-  { key: "p2q2", label: "Overall experience at the Department of Math, Physics, and Computer Science" },
-  { key: "p2q3", label: "Non-academic experience at UP Mindanao" },
-  { key: "p2q4", label: "The expertise of the faculty" },
-  { key: "p2q5", label: "In meeting/fulfilling the expected program outcomes" },
-  { key: "p2q6", label: "Alignment of the course learning outcomes with the program learning outcomes" },
+  { key: "q1", label: "Overall experience at UP Mindanao" },
+  { key: "q2", label: "Overall experience at the Department of Math, Physics, and Computer Science" },
+  { key: "q3", label: "Non-academic experience at UP Mindanao" },
+  { key: "q4", label: "The expertise of the faculty" },
+  { key: "q5", label: "In meeting/fulfilling the expected program outcomes" },
+  { key: "q6", label: "Alignment of the course learning outcomes with the program learning outcomes" },
 ];
 
 const PLO_FACTORS = [
-  { key: "p2q7", label: "Development of a holistic understanding of the new general education (GE) courses" },
-  { key: "p2q8", label: "Mastery of fundamental concepts of mathematics" },
-  { key: "p2q9", label: "Mastery of fundamental concepts of statistics" },
-  { key: "p2q10", label: "Mastery of fundamental concepts of computer science" },
-  { key: "p2q11", label: "Enhanced analytical thinking skills through covering advanced mathematics courses" },
-  { key: "p2q12", label: "Ability to use operations research (OR) techniques to aid efficiency of the solution process" },
-  { key: "p2q13", label: "Ability to use GIS tools to aid efficiency of the solution process" },
-  { key: "p2q14", label: "Ability to use statistical methods to aid efficiency of the solution process" },
-  { key: "p2q15", label: "Implementation/development of computer programs for ease in complex computations" },
-  { key: "p2q16", label: "Ability to apply OR and statistical techniques to scientific research practices" },
-  { key: "p2q17", label: "Readiness or confidence to pursue a master's degree in applied mathematics" },
-  { key: "p2q18", label: "Readiness or confidence to pursue a master's degree in statistics" },
-  { key: "p2q19", label: "Readiness or confidence to pursue a master's degree in computer science" },
+  { key: "q7", label: "Development of a holistic understanding of the new general education (GE) courses" },
+  { key: "q8", label: "Mastery of fundamental concepts of mathematics" },
+  { key: "q9", label: "Mastery of fundamental concepts of statistics" },
+  { key: "q10", label: "Mastery of fundamental concepts of computer science" },
+  { key: "q11", label: "Enhanced analytical thinking skills through covering advanced mathematics courses" },
+  { key: "q12", label: "Ability to use operations research (OR) techniques to aid efficiency of the solution process" },
+  { key: "q13", label: "Ability to use GIS tools to aid efficiency of the solution process" },
+  { key: "q14", label: "Ability to use statistical methods to aid efficiency of the solution process" },
+  { key: "q15", label: "Implementation/development of computer programs for ease in complex computations" },
+  { key: "q16", label: "Ability to apply OR and statistical techniques to scientific research practices" },
+  { key: "q17", label: "Readiness or confidence to pursue a master's degree in applied mathematics" },
+  { key: "q18", label: "Readiness or confidence to pursue a master's degree in statistics" },
+  { key: "q19", label: "Readiness or confidence to pursue a master's degree in computer science" },
 ];
 
 export default function OverallSatisfaction({ program }: Props) {
@@ -52,26 +52,12 @@ export default function OverallSatisfaction({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p2q1, p2q2, p2q3, p2q4, p2q5, p2q6,
-            p2q7, p2q8, p2q9, p2q10, p2q11, p2q12, p2q13, p2q14, p2q15, p2q16, p2q17, p2q18, p2q19,
-            alumni(
-              graduation_year,
-              program(program_name),
-              users(fname, lname)
-            )
-          `);
-
-        const { data: rawData, error } = await query;
+        const { data, error } = await supabase
+          .from("satisfaction_section3")
+          .select("q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19");
         if (error) throw error;
 
-        if (rawData) {
-          const data = program 
-            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
-            : (rawData as any[]);
-
+        if (data) {
           const ratings = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
 
           const formattedDeptData = DEPT_FACTORS.map(f => {
@@ -116,52 +102,52 @@ export default function OverallSatisfaction({ program }: Props) {
           at the Department of Math, Physics and Computer Science?
         </p>
         <ResponsiveContainer width="100%" height={500}>
-          <BarChart 
-            data={deptData} 
-            layout="vertical" 
-            margin={{ top: 10, right: 20, left: 150, bottom: 10 }} 
+          <BarChart
+            data={deptData}
+            layout="vertical"
+            margin={{ top: 10, right: 20, left: 150, bottom: 10 }}
             barCategoryGap="20%">
             <CartesianGrid horizontal={false} stroke="#f0f0f0" />
-            <XAxis 
-              type="number" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fontSize: 10, fill: "#aaa" }} 
+            <XAxis
+              type="number"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10, fill: "#aaa" }}
               allowDecimals={false}
             />
-            <YAxis 
-              type="category" 
-              dataKey="factor" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fontSize: 11, fill: "#555" }} 
-              width={140} 
+            <YAxis
+              type="category"
+              dataKey="factor"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 11, fill: "#555" }}
+              width={140}
             />
             <Tooltip
               cursor={{ fill: "rgba(0,0,0,0.03)" }}
-              contentStyle={{ 
-                borderRadius: "8px", 
-                border: "1px solid #eee", 
-                fontSize: "11px" }} 
+              contentStyle={{
+                borderRadius: "8px",
+                border: "1px solid #eee",
+                fontSize: "11px" }}
               labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
               itemStyle={{ color: "#333" }}
             />
-            <Legend 
-              layout="horizontal" 
-              align="center" 
-              verticalAlign="bottom" 
-              iconType="square" 
-              iconSize={10} 
-              wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+            <Legend
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+              iconType="square"
+              iconSize={10}
+              wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }}
             />
             {ratings.map((rating, index) => (
-              <Bar 
-                key={rating} 
-                dataKey={rating} 
-                stackId="a" 
-                fill={colors[index]} 
-                radius={index === 0 ? [0, 0, 0, 0] : (index === ratings.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
-                maxBarSize={25} 
+              <Bar
+                key={rating}
+                dataKey={rating}
+                stackId="a"
+                fill={colors[index]}
+                radius={index === 0 ? [0, 0, 0, 0] : (index === ratings.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])}
+                maxBarSize={25}
               />
             ))}
           </BarChart>
@@ -173,29 +159,29 @@ export default function OverallSatisfaction({ program }: Props) {
           Rate your overall satisfaction based on the program learning outcomes:
         </p>
         <ResponsiveContainer width="100%" height={700}>
-          <BarChart 
-            data={ploData} 
-            layout="vertical" 
-            margin={{ top: 10, right: 20, left: 150, bottom: 10 }} 
+          <BarChart
+            data={ploData}
+            layout="vertical"
+            margin={{ top: 10, right: 20, left: 150, bottom: 10 }}
             barCategoryGap="20%">
-            <CartesianGrid 
-              horizontal={false} 
-              stroke="#f0f0f0" 
+            <CartesianGrid
+              horizontal={false}
+              stroke="#f0f0f0"
               />
-            <XAxis 
-              type="number" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fontSize: 10, fill: "#aaa" }} 
-              allowDecimals={false} 
+            <XAxis
+              type="number"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10, fill: "#aaa" }}
+              allowDecimals={false}
               />
-            <YAxis 
-              type="category" 
-              dataKey="factor" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fontSize: 11, fill: "#555" }} 
-              width={140} 
+            <YAxis
+              type="category"
+              dataKey="factor"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 11, fill: "#555" }}
+              width={140}
               />
             <Tooltip
               cursor={{ fill: "rgba(0,0,0,0.03)" }}
@@ -203,22 +189,22 @@ export default function OverallSatisfaction({ program }: Props) {
               labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
               itemStyle={{ color: "#333" }}
             />
-            <Legend 
-              layout="horizontal" 
-              align="center" 
-              verticalAlign="bottom" 
-              iconType="square" 
-              iconSize={10} 
-              wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+            <Legend
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+              iconType="square"
+              iconSize={10}
+              wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }}
             />
             {ratings.map((rating, index) => (
-              <Bar 
-                key={rating} 
-                dataKey={rating} 
-                stackId="a" 
-                fill={colors[index]} 
-                radius={index === 0 ? [0, 0, 0, 0] : (index === ratings.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
-                maxBarSize={25} 
+              <Bar
+                key={rating}
+                dataKey={rating}
+                stackId="a"
+                fill={colors[index]}
+                radius={index === 0 ? [0, 0, 0, 0] : (index === ratings.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])}
+                maxBarSize={25}
               />
             ))}
           </BarChart>

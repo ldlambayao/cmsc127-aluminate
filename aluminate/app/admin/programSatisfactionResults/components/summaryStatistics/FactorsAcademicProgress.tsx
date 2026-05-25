@@ -46,18 +46,18 @@ interface ModalEntry {
   count?: number;
 }
 
-// Factors & colors 
+// Factors & colors
 const FACTORS = [
-  { key: "p4q1", label: "Family obligations", color: "#f5dede" },
-  { key: "p4q2", label: "Challenges of requirements for each course", color: "#f0d0d0" },
-  { key: "p4q3", label: "Volume of requirements for each course", color: "#ebb8b8" },
-  { key: "p4q4", label: "Lack of access to the intended faculty", color: "#e6a0a0" },
-  { key: "p4q5", label: "Work conditions/demands", color: "#e09898" },
-  { key: "p4q6", label: "Financial concerns", color: "#d68080" },
-  { key: "p4q7", label: "Lack of motivation", color: "#d07878" },
-  { key: "p4q8", label: "Health issues", color: "#c06060" },
-  { key: "p4q9", label: "Challenges about the program in general", color: "#b85050" },
-  { key: "p4q10", label: "Challenges about the faculty in general", color: "#9b1d2a" },
+  { key: "q1", label: "Family obligations", color: "#f5dede" },
+  { key: "q2", label: "Challenges of requirements for each course", color: "#f0d0d0" },
+  { key: "q3", label: "Volume of requirements for each course", color: "#ebb8b8" },
+  { key: "q4", label: "Lack of access to the intended faculty", color: "#e6a0a0" },
+  { key: "q5", label: "Work conditions/demands", color: "#e09898" },
+  { key: "q6", label: "Financial concerns", color: "#d68080" },
+  { key: "q7", label: "Lack of motivation", color: "#d07878" },
+  { key: "q8", label: "Health issues", color: "#c06060" },
+  { key: "q9", label: "Challenges about the program in general", color: "#b85050" },
+  { key: "q10", label: "Challenges about the faculty in general", color: "#9b1d2a" },
 ];
 
 const INFLUENCE_LABELS = [
@@ -71,7 +71,7 @@ const INFLUENCE_LABELS = [
 
 const LEAVING_COLORS = ["#9b1d2a", "#f5dede"];
 
-//  Custom donut label 
+//  Custom donut label
 const renderDonutLabel = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, percent } = props;
   if (props.payload.name === "Yes") {
@@ -84,7 +84,7 @@ const renderDonutLabel = (props: any) => {
   return null;
 };
 
-//  Reusable response card 
+//  Reusable response card
 function ResponseCard({
   question,
   isHighlighted = false,
@@ -152,26 +152,19 @@ export default function FactorsAcademicProgress({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p4q1, p4q2, p4q3, p4q4, p4q5, p4q6, p4q7, p4q8, p4q9, p4q10,
-            p4q11, p4q12, p4q13, p4q14, p4q15, p4q16, p4q17, p4q18, p4q19, p4q20,
-            alumni(
-              graduation_year,
-              program(program_name),
-              users(fname, lname)
-            )
-          `);
+        const { data: alumniData, error: alumniError } = await supabase
+          .from("alumni")
+          .select("users!inner(fname, mname, lname), graduation_year, program!inner(program_name), satisfaction_survey_response!inner(satisfaction_section6!inner(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20))");
 
-        const { data: rawData, error } = await query;
+        if (alumniError) throw alumniError;
+
+        const { data, error } = await supabase
+          .from("satisfaction_section6")
+          .select("q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20")
+
         if (error) throw error;
 
-        if (rawData) {
-          const data = program
-            ? (rawData as any[]).filter((row: any) => row.alumni?.program?.program_name === program)
-            : (rawData as any[]);
-
+        if (data && alumniData) {
           // Process Factors Data
           const influenceColors = ["#7a1a23", "#9b1d2a", "#d07878", "#e8b4b4", "#f5dede", "#e0e0e0"];
           const formattedFactorsData = FACTORS.map(f => {
@@ -184,8 +177,8 @@ export default function FactorsAcademicProgress({ program }: Props) {
           setFactorsData(formattedFactorsData);
 
           // Process Leaving Data
-          const yesCount = data.filter((row: any) => row.p4q12 === "Yes").length;
-          const noCount = data.filter((row: any) => row.p4q12 === "No").length;
+          const yesCount = data.filter((row: any) => row.q12 === "Yes").length;
+          const noCount = data.filter((row: any) => row.q12 === "No").length;
           const total = yesCount + noCount || 1;
           setLeavingData([
             { name: "Yes", value: parseFloat(((yesCount / total) * 100).toFixed(2)) },
@@ -195,30 +188,32 @@ export default function FactorsAcademicProgress({ program }: Props) {
           // Process Favorite Year Data
           const yearCounts: Record<string, number> = {};
           data.forEach((row: any) => {
-            if (row.p4q14) {
-              yearCounts[row.p4q14] = (yearCounts[row.p4q14] || 0) + 1;
+            if (row.q14) {
+              yearCounts[row.q14] = (yearCounts[row.q14] || 0) + 1;
             }
           });
           setYearData(Object.entries(yearCounts).map(([year, count]) => ({ year, count })));
 
           // Process Responses
-          const mapResponse = (key: string) => data
-            .filter((row: any) => row[key] && String(row[key]).trim() !== "")
-            .map((row: any) => ({
-              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
-              answer: row[key],
-              program: row.alumni?.program?.program_name || "Unknown Program"
-            }));
+          const mapResponse = (key: string) => alumniData.flatMap((row: any) =>
+            row.satisfaction_survey_response
+              .filter((survey: any) => survey.satisfaction_section6?.[key] && String(survey.satisfaction_section6[key]).trim() !== "")
+              .map((survey: any) => ({
+                name: `${row.users?.fname || ""}${row.users?.mname ? " " + row.users.mname.charAt(0) + ". " : " "}${row.users?.lname || ""}`.trim() || "Anonymous",
+                classOf: row.graduation_year ? `Class of ${row.graduation_year}` : "Unknown Year",
+                answer: survey.satisfaction_section6[key],
+                program: row.program?.program_name || "Unknown Program"
+              }))
+          );
 
-          setOthersResponses(mapResponse("p4q11"));
-          setLeavingWhyResponses(mapResponse("p4q13"));
-          setFavoriteWhyResponses(mapResponse("p4q15"));
-          setMostHelpfulResponses(mapResponse("p4q16"));
-          setHelpfulFutureResponses(mapResponse("p4q17"));
-          setShouldNotIncludeResponses(mapResponse("p4q18"));
-          setShouldBeAddedResponses(mapResponse("p4q19"));
-          setOtherChallengesResponses(mapResponse("p4q20"));
+          setOthersResponses(mapResponse("q11"));
+          setLeavingWhyResponses(mapResponse("q13"));
+          setFavoriteWhyResponses(mapResponse("q15"));
+          setMostHelpfulResponses(mapResponse("q16"));
+          setHelpfulFutureResponses(mapResponse("q17"));
+          setShouldNotIncludeResponses(mapResponse("q18"));
+          setShouldBeAddedResponses(mapResponse("q19"));
+          setOtherChallengesResponses(mapResponse("q20"));
         }
       } catch (err) {
         console.error("Error fetching factors data:", err);

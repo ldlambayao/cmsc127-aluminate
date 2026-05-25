@@ -40,7 +40,7 @@ const DIFFICULTY_LABELS: Record<string, string> = {
   "5": "5-Very Difficult",
 };
 
-//  Main component 
+//  Main component
 export default function TransitiontoProgram({ program }: Props) {
   const supabase = getSupabaseBrowserClient();
   const [difficultyData, setDifficultyData] = useState<{ rating: string; "Count": number }[]>([]);
@@ -58,44 +58,33 @@ export default function TransitiontoProgram({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p1q3, p1q4, p1q4c1, p1q4c2, p1q4c3, p1q4t1, p1q5,
-            alumni(
-              graduation_year,
-              program(program_name),
-              users(fname, lname)
-            )
-          `);
-
-        const { data: rawData, error } = await query;
+        const { data: data, error } = await supabase
+          .from("alumni")
+          .select("users!inner(fname, mname, lname), graduation_year, program!inner(program_name), satisfaction_survey_response!inner(satisfaction_section2!inner(q1, q2, q3c1, q3c2, q3c3, q4))");
 
         if (error) throw error;
 
-        if (rawData) {
-          // Filter data by program if specified
-          const data = program 
-            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
-            : (rawData as any[]);
-
-          // Difficulty Level
+        if (data) {
           const difficultyCounts: Record<string, number> = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
           data.forEach((row: any) => {
-            const val = String(row.p1q3);
-            if (val in difficultyCounts) difficultyCounts[val]++;
+            row.satisfaction_survey_response.forEach((response: any) => {
+              const val = String(response.satisfaction_section2?.q1);
+              if (val in difficultyCounts) difficultyCounts[val]++;
+            })
           });
-          setDifficultyData(Object.keys(difficultyCounts).map(k => ({ 
-            rating: DIFFICULTY_LABELS[k] || k, 
-            "Count": difficultyCounts[k] 
+          setDifficultyData(Object.keys(difficultyCounts).map(k => ({
+            rating: DIFFICULTY_LABELS[k] || k,
+            "Count": difficultyCounts[k]
           })));
 
           // Transition Help
           const transitionCounts: Record<string, number> = { "Bridging Program": 0, "Refresher course": 0, "Other": 0 };
           data.forEach((row: any) => {
-            if (row.p1q4c1) transitionCounts["Bridging Program"]++;
-            if (row.p1q4c2) transitionCounts["Refresher course"]++;
-            if (row.p1q4c3 || (row.p1q4t1 && row.p1q4t1.trim() !== "")) transitionCounts["Other"]++;
+            row.satisfaction_survey_response.forEach((response: any) => {
+              if (response.satisfaction_section2?.q3c1) transitionCounts["Bridging Program"]++;
+              if (response.satisfaction_section2?.q3c2) transitionCounts["Refresher course"]++;
+              if (response.satisfaction_section2?.q3c3 || (response.satisfaction_section2?.q3t1 && row.satisfaction_survey_response[0].satisfaction_section2.q3t1.trim() !== "")) transitionCounts["Other"]++;
+            })
           });
           setTransitionData([
             { category: "Bridging Program", "Count": transitionCounts["Bridging Program"] },
@@ -104,24 +93,28 @@ export default function TransitiontoProgram({ program }: Props) {
           ]);
 
           // Responses
-          const diffRes: Response[] = data
-            .filter((row: any) => row.p1q4 && row.p1q4.trim() !== "")
-            .map((row: any) => ({
-              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
-              answer: row.p1q4,
-              program: row.alumni?.program?.program_name || "Unknown Program"
-            }));
+          const diffRes: Response[] = data.flatMap((row: any) =>
+            row.satisfaction_survey_response
+              .filter((survey: any) => survey.satisfaction_section2?.q2 && survey.satisfaction_section2.q2.trim() !== "")
+              .map((survey: any) => ({
+                name: `${row.users?.fname || ""} ${row.users?.mname ? " " + row.users.mname.charAt(0) + ". " : " "}${row.users?.lname || ""}`.trim() || "Anonymous",
+                classOf: row.graduation_year ? `Class of ${row.graduation_year}` : "Unknown Year",
+                answer: survey.satisfaction_section2.q2,
+                program: row.program?.program_name || "Unknown Program"
+              }))
+          );
           setDifficultyResponses(diffRes);
 
-          const sugRes: Response[] = data
-            .filter((row: any) => row.p1q5 && row.p1q5.trim() !== "")
-            .map((row: any) => ({
-              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
-              answer: row.p1q5,
-              program: row.alumni?.program?.program_name || "Unknown Program"
-            }));
+          const sugRes: Response[] = data.flatMap((row: any) =>
+            row.satisfaction_survey_response
+              .filter((survey: any) => survey.satisfaction_section2?.q2 && survey.satisfaction_section2.q2.trim() !== "")
+              .map((survey: any) => ({
+                name: `${row.users?.fname || ""} ${row.users?.mname ? " " + row.users.mname.charAt(0) + ". " : " "}${row.users?.lname || ""}`.trim() || "Anonymous",
+                classOf: row.graduation_year ? `Class of ${row.graduation_year}` : "Unknown Year",
+                answer: survey.satisfaction_section2.q2,
+                program: row.program?.program_name || "Unknown Program"
+              }))
+          );
           setSuggestResponses(sugRes);
         }
       } catch (err) {
@@ -184,10 +177,10 @@ export default function TransitiontoProgram({ program }: Props) {
                   cursor={{ fill: "rgba(216,154,154,0.10)" }} contentStyle={{ borderRadius: "8px", border: "1px solid #eee", fontSize: "12px" }}
                   labelStyle={{ color: "#1a1a1a", fontWeight: 600, marginBottom: "4px" }}
                   itemStyle={{ color: "#333" }} />
-                <Bar 
-                  dataKey="Count" 
-                  fill="#D89A9A" 
-                  radius={[8, 8, 0, 0]} 
+                <Bar
+                  dataKey="Count"
+                  fill="#D89A9A"
+                  radius={[8, 8, 0, 0]}
                   maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>

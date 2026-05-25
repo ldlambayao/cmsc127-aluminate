@@ -28,22 +28,22 @@ interface FactorDataPoint {
 }
 
 const LEARN_ABOUT_MAPPING = [
-  { key: "p1q2c1", label: "UP Website" },
-  { key: "p1q2c2", label: "UP Faculty/Employee" },
-  { key: "p1q2c3", label: "Friend/Colleague" },
-  { key: "p1q2t1", label: "Other" },
+  { key: "q1c1", label: "UP Website" },
+  { key: "q1c2", label: "UP Faculty/Employee" },
+  { key: "q1c3", label: "Friend/Colleague" },
+  { key: "q1t1", label: "Other" },
 ];
 
 const ENROLLMENT_FACTORS_MAPPING = [
-  { key: "p1q6q1", label: "Reputation of UP Mindanao" },
-  { key: "p1q6q2", label: "Reputation of UP Mindanao Department of Math, Physics and Computer Science" },
-  { key: "p1q6q3", label: "Reputation of the BSAM program" },
-  { key: "p1q6q4", label: "Reputation/Expertise of the Faculty members" },
-  { key: "p1q6q5", label: "The program matches my interests" },
-  { key: "p1q6q6", label: "Financial consideration" },
-  { key: "p1q6q7", label: "Recommendation of a friend" },
-  { key: "p1q6q8", label: "Encouragement of parent/s or relatives" },
-  { key: "p1q6q9", label: "Encouragement of a faculty member" },
+  { key: "q2", label: "Reputation of UP Mindanao" },
+  { key: "q3", label: "Reputation of UP Mindanao Department of Math, Physics and Computer Science" },
+  { key: "q4", label: "Reputation of the BSAM program" },
+  { key: "q5", label: "Reputation/Expertise of the Faculty members" },
+  { key: "q6", label: "The program matches my interests" },
+  { key: "q7", label: "Financial consideration" },
+  { key: "q8", label: "Recommendation of a friend" },
+  { key: "q9", label: "Encouragement of parent/s or relatives" },
+  { key: "q10", label: "Encouragement of a faculty member" },
 ];
 
 const RATING_LABELS: Record<string, string> = {
@@ -73,25 +73,13 @@ export default function DecisiontoEnroll({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p1q2c1, p1q2c2, p1q2c3, p1q2t1,
-            p1q6q1, p1q6q2, p1q6q3, p1q6q4, p1q6q5, p1q6q6, p1q6q7, p1q6q8, p1q6q9,
-            alumni(
-              program(program_name)
-            )
-          `);
-
-        const { data: rawData, error } = await query;
+        const { data: data, error } = await supabase
+          .from("satisfaction_section1")
+          .select("q1c1, q1c2, q1c3, q1t1, q2, q3, q4, q5, q6, q7, q8, q9, q10");
 
         if (error) throw error;
 
-        if (rawData) {
-          // Filter data by program if specified
-          const data = program 
-            ? rawData.filter((row: any) => row.alumni?.program?.program_name === program)
-            : rawData;
+        if (data) {
 
           // Process Learn About Data
           const learnCounts: Record<string, number> = {
@@ -102,10 +90,10 @@ export default function DecisiontoEnroll({ program }: Props) {
           };
 
           data.forEach((row: any) => {
-            if (row.p1q2c1) learnCounts["UP Website"]++;
-            if (row.p1q2c2) learnCounts["UP Faculty/Employee"]++;
-            if (row.p1q2c3) learnCounts["Friend/Colleague"]++;
-            if (row.p1q2t1 && row.p1q2t1.trim() !== "") learnCounts["Other"]++;
+            if (row.q1c1) learnCounts["UP Website"]++;
+            if (row.q1c2) learnCounts["UP Faculty/Employee"]++;
+            if (row.q1c3) learnCounts["Friend/Colleague"]++;
+            if (row.q1t1 && row.q1t1.trim() !== "") learnCounts["Other"]++;
           });
 
           const formattedLearnData = LEARN_ABOUT_MAPPING.map((m) => ({

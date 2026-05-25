@@ -24,7 +24,6 @@ export default function RecentSubmissions() {
           .order("date_answered", { ascending: false })
           .limit(10);
 
-        console.log("sat rows", satRows)
 
         // Fetch recent tracer form submissions
         const { data: tracerRows } = await supabase
@@ -33,7 +32,6 @@ export default function RecentSubmissions() {
           .order("date_answered", { ascending: false })
           .limit(10);
 
-        console.log("tracer rows", tracerRows)
 
         const format = (rows: any[], formName: string): Submission[] =>
           (rows ?? []).map((r: any) => {
@@ -59,7 +57,6 @@ export default function RecentSubmissions() {
           ...format(tracerRows ?? [], "Alumni Tracer Form"),
         ].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()).slice(0, 10);
 
-        console.log("all submissions: ", all);
         setSubmissions(all);
       } catch (err) {
         console.error(err);

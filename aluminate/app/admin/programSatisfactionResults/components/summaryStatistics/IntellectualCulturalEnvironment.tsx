@@ -30,12 +30,12 @@ interface ReasonEntry {
   category: string;
 }
 
-// Factors & colors 
+// Factors & colors
 const FACTORS = [
-  { key: "p3q1", label: "Inclusivity (individuals with diverse backgrounds)", color: "#f5dede" },
-  { key: "p3q2", label: "Faculty members serve as exemplars of 'honor and excellence'", color: "#e8b4b4" },
-  { key: "p3q3", label: "Students are encouraged to participate", color: "#d07878" },
-  { key: "p3q4", label: "The expertise of the faculty", color: "#9b1d2a" },
+  { key: "q1", label: "Inclusivity (individuals with diverse backgrounds)", color: "#f5dede" },
+  { key: "q2", label: "Faculty members serve as exemplars of 'honor and excellence'", color: "#e8b4b4" },
+  { key: "q3", label: "Students are encouraged to participate", color: "#d07878" },
+  { key: "q4", label: "The expertise of the faculty", color: "#9b1d2a" },
 ];
 
 export default function IntellectualCulturalEnvironment({ program }: Props) {
@@ -50,27 +50,19 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p3q1, p3q2, p3q3, p3q4, p3q5,
-            alumni(
-              graduation_year,
-              program(program_name),
-              users(fname, lname)
-            )
-          `);
+        const { data: alumniData, error: alumniError } = await supabase
+          .from("alumni")
+          .select("users!inner(fname, mname, lname), graduation_year, program!inner(program_name), satisfaction_survey_response!inner(satisfaction_section4!inner(q1, q2, q3, q4, q5))");
 
-        const { data: rawData, error } = await query;
+        if (alumniError) throw alumniError;
+
+        const { data, error} = await supabase
+          .from("satisfaction_section4")
+          .select("q1, q2, q3, q4, q5")
 
         if (error) throw error;
 
-        if (rawData) {
-          // Filter data by program if specified
-          const data = program 
-            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
-            : (rawData as any[]);
-
+        if (data && alumniData) {
           // Process Chart Data
           const ratingEntries = ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"];
           const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
@@ -85,17 +77,20 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
             });
             return entry;
           });
+
           setChartData(formattedChartData);
 
           // Process Explain Responses
-          const responses: Response[] = data
-            .filter((row: any) => row.p3q5 && String(row.p3q5).trim() !== "")
-            .map((row: any) => ({
-              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
-              answer: row.p3q5,
-              program: row.alumni?.program?.program_name || "Unknown Program"
-            }));
+          const responses: Response[] = alumniData.flatMap((row: any) =>
+            row.satisfaction_survey_response
+              .filter((survey: any) => survey.satisfaction_section4?.q5 && String(survey.satisfaction_section4.q5).trim() !== "")
+              .map((survey: any) => ({
+                name: `${row.users?.fname || ""}${row.users?.mname ? " " + row.users.mname.charAt(0) + ". " : " "}${row.users?.lname || ""}`.trim() || "Anonymous",
+                classOf: row.graduation_year ? `Class of ${row.graduation_year}` : "Unknown Year",
+                answer: survey.satisfaction_section4.q5,
+                program: row.program?.program_name || "Unknown Program"
+              }))
+          );
           setExplainResponses(responses);
         }
       } catch (err) {
@@ -169,22 +164,22 @@ export default function IntellectualCulturalEnvironment({ program }: Props) {
                 verticalAlign="bottom"
                 iconType="square"
                 iconSize={10}
-                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }}
               />
               {ratingEntries.map((rating, index) => (
-                <Bar 
-                  key={rating} 
-                  dataKey={rating} 
+                <Bar
+                  key={rating}
+                  dataKey={rating}
                   stackId="a"
-                  fill={colors[index]} 
-                  radius={index === 0 ? [0, 0, 0, 0] : (index === ratingEntries.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
-                  maxBarSize={25} 
+                  fill={colors[index]}
+                  radius={index === 0 ? [0, 0, 0, 0] : (index === ratingEntries.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])}
+                  maxBarSize={25}
                 />
               ))}
             </BarChart>
           </ResponsiveContainer>
         </div>
-        
+
         <div className="flex justify-center mt-4 border-t border-gray-100 pt-4">
           <button className="bg-transparent border-none text-red-900 text-sm font-semibold cursor-pointer hover:text-red-800" onClick={openExplainModal}>
             View Explanations

@@ -31,19 +31,19 @@ interface OthersEntry {
   count?: number;
 }
 
-// Factors & colors (light → dark pink/red) 
+// Factors & colors (light → dark pink/red)
 const FACTORS = [
-  { key: "p3q6", label: "DMPCS Staff", color: "#f5dede" },
-  { key: "p3q7", label: "Faculty members in general", color: "#f0d0d0" },
-  { key: "p3q8", label: "Faculty members who handle the courses", color: "#ebb8b8" },
-  { key: "p3q9", label: "Office of the University Registrar", color: "#e6a0a0" },
-  { key: "p3q10", label: "Dean's Office", color: "#e09898" },
-  { key: "p3q11", label: "Guidance and Counseling Office", color: "#d68080" },
-  { key: "p3q12", label: "University Library", color: "#d07878" },
-  { key: "p3q13", label: "ICT Office", color: "#c06060" },
-  { key: "p3q14", label: "Office of Student Affairs", color: "#b85050" },
-  { key: "p3q15", label: "Canteen", color: "#a03030" },
-  { key: "p3q16", label: "Guards", color: "#9b1d2a" },
+  { key: "q1", label: "DMPCS Staff", color: "#f5dede" },
+  { key: "q2", label: "Faculty members in general", color: "#f0d0d0" },
+  { key: "q3", label: "Faculty members who handle the courses", color: "#ebb8b8" },
+  { key: "q4", label: "Office of the University Registrar", color: "#e6a0a0" },
+  { key: "q5", label: "Dean's Office", color: "#e09898" },
+  { key: "q6", label: "Guidance and Counseling Office", color: "#d68080" },
+  { key: "q7", label: "University Library", color: "#d07878" },
+  { key: "q8", label: "ICT Office", color: "#c06060" },
+  { key: "q9", label: "Office of Student Affairs", color: "#b85050" },
+  { key: "q10", label: "Canteen", color: "#a03030" },
+  { key: "q11", label: "Guards", color: "#9b1d2a" },
 ];
 
 export default function ServicesProvidedbyUP({ program }: Props) {
@@ -58,27 +58,19 @@ export default function ServicesProvidedbyUP({ program }: Props) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const query = supabase
-          .from("satisfaction_survey_response")
-          .select(`
-            p3q6, p3q7, p3q8, p3q9, p3q10, p3q11, p3q12, p3q13, p3q14, p3q15, p3q16, p3q17,
-            alumni(
-              graduation_year,
-              program(program_name),
-              users(fname, lname)
-            )
-          `);
+        const { data: alumniData, error: alumniError } = await supabase
+          .from("alumni")
+          .select("users!inner(fname, mname, lname), graduation_year, program!inner(program_name), satisfaction_survey_response!inner(satisfaction_section5!inner(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12))");
 
-        const { data: rawData, error } = await query;
+        if (alumniError) throw alumniError;
+
+        const { data, error } = await supabase
+          .from("satisfaction_section5")
+          .select("q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12")
 
         if (error) throw error;
 
-        if (rawData) {
-          // Filter data by program if specified
-          const data = program 
-            ? (rawData as any[]).filter((row) => row.alumni?.program?.program_name === program)
-            : (rawData as any[]);
-
+        if (data && alumniData) {
           // Process Chart Data
           const ratingEntries = ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"];
           const colors = ["#9b1d2a", "#d07878", "#e8b4b4", "#f5dede"];
@@ -95,15 +87,16 @@ export default function ServicesProvidedbyUP({ program }: Props) {
           });
           setChartData(formattedChartData);
 
-          // Process Other Responses (p3q17)
-          const responses: Response[] = data
-            .filter((row: any) => row.p3q17 && String(row.p3q17).trim() !== "")
-            .map((row: any) => ({
-              name: `${row.alumni?.users?.fname} ${row.alumni?.users?.lname}` || "Anonymous",
-              classOf: `Class of ${row.alumni?.graduation_year}` || "Unknown Year",
-              answer: row.p3q17,
-              program: row.alumni?.program?.program_name || "Unknown Program"
-            }));
+          const responses: Response[] = alumniData.flatMap((row: any) =>
+            row.satisfaction_survey_response
+              .filter((survey: any) => survey.satisfaction_section5?.q12 && String(survey.satisfaction_section5.q12).trim() !== "")
+              .map((survey: any) => ({
+                name: `${row.users?.fname || ""}${row.users?.mname ? " " + row.users.mname.charAt(0) + ". " : " "}${row.users?.lname || ""}`.trim() || "Anonymous",
+                classOf: row.graduation_year ? `Class of ${row.graduation_year}` : "Unknown Year",
+                answer: survey.satisfaction_section5.q12,
+                program: row.program?.program_name || "Unknown Program"
+              }))
+          );
           setOtherResponses(responses);
         }
       } catch (err) {
@@ -175,16 +168,16 @@ export default function ServicesProvidedbyUP({ program }: Props) {
                 verticalAlign="bottom"
                 iconType="square"
                 iconSize={10}
-                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }} 
+                wrapperStyle={{ fontSize: "11px", color: "#555", paddingTop: "20px" }}
               />
               {ratingEntries.map((rating, index) => (
-                <Bar 
-                  key={rating} 
-                  dataKey={rating} 
+                <Bar
+                  key={rating}
+                  dataKey={rating}
                   stackId="a"
-                  fill={colors[index]} 
-                  radius={index === 0 ? [0, 0, 0, 0] : (index === ratingEntries.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])} 
-                  maxBarSize={25} 
+                  fill={colors[index]}
+                  radius={index === 0 ? [0, 0, 0, 0] : (index === ratingEntries.length - 1 ? [0, 4, 4, 0] : [0, 0, 0, 0])}
+                  maxBarSize={25}
                 />
               ))}
             </BarChart>
