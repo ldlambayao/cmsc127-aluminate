@@ -86,7 +86,7 @@ export default function LoginPage({ user }: LoginProps) {
         <div className="page-enter-child-1" style={brandColumnStyle}>
           <div style={brandLockupStyle}>
             <Image
-              src="/aluminate logo.png"
+              src="/aluminate-withsubtitle.png"
               alt="Aluminate logo"
               width={380}
               height={95}
@@ -94,9 +94,6 @@ export default function LoginPage({ user }: LoginProps) {
               priority
             />
           </div>
-          <p style={brandSubtitleStyle}>
-            A DMPCS Graduate and Alumni Tracking Analytics System
-          </p>
         </div>
 
         {/* Right — card morphs in */}

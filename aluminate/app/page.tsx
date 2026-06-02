@@ -14,7 +14,7 @@ export default function Home() {
       <div style={contentStyle}>
         <div className="page-enter-child-1">
           <Image
-            src="/aluminate logo.png"
+            src="/aluminate-withsubtitle.png"
             alt="Aluminate logo"
             width={320}
             height={80}
@@ -24,7 +24,6 @@ export default function Home() {
         </div>
 
         <p className="page-enter-child-2" style={subtitleStyle}>
-          A DMPCS Graduate and Alumni Tracking Analytics System
         </p>
 
         <div className="page-enter-child-3">
